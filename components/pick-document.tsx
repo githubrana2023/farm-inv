@@ -35,7 +35,7 @@ const PickDocument = () => {
 
 
     const getPermission = async () => {
-        const permission = await Saf.requestDirectoryPermissionsAsync()
+        const permission = await Saf.requestStoredDirectoryInfosAsync()
 
         if (permission.granted) {
             storeData('storedDirectoryUri', permission.directoryUri)

@@ -22,26 +22,16 @@ export const storeData = async<T>({ key, isStringValue, value }: StoredData<T>) 
 
     try {
         await AsyncStorage.setItem(key, stringifiedValue)
-        storageEvent.emit('permissionChanged',)
+        // storageEvent.emit('permissionChanged',)
     } catch (error) {
         console.log('error storing data', error)
     }
 }
 
 
-export const getStoredData = async (key: string) => {
+export const getStringStoredData = async (key: string) => {
     try {
-        const storedData = await AsyncStorage.getItem(key);
-        if (!storedData) {
-            Toast.show({
-                type: 'error',
-                text1: 'No stored data found!',
-                text2: `No data found for the key: ${key}`,
-            })
-            return null
-        }
-
-        return storedData
+        return await AsyncStorage.getItem(key);
     } catch (e) {
         console.log('error reading stored data', e)
     }
@@ -51,16 +41,7 @@ export const getStoredData = async (key: string) => {
 export const getNonStringStoredData = async <T = unknown>(key: string) => {
     try {
         const storedData = await AsyncStorage.getItem(key);
-        if (!storedData) {
-            Toast.show({
-                type: 'error',
-                text1: 'No stored data found!',
-                text2: `No data found for the key: ${key}`,
-            })
-            return null
-        }
-        return JSON.parse(storedData) as T
-
+        return storedData ? JSON.parse(storedData) as T : null
     } catch (e) {
         console.log('error reading stored data', e)
     }

@@ -1,16 +1,17 @@
+import { getStoredData } from "@/components/pick-document"
 import { DIRECTORY_PERMISSION_KEY } from "@/constants"
-import { DirectoryPermission } from "@/constants/type"
-import { getNonStringStoredData, getStoredData } from "@/lib/async-storage"
+import { StoredDirectoryInfo } from "@/constants/type"
+import { getNonStringStoredData, } from "@/lib/async-storage"
 import { storageEvent } from "@/lib/even-emitter/storage-event"
 
 import * as FileSystem from 'expo-file-system'
 import { useEffect, useState } from "react"
 
 export const usePermission = () => {
-    const [state, setState] = useState<DirectoryPermission>({ directoryUri: "", granted: false })
+    const [state, setState] = useState<StoredDirectoryInfo>({ directoryUri: "", directoryName: "" })
     const load = async () => {
-        const storedData = await getNonStringStoredData<DirectoryPermission>(DIRECTORY_PERMISSION_KEY)
-        setState(storedData ?? { directoryUri: "", granted: false })
+        const storedData = await getNonStringStoredData<StoredDirectoryInfo>(DIRECTORY_PERMISSION_KEY)
+        setState(storedData ?? { directoryUri: "", directoryName: "" })
     }
 
     useEffect(() => {

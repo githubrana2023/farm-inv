@@ -1,3 +1,4 @@
+import { saveFile } from "@/lib/expo-file-system/save-file"
 import { saveOrder } from "@/lib/utils"
 
 export const APP_SETTINGS_TAB = 'app-settings' as const
@@ -12,32 +13,51 @@ export const FILE_URI_KEY = 'file-uri' as const
 export const ORDER_NAME = [
     {
         name: 'Kwh',
-        onPress: saveOrder
+        onPress: saveFile
     },
     {
         name: 'Veg',
-        onPress: saveOrder
+        onPress: saveFile
     },
     {
         name: 'Louziano',
-        onPress: saveOrder
+        onPress: saveFile
     },
     {
         name: 'Meat',
-        onPress: saveOrder
+        onPress: saveFile
     },
     {
         name: 'Direct',
-        onPress: saveOrder
+        onPress: saveFile
     },
 ]
 export const SAVE_NAME = [
     {
-        name: 'Inventory',
-        onPress: saveOrder
+        name: 'Cigarettes',
+        onPress: saveFile
     },
     {
-        name: 'Shelf Tags',
-        onPress: saveOrder
+        name: 'Louziano',
+        onPress: saveFile
+    },
+    {
+        name: 'Veg',
+        onPress: saveFile
     }
+]
+
+export const EMPLOYEE_NAME = [
+    {
+        name: 'Ruel',
+        onPress: saveFile
+    },
+    {
+        name: 'Jojo',
+        onPress: saveFile
+    },
+    {
+        name: 'Jitendra',
+        onPress: saveFile
+    },
 ]

@@ -5,14 +5,14 @@ import { Label } from './ui/label'
 import { Text } from './ui/text'
 import { Separator } from './ui/separator'
 import { Button } from './ui/button'
-import { getFolderAccessPermission, importDb } from '@/lib/expo-file-system'
 import { useFile, usePermission } from '@/hooks/permissions'
 import { removeStoredData } from '@/lib/async-storage'
 import { DIRECTORY_PERMISSION_KEY, FILE_URI_KEY } from '@/constants'
+import { filePicker } from '@/lib/expo-file-system/file-picker'
 
 const AppSettings = () => {
-    const permission = usePermission()
-    const file = useFile(FILE_URI_KEY)
+    // const permission = usePermission()
+    // const file = useFile(FILE_URI_KEY)
     return (
         <View>
             {/* /BRANCH INPUT AREA */}
@@ -26,13 +26,10 @@ const AppSettings = () => {
                 <Separator />
             </View>
             {/* BRANCH INPUT AREA FINISH */}
-            <Button onPress={importDb}>
-                <Text>Import DB</Text>
-            </Button>
-            <Text>{file?.lastModified && String(new Date(file.lastModified))}</Text>
-            <Separator className='my-4' />
-            <Button onPress={getFolderAccessPermission}>
-                <Text>Folder Permission {permission.granted ? "granted" : 'deny'}</Text>
+            <Button
+                onPress={filePicker}
+            >
+                <Text>Import Database</Text>
             </Button>
             <Separator className='my-4' />
 
