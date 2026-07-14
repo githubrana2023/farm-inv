@@ -1,8 +1,12 @@
+import AddItemForm from '@/components/form/add-item-form';
 import PickDocument, { getStoredData } from '@/components/pick-document';
 import Container from '@/components/shared/container';
+import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
+import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import { Link, } from 'expo-router';
 import { MoonStarIcon, StarIcon, SunIcon } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
@@ -28,10 +32,10 @@ const IMAGE_STYLE: ImageStyle = {
 export default function Screen() {
   const { colorScheme } = useColorScheme();
 
-
+const storedScannedItems:unknown[] = []
   return (
     <Container>
-      {/* <Tabs.Screen options={SCREEN_OPTIONS} /> */}
+      {/* <Tabs.Screen options={SCREEN_OPTIONS} />
       <View className="flex-1 items-center justify-center gap-8 p-4">
         <Image source={LOGO[colorScheme ?? 'light']} style={IMAGE_STYLE} resizeMode="contain" />
         <View className="gap-2 p-4">
@@ -56,7 +60,31 @@ export default function Screen() {
           </Link>
           <PickDocument />
         </View>
-      </View>
+      </View> */}
+      <AddItemForm/>
+
+      {
+        storedScannedItems.length > 0 ? (
+          // <FlatList
+          //   className="pb-0 flex-1"
+          //   showsVerticalScrollIndicator={false}
+          //   data={storedScannedItems}
+          //   renderItem={({ item }) => (
+          //     <ScannedItemCard
+          //       key={item.barcode}
+          //       item={item}
+          //       isCollapseAble
+          //       defaultCollapse={false}
+          //     />
+          //   )}
+          // />
+          <Text>Show scanned items</Text>
+        ) : (
+          <EmptyState
+            icon={<FontAwesome6 name='box' iconStyle='solid' size={28} />}
+          />
+        )
+      }
     </Container>
   );
 }
