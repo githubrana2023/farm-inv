@@ -12,7 +12,8 @@ export const FILE_URI_KEY = 'file-uri' as const
 export const ITEM_CODE_REGEX = /^0\d{7}-\d{4}$/;
 export const valueIsItemCode = (code: string) => ITEM_CODE_REGEX.test(code);
 
-export const multitaskVariantValues = ["Inventory", "Tags", "Order"] as const;
+export const SCAN_FLAG = ["Inventory", "Tags", "Order"] as const;
+export const SAVE_FLAG = ["Inventory",  "Order"] as const;
 
 export const multitaskVariants = [
   {
@@ -29,7 +30,7 @@ export const multitaskVariants = [
   },
 ] as const;
 
-export type MultitaskVariantValues = (typeof multitaskVariantValues)[number];
+export type MultitaskVariantValues = (typeof SCAN_FLAG)[number];
 
 export const ORDER_NAME = [
     {
