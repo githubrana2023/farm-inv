@@ -12,12 +12,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller'
 import { useEmployeeCreateMutation } from '@/hooks/tanstack/mutation/employee'
 import { showSuccess } from '@/lib/toast/success'
-import { queryClient } from '../provider/tanstak-query-client'
+import { queryClient } from '../provider/tanstack-query-client'
 import { MUTATION_KEY } from '@/constants/tanstack-query'
+import { useModalAction } from '@/hooks/redux/use-modal'
 
 const EmployeeCreateForm = () => {
 
-    const { mutate: createEmployee } = useEmployeeCreateMutation()
+    const { mutate: createEmployee, isPending, } = useEmployeeCreateMutation()
+    const { onClose } = useModalAction()
 
     const form = useForm<EmployeeCreateFormValue>({
         defaultValues: {
@@ -33,6 +35,8 @@ const EmployeeCreateForm = () => {
         createEmployee(values, {
             onSuccess() {
                 queryClient.invalidateQueries({ queryKey: [MUTATION_KEY.EMPLOYEE.READ] })
+                // form.reset()
+                // onClose()
             }
         })
 
@@ -104,8 +108,10 @@ const EmployeeCreateForm = () => {
                             />
                         )}
                     />
-                    <Button onPress={onSubmitHandler}>
-                        <Text>Create Employee</Text>
+                    <Button onPress={onSubmitHandler} disabled={isPending}>
+                        <Text>
+                            {isPending ? 'Creating Employee...' : 'Create Employee'}
+                        </Text>
                     </Button>
                 </View>
             </Form>

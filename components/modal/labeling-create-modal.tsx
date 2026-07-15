@@ -1,27 +1,23 @@
-import { View, } from 'react-native'
-import React from 'react'
 import Modal from '../shared/modal'
-import { Text } from '../ui/text'
-import { Button } from '../ui/button'
-import EmployeeCreateForm from '../form/employee-create-form'
 import { useModal, useModalAction } from '@/hooks/redux/use-modal'
 import { MODAL_TYPE } from '@/constants'
+import LabelingCreateForm from '../form/labeling-create-form'
 
-const EmployeeCreateModal = () => {
+const LabelingCreateModal = () => {
     const { isOpen, type } = useModal()
     const { onClose } = useModalAction()
-    const open = isOpen && type === MODAL_TYPE.EMPLOYEE_CREATE_MODAL
+    const open = isOpen && type === MODAL_TYPE.LABELING_CREATE_MODAL
     return (
         <Modal
             open={open}
             onOpenChange={onClose}
-            title="Create Employee"
+            title="Create Labeling"
             description="Fill the following fields"
             isWithoutHeader={false}
         >
-            <EmployeeCreateForm />
+            <LabelingCreateForm />
         </Modal>
     )
 }
 
-export default EmployeeCreateModal
+export default LabelingCreateModal

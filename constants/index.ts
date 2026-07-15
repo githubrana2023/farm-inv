@@ -1,5 +1,3 @@
-import { saveFile } from "@/lib/expo-file-system/save-file"
-//TODO : Change the directory 
 export const APP_SETTINGS_TAB = 'app-settings' as const
 export const USER_SETTINGS_TAB = 'user-settings' as const
 
@@ -33,59 +31,10 @@ export const multitaskVariants = [
 
 export type MultitaskVariantValues = (typeof SCAN_FLAG)[number];
 
+
 export const MODAL_TYPE = {
     EMPLOYEE_CREATE_MODAL: "EMPLOYEE_CREATE_MODAL",
     EMPLOYEE_UPDATE_MODAL: "EMPLOYEE_UPDATE_MODAL",
+    LABELING_CREATE_MODAL: "LABELING_CREATE_MODAL",
+    LABELING_UPDATE_MODAL: "LABELING_UPDATE_MODAL",
 } as const
-
-export const ORDER_NAME = [
-    {
-        name: 'Kwh',
-        onPress: saveFile
-    },
-    {
-        name: 'Veg',
-        onPress: saveFile
-    },
-    {
-        name: 'Louziano',
-        onPress: saveFile
-    },
-    {
-        name: 'Meat',
-        onPress: saveFile
-    },
-    {
-        name: 'Direct',
-        onPress: saveFile
-    },
-]
-export const SAVE_NAME = [
-    {
-        name: 'Cigarettes',
-        onPress: saveFile
-    },
-    {
-        name: 'Louziano',
-        onPress: saveFile
-    },
-    {
-        name: 'Veg',
-        onPress: saveFile
-    }
-]
-
-export const EMPLOYEE_NAME = [
-    {
-        name: 'Ruel',
-        onPress: saveFile
-    },
-    {
-        name: 'Jojo',
-        onPress: saveFile
-    },
-    {
-        name: 'Jitendra',
-        onPress: saveFile
-    },
-]

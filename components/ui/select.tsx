@@ -20,8 +20,8 @@ function SelectValue({
   className,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Value> & {
-    className?: string;
-  }) {
+  className?: string;
+}) {
   const { value } = SelectPrimitive.useRootContext();
   return (
     <SelectPrimitive.Value
@@ -43,9 +43,9 @@ function SelectTrigger({
   size = 'default',
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
-    children?: React.ReactNode;
-    size?: 'default' | 'sm';
-  }) {
+  children?: React.ReactNode;
+  size?: 'default' | 'sm';
+}) {
   return (
     <SelectPrimitive.Trigger
       ref={ref}
@@ -74,9 +74,9 @@ function SelectContent({
   portalHost,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content> & {
-    className?: string;
-    portalHost?: string;
-  }) {
+  className?: string;
+  portalHost?: string;
+}) {
   return (
     <SelectPrimitive.Portal hostName={portalHost}>
       <FullWindowOverlay>

@@ -1,4 +1,4 @@
-type Key = 'EMPLOYEE'
+type Key = 'EMPLOYEE' | 'LABELING'
 type Action = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE'
 
 
@@ -15,5 +15,11 @@ export const MUTATION_KEY: MutationKey = {
         READ: 'EMPLOYEE-READ',
         DELETE: 'EMPLOYEE-DELETE',
         UPDATE: 'EMPLOYEE-UPDATE'
+    },
+    LABELING: {
+        CREATE: 'LABELING-CREATE',
+        READ: 'LABELING-READ',
+        UPDATE: 'LABELING-UPDATE',
+        DELETE: 'LABELING-DELETE'
     }
 }

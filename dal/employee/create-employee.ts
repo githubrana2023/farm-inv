@@ -12,11 +12,11 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
         const allEmployees = await inventoryDb.select().from(employeeTable)
 
         const isFirstEmp = allEmployees.length < 1
-        const isEdpEmployee = value.employeeTitle === 'EDP'
+        const isEdpEmployee = value.employeeTitle.toUpperCase() === 'EDP'
         const salt = await bcrypt.genSalt(10)
 
         if (isFirstEmp) {
-            if (value.employeeTitle !== 'EDP') {
+            if (value.employeeTitle.toUpperCase() !== 'EDP') {
                 showError('I.T required to create employee!')
                 return
             }
@@ -28,6 +28,7 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
             await inventoryDb.insert(employeeTable).values({
                 ...value,
                 employeeId: Number(value.employeeId),
+                employeeTitle: value.employeeTitle.toUpperCase(),
                 password: hashedPw
             })
             showSuccess('EDP created!')
@@ -38,6 +39,11 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
         const totalEdp = edpEmployees.length
         if (totalEdp > 1) {
             showError('I.T employee already exist!')
+            return
+        }
+
+        if (isEdpEmployee) {
+            showError('I.T can not more than one!' + totalEdp)
             return
         }
 

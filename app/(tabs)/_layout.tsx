@@ -13,7 +13,7 @@ import Toast from 'react-native-toast-message'
 import ModalProvider from '@/components/provider/modal-provider';
 import ReduxStoreProvider from '@/components/provider/redux-store-provider';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { TanstackQueryProvider } from '@/components/provider/tanstak-query-client';
+import { TanstackQueryProvider } from '@/components/provider/tanstack-query-client';
 
 export {
   // Catch any errors thrown by the Layout component.
