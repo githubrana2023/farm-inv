@@ -5,6 +5,12 @@ export const store = configureStore({
     reducer: {
         modal: modalReducer
     },
+    middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        warnAfter: 100, // Warn only if it takes more than 100 ms
+      },
+    }),
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

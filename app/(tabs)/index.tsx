@@ -13,6 +13,9 @@ import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { Image, type ImageStyle, View } from 'react-native';
 
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import { inventoryDb } from '@/drizzle/db/inventory-db';
+import migrations from '@/drizzle/migration/inventoryDb/migrations'
 const LOGO = {
   light: require('@/assets/images/react-native-reusables-light.png'),
   dark: require('@/assets/images/react-native-reusables-dark.png'),
@@ -32,7 +35,27 @@ const IMAGE_STYLE: ImageStyle = {
 export default function Screen() {
   const { colorScheme } = useColorScheme();
 
-const storedScannedItems:unknown[] = []
+  const { success, error } = useMigrations(inventoryDb, migrations);
+
+
+  if (error) {
+    console.log({ error });
+
+    return (
+      <View>
+        <Text>Migration error: {error.message}</Text>
+      </View>
+    );
+  }
+  if (!success) {
+    return (
+      <View>
+        <Text>Migration is in progress...</Text>
+      </View>
+    );
+  }
+
+  const storedScannedItems: unknown[] = []
   return (
     <Container>
       {/* <Tabs.Screen options={SCREEN_OPTIONS} />
@@ -61,7 +84,7 @@ const storedScannedItems:unknown[] = []
           <PickDocument />
         </View>
       </View> */}
-      <AddItemForm/>
+      <AddItemForm />
 
       {
         storedScannedItems.length > 0 ? (

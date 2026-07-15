@@ -27,9 +27,6 @@ const Modal = ({ description, onOpenChange, open, title, isWithoutHeader, footer
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogTrigger>
-                <Text>Open</Text>
-            </DialogTrigger>
             <DialogContent>
                 {
                     !isWithoutHeader && (
