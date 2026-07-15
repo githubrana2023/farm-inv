@@ -5,4 +5,8 @@ export default defineConfig({
     out: './drizzle/migration/inventoryDb',
     dialect: 'sqlite',
     driver: 'expo', // <--- very important
+    migrations: {
+        table: '__drizzle_migrations',
+        schema: 'drizzle',
+    },
 });

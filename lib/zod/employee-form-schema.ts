@@ -1,9 +1,9 @@
 import z from "zod";
 
 export const employeeCreateFormSchema = z.object({
-    name: z.string(),
-    employeeId: z.coerce.number<number>(),
-    employeeTitle: z.string(),
+    name: z.string().nonempty({ error: "Name is required!" }).min(3, { error: 'Name at least 3 characters long! ' }),
+    employeeId: z.string().nonempty({ error: "Employee ID is required!" }).min(5, { error: 'Employee ID at least 5 digits long! ' }),
+    employeeTitle: z.string().nonempty({ error: "Employee title is required!" }).min(3, { error: 'Employee title at least 3 characters long! ' }),
     password: z.string(),
 })
 

@@ -9,12 +9,20 @@ import { Text } from '../ui/text'
 import InputField from '../shared/input-field'
 import { employeeCreateFormSchema, EmployeeCreateFormValue } from '@/lib/zod/employee-form-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller'
+import { useEmployeeCreateMutation } from '@/hooks/tanstack/mutation/employee'
+import { showSuccess } from '@/lib/toast/success'
+import { queryClient } from '../provider/tanstak-query-client'
+import { MUTATION_KEY } from '@/constants/tanstack-query'
 
 const EmployeeCreateForm = () => {
+
+    const { mutate: createEmployee } = useEmployeeCreateMutation()
+
     const form = useForm<EmployeeCreateFormValue>({
         defaultValues: {
             employeeTitle: "",
-            password: "",
+            employeeId: "",
             name: ""
         },
         resolver: zodResolver(employeeCreateFormSchema)
@@ -22,7 +30,11 @@ const EmployeeCreateForm = () => {
 
 
     const onSubmitHandler = form.handleSubmit(values => {
-        console.log({ values });
+        createEmployee(values, {
+            onSuccess() {
+                queryClient.invalidateQueries({ queryKey: [MUTATION_KEY.EMPLOYEE.READ] })
+            }
+        })
 
     })
 
@@ -30,75 +42,74 @@ const EmployeeCreateForm = () => {
 
 
     return (
-        <Form {...form}>
-            <View className='gap-2 w-72'>
-                <View className="gap-1 items-center justify-between flex-row">
+        <>
+            <Form {...form}>
+
+                <View className='gap-2 w-72'>
+                    <View className="gap-1 items-center justify-between flex-row">
+                        <FormField
+                            control={form.control}
+                            name='employeeId'
+                            render={({ field }) => (
+                                <InputField
+                                    label='Employee ID'
+                                    placeholder="e.g. 45168"
+                                    keyboardType='numeric'
+                                    returnKeyType="next"
+                                    onChangeText={field.onChange}
+                                    value={String(field.value)}
+                                    className='min-w-36 max-w-36'
+                                />
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='name'
+                            render={({ field }) => (
+                                <InputField
+                                    label='Name'
+                                    placeholder="e.g. John"
+                                    returnKeyType="next"
+                                    onChangeText={field.onChange}
+                                    value={field.value}
+                                    className='min-w-36 max-w-36'
+                                />
+                            )}
+                        />
+                    </View>
                     <FormField
                         control={form.control}
-                        name='employeeId'
+                        name='employeeTitle'
                         render={({ field }) => (
                             <InputField
-                                label='Employee ID'
-                                placeholder="e.g. 45168"
-                                keyboardType='numeric'
-                                returnKeyType="next"
-                                onChangeText={field.onChange}
-                                value={String(field.value)}
-                                className='min-w-36 max-w-36'
-                            // onSubmitEditing={handleBarcodeSubmit}
-                            />
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name='name'
-                        render={({ field }) => (
-                            <InputField
-                                label='Name'
-                                placeholder="e.g. John"
+                                label='Employee Title'
+                                placeholder="e.g. I.T"
                                 returnKeyType="next"
                                 onChangeText={field.onChange}
                                 value={field.value}
-                                className='min-w-36 max-w-36'
-                            // onSubmitEditing={handleBarcodeSubmit}
                             />
                         )}
                     />
+                    <FormField
+                        control={form.control}
+                        name='password'
+                        render={({ field }) => (
+                            <InputField
+                                label='Password'
+                                placeholder="******"
+                                secureTextEntry
+                                returnKeyType="next"
+                                onChangeText={field.onChange}
+                                value={field.value}
+                            />
+                        )}
+                    />
+                    <Button onPress={onSubmitHandler}>
+                        <Text>Create Employee</Text>
+                    </Button>
                 </View>
-                <FormField
-                    control={form.control}
-                    name='employeeTitle'
-                    render={({ field }) => (
-                        <InputField
-                            label='Employee Title'
-                            placeholder="e.g. I.T"
-                            returnKeyType="next"
-                            onChangeText={field.onChange}
-                            value={field.value}
-                        // onSubmitEditing={handleBarcodeSubmit}
-                        />
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name='password'
-                    render={({ field }) => (
-                        <InputField
-                            label='Password'
-                            placeholder="******"
-                            secureTextEntry
-                            returnKeyType="next"
-                            onChangeText={field.onChange}
-                            value={field.value}
-                        // onSubmitEditing={handleBarcodeSubmit}
-                        />
-                    )}
-                />
-                <Button onPress={onSubmitHandler}>
-                    <Text>Create Employee</Text>
-                </Button>
-            </View>
-        </Form>
+            </Form>
+        </>
     )
 }
 
