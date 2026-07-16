@@ -32,9 +32,29 @@ export const multitaskVariants = [
 export type MultitaskVariantValues = (typeof SCAN_FLAG)[number];
 
 
-export const MODAL_TYPE = {
-    EMPLOYEE_CREATE_MODAL: "EMPLOYEE_CREATE_MODAL",
-    EMPLOYEE_UPDATE_MODAL: "EMPLOYEE_UPDATE_MODAL",
-    LABELING_CREATE_MODAL: "LABELING_CREATE_MODAL",
-    LABELING_UPDATE_MODAL: "LABELING_UPDATE_MODAL",
-} as const
+type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD'
+type Type = 'CREATE' | 'UPDATE'
+
+type ModalTypeStructure = {
+    [M in Modal]: {
+        [T in Type]: `${M}_${T}_MODAL`
+    }
+}
+
+export type ModalType = ModalTypeStructure[Modal][Type]
+
+
+export const MODAL_TYPE: ModalTypeStructure = {
+    EMPLOYEE: {
+        CREATE: 'EMPLOYEE_CREATE_MODAL',
+        UPDATE: 'EMPLOYEE_UPDATE_MODAL',
+    },
+    CHANGE_PASSWORD: {
+        CREATE: 'CHANGE_PASSWORD_CREATE_MODAL',
+        UPDATE: 'CHANGE_PASSWORD_UPDATE_MODAL',
+    },
+    LABELING: {
+        CREATE: 'LABELING_CREATE_MODAL',
+        UPDATE: 'LABELING_UPDATE_MODAL',
+    }
+} 

@@ -1,4 +1,3 @@
-import { MODAL_TYPE } from "@/constants"
 import { MUTATION_KEY } from "@/constants/tanstack-query"
 import { createEmployee } from "@/dal/employee/create-employee"
 import { inventoryDb } from "@/drizzle/db/inventory-db"

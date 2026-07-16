@@ -1,11 +1,10 @@
-import { MODAL_TYPE } from "@/constants";
+import { ModalType } from "@/constants";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type ModalType = keyof typeof MODAL_TYPE | null
 
 export type ModalState = {
     isOpen: boolean;
-    type: ModalType
+    type: ModalType | null
 }
 
 const initialState: ModalState = {

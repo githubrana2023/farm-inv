@@ -1,44 +1,32 @@
 import { View } from 'react-native'
-import React from 'react'
-import { Form, FormControl, FormField, FormItem } from '../ui/form'
+import { Form, FormField } from '../ui/form'
 import { useForm } from 'react-hook-form'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
 import { Button } from '../ui/button'
 import { Text } from '../ui/text'
 import InputField from '../shared/input-field'
-import { employeeCreateFormSchema, EmployeeCreateFormValue } from '@/lib/zod/employee-form-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller'
-import { useEmployeeCreateMutation } from '@/hooks/tanstack/mutation/employee'
-import { showSuccess } from '@/lib/toast/success'
-import { queryClient } from '../provider/tanstack-query-client'
-import { MUTATION_KEY } from '@/constants/tanstack-query'
-import { useModalAction } from '@/hooks/redux/use-modal'
+import { employeeUpdateFormSchema, EmployeeUpdateFormValue } from '@/lib/zod/employee-form-schema'
 
-const EmployeeCreateForm = () => {
+type EmployeeUpdateFormProp = {
+    employee: {
+        employeeTitle: string,
+        employeeId: string,
+        name: string,
+    }
+}
+const EmployeeUpdateForm = ({ employee }: EmployeeUpdateFormProp) => {
 
-    const { mutate: createEmployee, isPending, } = useEmployeeCreateMutation()
-    const { onClose } = useModalAction()
 
-    const form = useForm<EmployeeCreateFormValue>({
+    const form = useForm<EmployeeUpdateFormValue>({
         defaultValues: {
-            employeeTitle: "",
-            employeeId: "",
-            name: ""
+            ...employee,
+            edpPassword: ""
         },
-        resolver: zodResolver(employeeCreateFormSchema)
+        resolver: zodResolver(employeeUpdateFormSchema)
     })
 
 
     const onSubmitHandler = form.handleSubmit(values => {
-        createEmployee(values, {
-            onSuccess() {
-                queryClient.invalidateQueries({ queryKey: [MUTATION_KEY.EMPLOYEE.READ] })
-                // form.reset()
-                // onClose()
-            }
-        })
 
     })
 
@@ -49,7 +37,7 @@ const EmployeeCreateForm = () => {
         <>
             <Form {...form}>
 
-                <View className='gap-2 w-72'>
+                <View className='gap-2'>
                     <View className="gap-1 items-center justify-between flex-row">
                         <View className="flex-1">
                             <FormField
@@ -78,6 +66,7 @@ const EmployeeCreateForm = () => {
                                         returnKeyType="next"
                                         onChangeText={field.onChange}
                                         value={field.value}
+                                        className='w-full'
                                     />
                                 )}
                             />
@@ -98,7 +87,7 @@ const EmployeeCreateForm = () => {
                     />
                     <FormField
                         control={form.control}
-                        name='password'
+                        name='edpPassword'
                         render={({ field }) => (
                             <InputField
                                 label='Password'
@@ -110,9 +99,9 @@ const EmployeeCreateForm = () => {
                             />
                         )}
                     />
-                    <Button onPress={onSubmitHandler} disabled={isPending}>
+                    <Button onPress={onSubmitHandler}>
                         <Text>
-                            {isPending ? 'Creating Employee...' : 'Create Employee'}
+                            Update Employee
                         </Text>
                     </Button>
                 </View>
@@ -121,4 +110,4 @@ const EmployeeCreateForm = () => {
     )
 }
 
-export default EmployeeCreateForm
+export default EmployeeUpdateForm

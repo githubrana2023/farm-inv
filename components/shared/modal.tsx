@@ -27,7 +27,7 @@ const Modal = ({ description, onOpenChange, open, title, isWithoutHeader, footer
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className='min-w-80'>
                 {
                     !isWithoutHeader && (
                         <DialogHeader>
