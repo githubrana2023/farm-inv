@@ -35,7 +35,7 @@ function validateDirectory(directory: Directory | null): directory is Directory 
     return true;
 }
 
-async function getDirectory(): Promise<Directory | null> {
+export async function getDirectory(): Promise<Directory | null> {
     const stored = await getNonStringStoredData<StoredDirectoryInfo>(
         DIRECTORY_PERMISSION_KEY
     );
