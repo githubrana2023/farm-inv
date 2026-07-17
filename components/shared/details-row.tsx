@@ -1,26 +1,40 @@
 import FontAwesome6, { FontAwesome6SolidIconName } from '@react-native-vector-icons/fontawesome6';
-import { ReactNode } from 'react';
+import Lucide, { LucideIconName } from '@react-native-vector-icons/lucide';
+import { JSX, ReactNode } from 'react';
 import { View } from 'react-native';
 import { Text } from '../ui/text';
 
 
+type DetailsRowProp = LucideIcon | FontAwesome
+type LucideIcon = {
+    library: 'Lucide',
+    iconName: LucideIconName
+    label: string;
+    value: string;
+}
+type FontAwesome = {
+    library: 'FontAwesome',
+    iconName: FontAwesome6SolidIconName
+    label: string;
+    value: string;
+}
+
+
 
 export const DetailsRow = ({
+    library,
     label,
-    value
-}: { label: string, value: string }) => {
+    value,
+    iconName
+}: DetailsRowProp) => {
 
 
     return (
 
         <View className="flex-row items-start gap-2 ">
             <View className='flex-row items-center justify-center w-8 h-8 bg-[##E8F1FC] rounded-md'>
-                {/* {isFontAwesome ? (
-                    <FontAwesome6 name={name} color={"#124DA1"} size={16} />
-                ) : (
-                    <MaterialIcons name={name} color={"#124DA1"} size={16} />
-                )} */}
-                <Text>Icon</Text>
+                {library === 'FontAwesome' && (<FontAwesome6 name={iconName} color={"#124DA1"} size={16} iconStyle='solid' />)}
+                {library === 'Lucide' && <Lucide name={iconName} color={"#124DA1"} size={16} />}
             </View>
 
             <View className="flex-1">

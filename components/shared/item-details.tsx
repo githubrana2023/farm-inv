@@ -115,7 +115,7 @@ export const ItemDetails = ({
                 keyboardShouldPersistTaps="handled"
             >
                 <Card
-                //  className="bg-white border-muted my-1 p-3 gap-4"
+                    className="mt-1 p-3 gap-4"
                 >
                     <CardHeader
                         className="flex-row items-center justify-between px-0"
@@ -153,11 +153,14 @@ export const ItemDetails = ({
 
                     <CardContent className="flex-col gap-2 px-0 py-0">
                         <DetailsRow
-                            // icon={{ library: "FontAwesome", name: "hashtag" }}
+                            library="Lucide"
+                            iconName="hash"
                             label="Item Code"
                             value={item.item?.item_number ?? "no item code"}
                         />
                         <DetailsRow
+                            library="Lucide"
+                            iconName="file-text"
                             // icon={{ library: "FontAwesome", name: "file-text" }}
                             label="description"
                             value={item.item?.description ?? ""}

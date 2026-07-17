@@ -36,6 +36,9 @@ import { addItemFormSchema, AddItemFormValue } from "@/lib/zod/add-item-form-sch
 import { usePersistAdvanceMode } from "@/hooks/use-persist-advance-mode";
 import { useGetItemByBarcode } from "@/hooks/tanstack/mutation/item/get-item";
 import { ItemDetails } from "../shared/item-details";
+import { useDefaultUnitFromItemDetails } from "@/hooks/use-default-unit";
+import Lucide from "@react-native-vector-icons/lucide";
+import { showDynamicToast } from "@/lib/toast/dynamic";
 
 
 
@@ -53,7 +56,7 @@ export default function AddItemForm() {
     defaultValues: {
       barcode: "",
       uom: "",
-      quantity: "1",
+      quantity: "",
       isAdvanceMode: false,
     },
     resolver: zodResolver(addItemFormSchema),
@@ -80,24 +83,38 @@ export default function AddItemForm() {
 
 
   //! Tanstack mutation hook
-  const { mutate: getItemByBarcode, data: itemDetails } = useGetItemByBarcode()
+  const { mutate: getItemByBarcode, data: itemDetails, reset: resetGetItem } = useGetItemByBarcode()
+  useDefaultUnitFromItemDetails(form, itemDetails)
 
   //! handle submit function
-  const onSubmit = handleSubmit(async (value) => {
+  const onSubmit = handleSubmit((value) => {
 
     handleResetForm();
 
     barcodeInputRef.current?.focus();
+
+    console.log({ value })
   });
 
   //! handle submit function
   const handleOnSubmitEditing = React.useCallback(
     () => {
       const barcode = getFormValues('barcode')
-      getItemByBarcode({
-        barcode, isAdvanceMode, scanType
-      })
+      getItemByBarcode(
+        { barcode, isAdvanceMode, scanType },
+        {
+          onSuccess({ success, message }) {
+            showDynamicToast(message, success)
+            if (success) {
+              quantityInputRef.current?.focus()
+            } else {
 
+              barcodeInputRef.current?.focus()
+            }
+
+          }
+        }
+      )
     },
     [isAdvanceMode, scanType, setFormValue],
   );
@@ -110,19 +127,11 @@ export default function AddItemForm() {
     resetForm({
       barcode: "",
       uom: "",
-      quantity: "1",
+      quantity: "",
       isAdvanceMode: currentAdvanceMode,
       scanType: currentAdvanceMode ? (currentScanFor ?? "Inventory") : undefined,
     });
   };
-
-  const handleBarcodeSubmit = React.useCallback(() => {
-    const barcode = getFormValues("barcode");
-
-  }, [getFormValues, handleOnSubmitEditing]);
-
-
-
 
 
   if (!isHydrated) return null
@@ -142,7 +151,13 @@ export default function AddItemForm() {
                   placeholder="Barcode/Item-Code"
                   keyboardType="numeric"
                   returnKeyType="next"
-                  onChangeText={field.onChange}
+                  onChangeText={(text) => {
+                    field.onChange(text)
+                    if (text.length === 0) {
+                      resetGetItem()
+                      handleResetForm();
+                    }
+                  }}
                   value={field.value}
                   onSubmitEditing={handleOnSubmitEditing}
                 />
@@ -153,9 +168,10 @@ export default function AddItemForm() {
                     <TouchableOpacity
                       onPress={async () => {
                         handleResetForm();
+                        resetGetItem()
                       }}
                     >
-                      <FontAwesome6 name="x" iconStyle="solid" size={24} />
+                      <Lucide name="x-circle" size={24} />
                     </TouchableOpacity>
                   </View>
                 ) : null}
@@ -177,10 +193,12 @@ export default function AddItemForm() {
                         onValueChange={(option) => {
                           field.onChange(option?.value);
                         }}
-                        value={{
-                          value: field.value,
-                          label: "Select an unit"
-                        }}
+                        value={
+                          field.value ? {
+                            value: field.value,
+                            label: field.value
+                          } : undefined
+                        }
                       // disabled={!itemDetails}
                       >
                         <SelectTrigger
@@ -191,17 +209,17 @@ export default function AddItemForm() {
                         >
                           <SelectValue placeholder="UOM" />
                         </SelectTrigger>
-                        <SelectContent style={{ width: triggerWidth }}>
-                          <SelectGroup>
+                        <SelectContent style={{ width: triggerWidth }} className="mt-2">
+                          <SelectGroup className="">
                             <SelectLabel>Units</SelectLabel>
                             {
                               itemDetails?.data?.item?.itemUoms && (
                                 itemDetails?.data?.item?.itemUoms.map(
-                                  ({ uom, barcode }) => (
+                                  ({ uom, barcode, packing }) => (
                                     <SelectItem
                                       key={barcode}
                                       value={uom}
-                                      label={uom}
+                                      label={`${uom} (${String(packing)})`}
                                     />
                                   )
                                 )
@@ -276,7 +294,7 @@ export default function AddItemForm() {
                     <Label className="font-semibold">Scan For</Label>
                     <Pressable onPress={startTimer}>
                       <Text className="">
-                        <FontAwesome6 name="info" iconStyle="solid" size={18} />
+                        <Lucide name="info" size={18} />
                       </Text>
                     </Pressable>
                   </View>
@@ -336,44 +354,41 @@ export default function AddItemForm() {
         <Separator className="my-3" />
         <View>
           {itemDetails && itemDetails.data && (
-            <>
-              <ItemDetails
-                header={{
-                  title: "Item Details",
-                  description: itemDetails.data.orderItem?.isDuplicated
-                    ? "Duplicate scan for order"
-                    : "Scanned item",
-                }}
-                item={itemDetails.data}
-                onUpdate={(item, quantity) => {
-                  // updateScannedItemMutation(
-                  //   {
-                  //     storedScannedItemId: item.storedItem?.storedId!,
-                  //     quantity: quantity.toString(),
-                  //   },
-                  //   {
-                  //     onSuccess() {
-                  //       dispatch(onClose());
-                  //       handleResetForm();
-                  //       refetchStoredItems();
-                  //       resetItemDetailsMutation();
-                  //     },
-                  //   },
-                  // );
-                }}
-                onDelete={(item) => {
-                  // deleteScannedItemMutation(item.storedItem?.storedId!, {
-                  //   onSuccess() {
-                  //     dispatch(onClose());
-                  //     refetchStoredItems();
-                  //     handleResetForm();
-                  //     resetItemDetailsMutation();
-                  //   },
-                  // });
-                }}
-              />
-              <Separator className="my-3" />
-            </>
+            <ItemDetails
+              header={{
+                title: "Item Details",
+                description: itemDetails.data.orderItem?.isDuplicated
+                  ? "Duplicate scan for order"
+                  : "Scanned item",
+              }}
+              item={itemDetails.data}
+              onUpdate={(item, quantity) => {
+                // updateScannedItemMutation(
+                //   {
+                //     storedScannedItemId: item.storedItem?.storedId!,
+                //     quantity: quantity.toString(),
+                //   },
+                //   {
+                //     onSuccess() {
+                //       dispatch(onClose());
+                //       handleResetForm();
+                //       refetchStoredItems();
+                //       resetItemDetailsMutation();
+                //     },
+                //   },
+                // );
+              }}
+              onDelete={(item) => {
+                // deleteScannedItemMutation(item.storedItem?.storedId!, {
+                //   onSuccess() {
+                //     dispatch(onClose());
+                //     refetchStoredItems();
+                //     handleResetForm();
+                //     resetItemDetailsMutation();
+                //   },
+                // });
+              }}
+            />
           )}
         </View>
       </Form>

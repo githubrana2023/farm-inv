@@ -17,6 +17,7 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { inventoryDb } from '@/drizzle/db/inventory-db';
 import migrations from '@/drizzle/migration/inventoryDb/migrations'
 import { Card, CardContent } from '@/components/ui/card';
+import Lucide from '@react-native-vector-icons/lucide';
 const LOGO = {
   light: require('@/assets/images/react-native-reusables-light.png'),
   dark: require('@/assets/images/react-native-reusables-dark.png'),
@@ -125,7 +126,7 @@ export default function Screen() {
           <Text>Show scanned items</Text>
         ) : (
           <EmptyState
-            icon={<FontAwesome6 name='box' iconStyle='solid' size={28} />}
+            icon={<Lucide name='package' size={28} />}
           />
         )
       }

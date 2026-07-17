@@ -23,9 +23,12 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
         const itemUoms = await farmDb.select({
             uom: itemMasterTable.uom,
             barcode: itemMasterTable.barcode,
+            packing: itemMasterTable.packing
         }).from(itemMasterTable).where(
             eq(itemMasterTable.item_number, item.item_number)
         )
+
+        const uniqueUoms = [...new Map(itemUoms.map(item => ([item.packing, item]))).values()]
 
         if (isAdvanceMode && isScanTypeOrder) {
             const scannedItems = await inventoryDb.select().from(inventoryTable).where(
@@ -41,7 +44,7 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
             if (itemAlreadyScanned) return successResponse({
                 orderItem: {
                     ...scannedItems[0],
-                    itemUoms,
+                    itemUoms: uniqueUoms,
                     isDuplicated: itemAlreadyScanned
                 },
                 item: null
@@ -52,7 +55,7 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
             orderItem: null,
             item: {
                 ...item,
-                itemUoms,
+                itemUoms: uniqueUoms,
                 isDuplicated: false
             }
         })
