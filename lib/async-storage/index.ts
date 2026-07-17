@@ -1,11 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import Toast from "react-native-toast-message"
 import { storageEvent } from "@/lib/even-emitter/storage-event"
+import { showSuccess } from "../toast/success"
+import { showError } from "../toast/error"
 
 export type StringStoredData = {
     key: string,
     isStringValue: true,
-    value: string
+    value: string | undefined
 }
 
 export type NonStringStoredData<T> = {
@@ -18,9 +20,10 @@ export type StoredData<T> = StringStoredData | NonStringStoredData<T>
 
 
 export const storeData = async<T>({ key, isStringValue, value }: StoredData<T>) => {
-    const stringifiedValue = !isStringValue ? JSON.stringify(value) : value
 
     try {
+        if (value === undefined || value === null) return removeStoredData(key)
+        const stringifiedValue = !isStringValue ? JSON.stringify(value) : value
         await AsyncStorage.setItem(key, stringifiedValue)
         // storageEvent.emit('permissionChanged',)
     } catch (error) {
@@ -48,11 +51,9 @@ export const getNonStringStoredData = async <T = unknown>(key: string) => {
 }
 
 export const removeStoredData = async (key: string) => {
-    await AsyncStorage.removeItem(key)
-    storageEvent.emit('permissionChanged')
-    Toast.show({
-        type: 'success',
-        text1: 'Data removed successfully!'
-    })
-    storageEvent.emit('permissionChanged',)
+    try {
+        await AsyncStorage.removeItem(key)
+    } catch (error) {
+        console.log('failed to removed stored data', error)
+    }
 }

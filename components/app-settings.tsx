@@ -48,8 +48,8 @@ const AppSettings = () => {
                 <View className='gap-2'>
                     <View className='flex-row justify-between items-center'>
                         <Button
-                            // onPress={filePicker}
-                            onPress={test}
+                            onPress={filePicker}
+                        // onPress={test}
                         >
                             <FontAwesome6 name='file-import' iconStyle='solid' color={color} />
                             <Text>Import Database</Text>

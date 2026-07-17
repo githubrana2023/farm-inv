@@ -11,11 +11,12 @@ import { Link, } from 'expo-router';
 import { MoonStarIcon, StarIcon, SunIcon } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import { Image, type ImageStyle, View } from 'react-native';
+import { ActivityIndicator, Image, type ImageStyle, View } from 'react-native';
 
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { inventoryDb } from '@/drizzle/db/inventory-db';
 import migrations from '@/drizzle/migration/inventoryDb/migrations'
+import { Card, CardContent } from '@/components/ui/card';
 const LOGO = {
   light: require('@/assets/images/react-native-reusables-light.png'),
   dark: require('@/assets/images/react-native-reusables-dark.png'),
@@ -31,6 +32,26 @@ const IMAGE_STYLE: ImageStyle = {
   height: 76,
   width: 76,
 };
+
+
+function MigrationInProgress() {
+  return (
+    <View className="flex-1 items-center justify-center p-6">
+      <Card className="w-full max-w-md">
+        <CardContent className="items-center gap-4 p-6">
+          <ActivityIndicator size="large" />
+          <Text className="text-xl font-semibold">
+            Preparing Database
+          </Text>
+          <Text className="text-center text-muted-foreground">
+            Database migration is in progress. Please wait...
+          </Text>
+        </CardContent>
+      </Card>
+    </View>
+  );
+}
+
 
 export default function Screen() {
   const { colorScheme } = useColorScheme();
@@ -49,9 +70,9 @@ export default function Screen() {
   }
   if (!success) {
     return (
-      <View>
-        <Text>Migration is in progress...</Text>
-      </View>
+      <Container>
+        <MigrationInProgress />
+      </Container>
     );
   }
 

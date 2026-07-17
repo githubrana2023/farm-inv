@@ -1,4 +1,4 @@
-import { multitaskVariantValues } from "@/constants";
+import { SCAN_FLAG } from "@/constants";
 import { useCountDown } from "@/hooks/use-count-down";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,35 +31,35 @@ import { Switch } from "../ui/switch";
 import { Text } from "../ui/text";
 import z from "zod";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
+import { useColorScheme } from "nativewind";
+import { addItemFormSchema, AddItemFormValue } from "@/lib/zod/add-item-form-schema";
+import { usePersistAdvanceMode } from "@/hooks/use-persist-advance-mode";
+import { useGetItemByBarcode } from "@/hooks/tanstack/mutation/item/get-item";
+import { ItemDetails } from "../shared/item-details";
 
 
-const schema = z.object({
-    barcode:z.string(),
-    uom:z.string(),
-    isAdvanceMode:z.coerce.boolean<boolean>(),
-    quantity:z.coerce.number<number>(),
-    scanType:z.string(),
-})
 
 export default function AddItemForm() {
   const [triggerWidth, setTriggerWidth] = React.useState(0);
   const { isTimerFinish, startTimer } = useCountDown(5);
+  const isDark = useColorScheme().colorScheme === 'dark';
 
   const quantityInputRef = React.useRef<any>(null);
   const barcodeInputRef = React.useRef<any>(null);
 
 
   //! React-hook-form
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const form = useForm<AddItemFormValue>({
     defaultValues: {
       barcode: "",
       uom: "",
-      quantity: 1,
+      quantity: "1",
       isAdvanceMode: false,
-      scanType: undefined,
     },
+    resolver: zodResolver(addItemFormSchema),
   });
+
+
   const {
     control,
     handleSubmit,
@@ -67,18 +67,24 @@ export default function AddItemForm() {
     setValue: setFormValue,
     getValues: getFormValues,
   } = form;
+
+
+  const { isHydrated } = usePersistAdvanceMode(form)
+
   const isAdvanceMode = useWatch({
     control,
     name: "isAdvanceMode",
   });
+
   const scanType = useWatch({ control, name: "scanType" });
 
+
   //! Tanstack mutation hook
-  
+  const { mutate: getItemByBarcode, data: itemDetails } = useGetItemByBarcode()
 
   //! handle submit function
   const onSubmit = handleSubmit(async (value) => {
-    
+
     handleResetForm();
 
     barcodeInputRef.current?.focus();
@@ -86,13 +92,14 @@ export default function AddItemForm() {
 
   //! handle submit function
   const handleOnSubmitEditing = React.useCallback(
-    (code: string) => {
-      if (!code) {
-        return;
-      }
+    () => {
+      const barcode = getFormValues('barcode')
+      getItemByBarcode({
+        barcode, isAdvanceMode, scanType
+      })
 
     },
-    [ isAdvanceMode, scanType, setFormValue],
+    [isAdvanceMode, scanType, setFormValue],
   );
 
   // handle reset form
@@ -103,7 +110,7 @@ export default function AddItemForm() {
     resetForm({
       barcode: "",
       uom: "",
-      quantity: 1,
+      quantity: "1",
       isAdvanceMode: currentAdvanceMode,
       scanType: currentAdvanceMode ? (currentScanFor ?? "Inventory") : undefined,
     });
@@ -111,9 +118,14 @@ export default function AddItemForm() {
 
   const handleBarcodeSubmit = React.useCallback(() => {
     const barcode = getFormValues("barcode");
-    handleOnSubmitEditing(barcode);
+
   }, [getFormValues, handleOnSubmitEditing]);
 
+
+
+
+
+  if (!isHydrated) return null
 
   return (
     <>
@@ -132,7 +144,7 @@ export default function AddItemForm() {
                   returnKeyType="next"
                   onChangeText={field.onChange}
                   value={field.value}
-                  onSubmitEditing={handleBarcodeSubmit}
+                  onSubmitEditing={handleOnSubmitEditing}
                 />
 
                 {/* Clear Button */}
@@ -167,9 +179,9 @@ export default function AddItemForm() {
                         }}
                         value={{
                           value: field.value,
-                          label:"Select an unit"
+                          label: "Select an unit"
                         }}
-                        // disabled={!itemDetails}
+                      // disabled={!itemDetails}
                       >
                         <SelectTrigger
                           onLayout={(e) =>
@@ -182,10 +194,20 @@ export default function AddItemForm() {
                         <SelectContent style={{ width: triggerWidth }}>
                           <SelectGroup>
                             <SelectLabel>Units</SelectLabel>
-                            <SelectItem
-                                value={"N/A"}
-                                label={`na`}
-                              />
+                            {
+                              itemDetails?.data?.item?.itemUoms && (
+                                itemDetails?.data?.item?.itemUoms.map(
+                                  ({ uom, barcode }) => (
+                                    <SelectItem
+                                      key={barcode}
+                                      value={uom}
+                                      label={uom}
+                                    />
+                                  )
+                                )
+
+                              )
+                            }
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -231,7 +253,7 @@ export default function AddItemForm() {
                         field.onChange(isEnable);
                         setFormValue(
                           "scanType",
-                         "Inventory"
+                          "Inventory"
                         );
                       }}
                       checked={field.value}
@@ -262,9 +284,9 @@ export default function AddItemForm() {
                     <RadioGroup
                       value={field.value}
                       onValueChange={field.onChange}
-                      className="flex-row gap-0"
+                      className="flex-row gap-2"
                     >
-                      {multitaskVariantValues.map((variant) => {
+                      {SCAN_FLAG.map((variant) => {
                         const isActive = field.value === variant;
 
                         return (
@@ -273,13 +295,13 @@ export default function AddItemForm() {
                             key={variant}
                             className={cn(
                               "flex-1 rounded-md",
-                              isActive ? "bg-black" : "",
+                              isActive ? "dark:bg-white bg-black" : "border border-gray-100",
                             )}
                           >
                             <Text
                               className={cn(
                                 "py-1 text-center font-semibold",
-                                isActive && "text-white",
+                                isActive && "dark:text-black text-white",
                               )}
                             >
                               {variant}{" "}
@@ -287,7 +309,7 @@ export default function AddItemForm() {
                                 <FontAwesome6
                                   name="check"
                                   iconStyle="solid"
-                                  color="#fff"
+                                  color={isDark ? "#000" : "#fff"}
                                   size={14}
                                 />
                               )}
@@ -312,48 +334,48 @@ export default function AddItemForm() {
           )}
         </View>
         <Separator className="my-3" />
-        {/* <View>
+        <View>
           {itemDetails && itemDetails.data && (
             <>
               <ItemDetails
                 header={{
                   title: "Item Details",
-                  description: itemDetails.data.storedItem
+                  description: itemDetails.data.orderItem?.isDuplicated
                     ? "Duplicate scan for order"
                     : "Scanned item",
                 }}
                 item={itemDetails.data}
                 onUpdate={(item, quantity) => {
-                  updateScannedItemMutation(
-                    {
-                      storedScannedItemId: item.storedItem?.storedId!,
-                      quantity: quantity.toString(),
-                    },
-                    {
-                      onSuccess() {
-                        dispatch(onClose());
-                        handleResetForm();
-                        refetchStoredItems();
-                        resetItemDetailsMutation();
-                      },
-                    },
-                  );
+                  // updateScannedItemMutation(
+                  //   {
+                  //     storedScannedItemId: item.storedItem?.storedId!,
+                  //     quantity: quantity.toString(),
+                  //   },
+                  //   {
+                  //     onSuccess() {
+                  //       dispatch(onClose());
+                  //       handleResetForm();
+                  //       refetchStoredItems();
+                  //       resetItemDetailsMutation();
+                  //     },
+                  //   },
+                  // );
                 }}
                 onDelete={(item) => {
-                  deleteScannedItemMutation(item.storedItem?.storedId!, {
-                    onSuccess() {
-                      dispatch(onClose());
-                      refetchStoredItems();
-                      handleResetForm();
-                      resetItemDetailsMutation();
-                    },
-                  });
+                  // deleteScannedItemMutation(item.storedItem?.storedId!, {
+                  //   onSuccess() {
+                  //     dispatch(onClose());
+                  //     refetchStoredItems();
+                  //     handleResetForm();
+                  //     resetItemDetailsMutation();
+                  //   },
+                  // });
                 }}
               />
               <Separator className="my-3" />
             </>
           )}
-        </View> */}
+        </View>
       </Form>
     </>
   );

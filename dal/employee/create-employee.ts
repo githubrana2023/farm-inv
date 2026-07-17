@@ -1,11 +1,10 @@
 import { inventoryDb } from "@/drizzle/db/inventory-db"
 import { employeeTable } from "@/drizzle/schema/inventory"
-import { showError } from "@/lib/toast/error"
-import { showSuccess } from "@/lib/toast/success"
 import { EmployeeCreateFormValue } from "@/lib/zod/employee-form-schema"
 import 'react-native-get-random-values';
 import bcrypt from "bcryptjs"
 import { eq } from "drizzle-orm"
+import { failureResponse, successResponse } from "@/lib/response"
 
 export const createEmployee = async (value: EmployeeCreateFormValue) => {
     try {
@@ -16,70 +15,49 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
         const salt = await bcrypt.genSalt(10)
 
         if (isFirstEmp) {
-            if (value.employeeTitle.toUpperCase() !== 'EDP') {
-                showError('I.T required to create employee!')
-                return
-            }
+            if (value.employeeTitle.toUpperCase() !== 'EDP') return failureResponse('I.T required to create employee!')
 
             const hashedPw = await bcrypt.hash(value.password, salt)
-            console.log({ value })
 
             // Create first emp as Edp
-            await inventoryDb.insert(employeeTable).values({
+            const [emp] = await inventoryDb.insert(employeeTable).values({
                 ...value,
                 employeeId: Number(value.employeeId),
                 employeeTitle: value.employeeTitle.toUpperCase(),
                 password: hashedPw
-            })
-            showSuccess('EDP created!')
-            return
+            }).returning()
+
+            return successResponse(emp, 'EDP employee created!')
         }
 
         const edpEmployees = await inventoryDb.select().from(employeeTable).where(eq(employeeTable.employeeTitle, 'EDP'))
         const totalEdp = edpEmployees.length
-        if (totalEdp > 1) {
-            showError('I.T employee already exist!')
-            return
-        }
+        if (totalEdp > 1) return failureResponse('I.T employee already exist!')
 
-        if (isEdpEmployee) {
-            showError('I.T can not more than one!' + totalEdp)
-            return
-        }
+        if (isEdpEmployee) return failureResponse('I.T can not more than one!')
 
         const [existEmp] = await inventoryDb.select().from(employeeTable).where(eq(employeeTable.employeeId, Number(value.employeeId)))
 
-        if (existEmp) {
-            showError('Employee already exist!')
-            return
-        }
+        if (existEmp) return failureResponse('Employee already exist!')
 
         const edpEmployee = edpEmployees[0]
 
-        if (!edpEmployee) {
-            showError('I.T required to create employee!')
-            return
-        }
+        if (!edpEmployee) return failureResponse('I.T required to create employee!')
 
         const isPwMatch = await bcrypt.compare(value.password, edpEmployee.password)
 
-        if (!isPwMatch) {
-            showError('Invalid password!')
-            return
-        }
+        if (!isPwMatch) return failureResponse('Invalid password!')
 
         const hashedPw = await bcrypt.hash(value.employeeId, salt)
 
-        await inventoryDb.insert(employeeTable).values({
+        const [emp] = await inventoryDb.insert(employeeTable).values({
             ...value,
             employeeId: Number(value.employeeId),
             password: hashedPw
-        })
-
-        showSuccess('Labour created!')
-        return
+        }).returning()
+        return successResponse(emp, 'Employee created successfully')
     } catch (error) {
         console.log('Failed to create employee!', error)
-        showError('Failed to create employee!')
+        return failureResponse('Failed to create employee!')
     }
 }

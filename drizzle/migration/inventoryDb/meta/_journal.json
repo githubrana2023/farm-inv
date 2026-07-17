@@ -22,6 +22,20 @@
       "when": 1784151783932,
       "tag": "0002_messy_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1784287502699,
+      "tag": "0003_strange_ben_urich",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1784287804918,
+      "tag": "0004_aromatic_gamma_corps",
+      "breakpoints": true
     }
   ]
 }
