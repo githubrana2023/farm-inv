@@ -6,7 +6,8 @@ import { createdAt, updatedAt, SAVE_FLAG, SCAN_FLAG } from '@/drizzle/schema-hel
 
 export const inventoryTable = sqliteTable('inventory', {
     id: text('id').notNull().primaryKey().unique().$defaultFn(() => uuid()),
-    barcode: integer('employeeId').notNull(),
+    barcode: text('barcode').notNull(),
+    item_number: text('item_number').notNull(),
     uom: text('uom').notNull(),
     packing: integer('packing').notNull(),
     quantity: integer('quantity').notNull(),

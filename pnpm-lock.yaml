@@ -17,6 +17,9 @@ importers:
       '@react-native-vector-icons/fontawesome6':
         specifier: ^13.1.2
         version: 13.1.2(@expo/config-plugins@56.0.12(typescript@6.0.3))(@react-native/assets-registry@0.85.3)(expo-font@56.0.7)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      '@react-native-vector-icons/lucide':
+        specifier: ^13.1.2
+        version: 13.1.2(@expo/config-plugins@56.0.12(typescript@6.0.3))(@react-native/assets-registry@0.85.3)(expo-font@56.0.7)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
       '@reduxjs/toolkit':
         specifier: ^2.12.0
         version: 2.12.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.3)(redux@5.0.1))(react@19.2.3)
@@ -1761,6 +1764,17 @@ packages:
 
   '@react-native-vector-icons/fontawesome6@13.1.2':
     resolution: {integrity: sha512-oQvQeDE8kSXm3l+oRKQm/Jo4ewR9YdKW2gFDVVl3st1yY5Nml1ZS4m3lTp3a/KehT9w+Uiv2JNn3kG0VOo+AZw==}
+    engines: {node: '>= 18.0.0'}
+    peerDependencies:
+      '@expo/config-plugins': '>=10.0.0'
+      react: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      '@expo/config-plugins':
+        optional: true
+
+  '@react-native-vector-icons/lucide@13.1.2':
+    resolution: {integrity: sha512-7JG85gyzjumwyOvapf6zE35m4spdkPPRzLdmYqP9fiClDR4wI6tbm1YAbQYftFbtCI/Dnalh3lS2rEXS2nQMTw==}
     engines: {node: '>= 18.0.0'}
     peerDependencies:
       '@expo/config-plugins': '>=10.0.0'
@@ -6196,6 +6210,18 @@ snapshots:
       expo-font: 56.0.7(expo@56.0.15)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
 
   '@react-native-vector-icons/fontawesome6@13.1.2(@expo/config-plugins@56.0.12(typescript@6.0.3))(@react-native/assets-registry@0.85.3)(expo-font@56.0.7)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.85.3)(expo-font@56.0.7)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)
+    optionalDependencies:
+      '@expo/config-plugins': 56.0.12(typescript@6.0.3)
+    transitivePeerDependencies:
+      - '@react-native-vector-icons/get-image'
+      - '@react-native/assets-registry'
+      - expo-font
+
+  '@react-native-vector-icons/lucide@13.1.2(@expo/config-plugins@56.0.12(typescript@6.0.3))(@react-native/assets-registry@0.85.3)(expo-font@56.0.7)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.85.3)(expo-font@56.0.7)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
       react: 19.2.3

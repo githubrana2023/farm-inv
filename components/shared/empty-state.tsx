@@ -23,11 +23,11 @@ export function EmptyState({
     action,
 }: EmptyStateProps) {
     return (
-        <Empty className="col-span-full border border-dashed border-border bg-card">
+        <Empty className="col-span-full border border-dashed border-border bg-card mb-4">
             <EmptyHeader>
                 <EmptyMedia>
                     <View className="h-14 w-14 items-center justify-center rounded-full bg-secondary">
-                        {icon&&icon}
+                        {icon && icon}
                     </View>
                 </EmptyMedia>
 

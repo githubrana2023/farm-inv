@@ -80,7 +80,7 @@ const LabelingCreateForm = () => {
                                             }}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Save Flag" />
+                                                <SelectValue placeholder="Select a label" />
                                             </SelectTrigger>
                                             <SelectContent className='min-w-36 max-w-36'>
                                                 <SelectGroup>

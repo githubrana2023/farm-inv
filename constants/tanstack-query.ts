@@ -1,4 +1,4 @@
-type Key = 'EMPLOYEE' | 'LABELING' | 'ITEM'
+type Key = 'EMPLOYEE' | 'LABELING' | 'ITEM' | 'SCANNED_ITEM'
 type Action = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE'
 
 
@@ -16,16 +16,22 @@ export const MUTATION_KEY: MutationKey = {
         DELETE: 'EMPLOYEE-DELETE',
         UPDATE: 'EMPLOYEE-UPDATE'
     },
+    LABELING: {
+        CREATE: 'LABELING-CREATE',
+        READ: 'LABELING-READ',
+        UPDATE: 'LABELING-UPDATE',
+        DELETE: 'LABELING-DELETE'
+    },
     ITEM: {
         CREATE: 'ITEM-CREATE',
         READ: 'ITEM-READ',
         DELETE: 'ITEM-DELETE',
         UPDATE: 'ITEM-UPDATE'
     },
-    LABELING: {
-        CREATE: 'LABELING-CREATE',
-        READ: 'LABELING-READ',
-        UPDATE: 'LABELING-UPDATE',
-        DELETE: 'LABELING-DELETE'
-    }
+    SCANNED_ITEM: {
+        CREATE: 'SCANNED_ITEM-CREATE',
+        READ: 'SCANNED_ITEM-READ',
+        DELETE: 'SCANNED_ITEM-DELETE',
+        UPDATE: 'SCANNED_ITEM-UPDATE'
+    },
 }

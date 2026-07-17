@@ -6,6 +6,8 @@ export const SETTINGS_TABS = [APP_SETTINGS_TAB, USER_SETTINGS_TAB] as const
 
 export const DIRECTORY_PERMISSION_KEY = 'directory-permission' as const
 export const FILE_URI_KEY = 'file-uri' as const
+export const ADVANCE_MODE_KEY = 'ADVANCE_MODE_KEY'
+export const SCAN_TYPE_KEY = 'SCAN_TYPE_KEY'
 
 export const ITEM_CODE_REGEX = /^0\d{7}-\d{4}$/;
 export const valueIsItemCode = (code: string) => ITEM_CODE_REGEX.test(code);
