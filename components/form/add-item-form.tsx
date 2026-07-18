@@ -50,8 +50,8 @@ export default function AddItemForm() {
   const { isTimerFinish, startTimer } = useCountDown(5);
   const isDark = useColorScheme().colorScheme === 'dark';
 
-  const quantityInputRef = React.useRef<any>(null);
-  const barcodeInputRef = React.useRef<any>(null);
+  // const quantityInputRef = React.useRef<any>(null);
+  // const barcodeInputRef = React.useRef<any>(null);
 
 
   //! React-hook-form
@@ -101,7 +101,7 @@ export default function AddItemForm() {
         if (success) {
           handleResetForm();
           resetGetItem()
-          barcodeInputRef.current?.focus();
+          // barcodeInputRef.current?.focus();
           queryClient.invalidateQueries({
             queryKey: [MUTATION_KEY.SCANNED_ITEM.READ]
           })
@@ -126,10 +126,10 @@ export default function AddItemForm() {
             )
 
             if (success) {
-              quantityInputRef.current?.focus()
+              // quantityInputRef.current?.focus()
             } else {
 
-              barcodeInputRef.current?.focus()
+              // barcodeInputRef.current?.focus()
             }
 
           }
@@ -159,44 +159,47 @@ export default function AddItemForm() {
   return (
     <>
       <Form {...form}>
-        <View className="gap-1.5">
+        <View className="gap-1.5 mt-3">
+
           {/* Barcode Input */}
           <FormField
             control={control}
             name="barcode"
-            render={({ field }) => (
-              <View className="relative">
-                <InputField
-                  ref={barcodeInputRef}
-                  placeholder="Barcode/Item-Code"
-                  keyboardType="numeric"
-                  returnKeyType="next"
-                  onChangeText={(text) => {
-                    field.onChange(text)
-                    if (text.length === 0) {
-                      resetGetItem()
-                      handleResetForm();
-                    }
-                  }}
-                  value={field.value}
-                  onSubmitEditing={handleOnSubmitEditing}
-                />
-
-                {/* Clear Button */}
-                {field.value.length > 0 ? (
-                  <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                    <TouchableOpacity
-                      onPress={async () => {
-                        handleResetForm();
+            render={({ field }) => {
+              return (
+                <View className="relative">
+                  <InputField
+                    // ref={barcodeInputRef}
+                    placeholder="Barcode/Item-Code"
+                    keyboardType="numeric"
+                    // returnKeyType="next"
+                    onChangeText={(text) => {
+                      field.onChange(text)
+                      if (text.length === 0) {
                         resetGetItem()
-                      }}
-                    >
-                      <Lucide name="x-circle" size={24} />
-                    </TouchableOpacity>
-                  </View>
-                ) : null}
-              </View>
-            )}
+                        handleResetForm();
+                      }
+                    }}
+                    value={field.value}
+                    onSubmitEditing={handleOnSubmitEditing}
+                  />
+
+                  {/* Clear Button */}
+                  {field.value.length > 0 ? (
+                    <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                      <TouchableOpacity
+                        onPress={async () => {
+                          handleResetForm();
+                          resetGetItem()
+                        }}
+                      >
+                        <Lucide name="x-circle" size={24} />
+                      </TouchableOpacity>
+                    </View>
+                  ) : null}
+                </View>
+              )
+            }}
           />
 
           {/* UOM & Quantity Container Start */}
@@ -264,10 +267,10 @@ export default function AddItemForm() {
                 render={({ field }) => (
                   <InputField
                     {...field}
-                    ref={quantityInputRef}
+                    // ref={quantityInputRef}
                     placeholder="Quantity"
                     keyboardType="numeric"
-                    returnKeyType="go"
+                    // returnKeyType="go"
                     value={field.value.toString()}
                     onChangeText={field.onChange}
                     onSubmitEditing={onSubmit}
@@ -285,7 +288,15 @@ export default function AddItemForm() {
               <FormItem>
                 <FormControl>
                   <View className="flex-row items-center justify-between">
-                    <Label>Advance Mode</Label>
+                    <View className="flex-row items-center gap-1">
+                      <Label>Advance Mode</Label>
+                      <Pressable onPress={startTimer}>
+                        <Text className="">
+                          <Lucide name="info" size={18} />
+                        </Text>
+                      </Pressable>
+                    </View>
+
                     <Switch
                       onCheckedChange={(isEnable) => {
                         field.onChange(isEnable);
@@ -310,14 +321,6 @@ export default function AddItemForm() {
               name="scanType"
               render={({ field }) => (
                 <FormItem>
-                  <View className="flex-row items-center gap-3">
-                    <Label className="font-semibold">Scan For</Label>
-                    <Pressable onPress={startTimer}>
-                      <Text className="">
-                        <Lucide name="info" size={18} />
-                      </Text>
-                    </Pressable>
-                  </View>
                   <FormControl>
                     <RadioGroup
                       value={field.value}
@@ -338,7 +341,7 @@ export default function AddItemForm() {
                           >
                             <Text
                               className={cn(
-                                "py-1 text-center font-semibold",
+                                "py-1 px-0 text-center font-semibold text-sm",
                                 isActive && "dark:text-black text-white",
                               )}
                             >
@@ -348,7 +351,7 @@ export default function AddItemForm() {
                                   name="check"
                                   iconStyle="solid"
                                   color={isDark ? "#000" : "#fff"}
-                                  size={14}
+                                  size={12}
                                 />
                               )}
                             </Text>

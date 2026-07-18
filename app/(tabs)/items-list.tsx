@@ -17,6 +17,17 @@ import { useState } from 'react'
 import ScannedItemCard from '@/components/shared/scanned-item-card'
 import { Input } from '@/components/ui/input'
 
+
+import {
+    Menubar,
+    MenubarContent,
+    MenubarItem,
+    MenubarMenu,
+    MenubarSeparator,
+    MenubarShortcut,
+    MenubarTrigger,
+} from "@/components/ui/menubar"
+
 const ItemsList = () => {
     const { data: employees } = useEmployeesGetQuery()
     const { data: label } = useLabelingGetQuery()
@@ -26,7 +37,7 @@ const ItemsList = () => {
             <View className='flex-1 justify-between py-4'>
                 <View >
                     {/* Inventory Save Form */}
-                    <View className="h-24 gap-2">
+                    <View className="h-24 gah-8">
                         <Input className="flex-1" placeholder="Item Title" />
                         <Input
                             className="flex-1"
@@ -62,20 +73,20 @@ const ItemsList = () => {
                         )}
                     />
                 </View>
-                <View className='flex-row justify-between'>
 
+                {/* below buttons */}
+                <View className='bg-background  flex h-10 flex-row justify-between items-center gap-1 rounded-md p-1 shadow-sm shadow-black/5 sm:h-9'>
                     {/* INVENTORY */}
                     <Inventory invLabels={label?.invLabels ?? []} />
-
                     {/* TAGS */}
                     <Tag employees={employees ?? []} />
-
                     {/* ORDER */}
                     <Order orderLabels={label?.orderLabels ?? []} />
 
                     <Button
                         onPress={() => saveOrder()}
                         size={'sm'}
+                        className='h-8'
                     >
                         <Text>Print</Text>
                     </Button>
@@ -108,7 +119,7 @@ const Inventory = ({ invLabels }: {
             <View className="flex-row">
                 <Button
                     onPress={() => saveFile('Tags')}
-                    className='rounded-r-none'
+                    className='rounded-r-none h-8 pr-0'
                     size={'sm'}
                 >
                     <Text>Inv</Text>
@@ -116,7 +127,7 @@ const Inventory = ({ invLabels }: {
                 <DropdownMenu >
                     <DropdownMenuTrigger asChild>
                         <Button
-                            className='rounded-l-none'
+                            className='rounded-l-none h-8 pl-2'
                             size={'sm'}
                         >
                             <Text>
@@ -172,7 +183,7 @@ const Order = ({ orderLabels }: {
             <View className="flex-row">
                 <Button
                     onPress={() => saveOrder()}
-                    className='rounded-r-none'
+                    className='rounded-r-none h-8 pr-0'
                     size={'sm'}
                 >
                     <Text>Order</Text>
@@ -180,7 +191,7 @@ const Order = ({ orderLabels }: {
                 <DropdownMenu >
                     <DropdownMenuTrigger asChild>
                         <Button
-                            className='rounded-l-none'
+                            className='rounded-l-none h-8 pl-2'
                             size={'sm'}
                         >
                             <Text>
@@ -238,7 +249,7 @@ const Tag = ({ employees }: {
             <View className="flex-row">
                 <Button
                     onPress={() => saveFile('Tags')}
-                    className='rounded-r-none'
+                    className='rounded-r-none h-8 pr-0'
                     size={'sm'}
                 >
                     <Text>Tags</Text>
@@ -246,7 +257,7 @@ const Tag = ({ employees }: {
                 <DropdownMenu  >
                     <DropdownMenuTrigger asChild>
                         <Button
-                            className='rounded-l-none'
+                            className='rounded-l-none h-8 pl-2'
                             size={'sm'}
                         >
                             <Text>

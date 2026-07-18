@@ -87,11 +87,11 @@ const ScannedItemCard = ({
         <CardHeader className="flex-row items-center justify-between px-0">
           <View className="w-2/3">
             <View className="flex-row items-center gap-1">
-              <CardTitle >BARCODE</CardTitle>
+              <CardTitle className="text-sm">BARCODE</CardTitle>
 
               {item.scanFlag && (
                 <Badge variant={"outline"} >
-                  <Text>
+                  <Text className="text-xs">
                     {item.scanFlag === "Inventory" ? "Inv" : item.scanFlag}
                   </Text>
                 </Badge>

@@ -43,7 +43,7 @@ export const DetailsRow = ({
                 >
                     {label}
                 </Text>
-                <Text >
+                <Text className='text-sm'>
                     {value}
                 </Text>
             </View>

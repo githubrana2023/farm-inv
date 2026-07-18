@@ -9,11 +9,13 @@ import { useColorScheme } from 'nativewind';
 import { FontAwesome6 } from "@react-native-vector-icons/fontawesome6";
 
 
-import Toast from 'react-native-toast-message'
+import Toast, { BaseToast } from 'react-native-toast-message'
 import ModalProvider from '@/components/provider/modal-provider';
 import ReduxStoreProvider from '@/components/provider/redux-store-provider';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { TanstackQueryProvider } from '@/components/provider/tanstack-query-client';
+import { Dimensions } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -23,21 +25,57 @@ export {
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
 
+  const screenWidth = Dimensions.get("window").width;
+
+  const toastConfig = {
+    success: (props: any) => (
+      <BaseToast
+        {...props}
+        style={{
+          width: screenWidth - 32, // 👈 16px margin both sides
+          alignSelf: "center",
+          borderLeftColor: "green",
+        }}
+      />
+    ),
+    error: (props: any) => (
+      <BaseToast
+        {...props}
+        style={{
+          width: screenWidth - 32, // 👈 16px margin both sides
+          alignSelf: "center",
+          borderLeftColor: "red",
+        }}
+      />
+    ),
+    warn: (props: any) => (
+      <BaseToast
+        {...props}
+        style={{
+          width: screenWidth - 32, // 👈 16px margin both sides
+          alignSelf: "center",
+          borderLeftColor: "yellow",
+        }}
+      />
+    ),
+  };
+
   return (
     <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
-
       <KeyboardProvider>
         <TanstackQueryProvider>
           <ReduxStoreProvider>
-            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-            <Stack
-              screenOptions={{
-                headerShown: false
-              }}
-            />
-            <Toast />
-            <PortalHost />
-            <ModalProvider />
+            <SafeAreaProvider>
+              <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+              <Stack
+                screenOptions={{
+                  headerShown: false
+                }}
+              />
+              <PortalHost />
+              <Toast config={toastConfig} />
+              <ModalProvider />
+            </SafeAreaProvider>
           </ReduxStoreProvider>
         </TanstackQueryProvider>
       </KeyboardProvider>
