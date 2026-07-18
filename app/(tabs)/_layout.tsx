@@ -1,7 +1,7 @@
 import '@/global.css';
 
 import { Tabs } from 'expo-router';
-import { FontAwesome6 } from "@react-native-vector-icons/fontawesome6";
+import { Lucide } from "@react-native-vector-icons/lucide";
 
 
 
@@ -19,8 +19,8 @@ export default function TabsLayout() {
         options={{
           title: 'Scan',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name='house' iconStyle='solid' size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Lucide name='house' size={20} color={color} />
           )
         }}
       />
@@ -29,8 +29,8 @@ export default function TabsLayout() {
         options={{
           title: 'Items-List',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name='list' iconStyle='solid' size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Lucide name='list' size={20} color={color} />
           )
         }}
       />
@@ -39,8 +39,8 @@ export default function TabsLayout() {
         options={{
           title: 'Price',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name='tags' iconStyle='solid' size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Lucide name='tags' size={20} color={color} />
           )
         }}
       />
@@ -49,8 +49,8 @@ export default function TabsLayout() {
         options={{
           title: 'Search',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name='magnifying-glass' iconStyle='solid' size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Lucide name='search' size={20} color={color} />
           )
         }}
       />
@@ -59,8 +59,8 @@ export default function TabsLayout() {
         options={{
           title: 'Files',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name='file-lines' iconStyle='solid' size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Lucide name='file-text' size={20} color={color} />
           )
         }}
       />
@@ -69,8 +69,8 @@ export default function TabsLayout() {
         options={{
           title: 'Settings',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name='gear' iconStyle='solid' size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Lucide name='settings' size={20} color={color} />
           )
         }}
       />

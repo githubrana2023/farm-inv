@@ -6,7 +6,6 @@ import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Pressable, TouchableOpacity, View } from "react-native";
 import InputField from "@/components/shared/input-field";
-// import { ItemDetails } from "@/components/shared/item-details";
 import {
   Form,
   FormControl,
@@ -26,11 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import { Text } from "../ui/text";
-import z from "zod";
-import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { useColorScheme } from "nativewind";
 import { addItemFormSchema, AddItemFormValue } from "@/lib/zod/add-item-form-schema";
 import { usePersistAdvanceMode } from "@/hooks/use-persist-advance-mode";
@@ -101,6 +97,7 @@ export default function AddItemForm() {
         if (success) {
           handleResetForm();
           resetGetItem()
+          // OK
           barcodeInputRef.current?.focus();
           queryClient.invalidateQueries({
             queryKey: [MUTATION_KEY.SCANNED_ITEM.READ]
@@ -126,10 +123,8 @@ export default function AddItemForm() {
             )
 
             if (success) {
+              // Ok
               quantityInputRef.current?.focus()
-            } else {
-
-              barcodeInputRef.current?.focus()
             }
 
           }
@@ -159,44 +154,46 @@ export default function AddItemForm() {
   return (
     <>
       <Form {...form}>
-        <View className="gap-1.5">
+        <View className="gap-1.5 mt-3">
+
           {/* Barcode Input */}
           <FormField
             control={control}
             name="barcode"
-            render={({ field }) => (
-              <View className="relative">
-                <InputField
-                  ref={barcodeInputRef}
-                  placeholder="Barcode/Item-Code"
-                  keyboardType="numeric"
-                  returnKeyType="next"
-                  onChangeText={(text) => {
-                    field.onChange(text)
-                    if (text.length === 0) {
-                      resetGetItem()
-                      handleResetForm();
-                    }
-                  }}
-                  value={field.value}
-                  onSubmitEditing={handleOnSubmitEditing}
-                />
-
-                {/* Clear Button */}
-                {field.value.length > 0 ? (
-                  <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                    <TouchableOpacity
-                      onPress={async () => {
-                        handleResetForm();
+            render={({ field }) => {
+              return (
+                <View className="relative">
+                  <InputField
+                    ref={barcodeInputRef}
+                    placeholder="Barcode/Item-Code"
+                    keyboardType="numeric"
+                    onChangeText={(text) => {
+                      field.onChange(text)
+                      if (text.length === 0) {
                         resetGetItem()
-                      }}
-                    >
-                      <Lucide name="x-circle" size={24} />
-                    </TouchableOpacity>
-                  </View>
-                ) : null}
-              </View>
-            )}
+                        handleResetForm();
+                      }
+                    }}
+                    value={field.value}
+                    onSubmitEditing={handleOnSubmitEditing}
+                  />
+
+                  {/* Clear Button */}
+                  {field.value.length > 0 ? (
+                    <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                      <TouchableOpacity
+                        onPress={async () => {
+                          handleResetForm();
+                          resetGetItem()
+                        }}
+                      >
+                        <Lucide name="x-circle" size={24} />
+                      </TouchableOpacity>
+                    </View>
+                  ) : null}
+                </View>
+              )
+            }}
           />
 
           {/* UOM & Quantity Container Start */}
@@ -267,7 +264,7 @@ export default function AddItemForm() {
                     ref={quantityInputRef}
                     placeholder="Quantity"
                     keyboardType="numeric"
-                    returnKeyType="go"
+                    // returnKeyType="go"
                     value={field.value.toString()}
                     onChangeText={field.onChange}
                     onSubmitEditing={onSubmit}
@@ -285,7 +282,15 @@ export default function AddItemForm() {
               <FormItem>
                 <FormControl>
                   <View className="flex-row items-center justify-between">
-                    <Label>Advance Mode</Label>
+                    <View className="flex-row items-center gap-1">
+                      <Label>Advance Mode</Label>
+                      <Pressable onPress={startTimer}>
+                        <Text className="">
+                          <Lucide name="info" size={18} />
+                        </Text>
+                      </Pressable>
+                    </View>
+
                     <Switch
                       onCheckedChange={(isEnable) => {
                         field.onChange(isEnable);
@@ -304,74 +309,68 @@ export default function AddItemForm() {
           />
 
           {/* Multitask Scan*/}
-          {isAdvanceMode && (
-            <FormField
-              control={control}
-              name="scanType"
-              render={({ field }) => (
-                <FormItem>
-                  <View className="flex-row items-center gap-3">
-                    <Label className="font-semibold">Scan For</Label>
-                    <Pressable onPress={startTimer}>
-                      <Text className="">
-                        <Lucide name="info" size={18} />
-                      </Text>
-                    </Pressable>
-                  </View>
-                  <FormControl>
-                    <RadioGroup
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      className="flex-row gap-2"
-                    >
-                      {SCAN_FLAG.map((variant) => {
-                        const isActive = field.value === variant;
+          <View className="mb-2">
+            {isAdvanceMode && (
+              <FormField
+                control={control}
+                name="scanType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <RadioGroup
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        className="flex-row gap-2"
+                      >
+                        {SCAN_FLAG.map((variant) => {
+                          const isActive = field.value === variant;
 
-                        return (
-                          <Pressable
-                            onPress={() => field.onChange(variant)}
-                            key={variant}
-                            className={cn(
-                              "flex-1 rounded-md",
-                              isActive ? "dark:bg-white bg-black" : "border border-gray-100",
-                            )}
-                          >
-                            <Text
+                          return (
+                            <Pressable
+                              onPress={() => field.onChange(variant)}
+                              key={variant}
                               className={cn(
-                                "py-1 text-center font-semibold",
-                                isActive && "dark:text-black text-white",
+                                "flex-1 rounded-md",
+                                isActive ? "dark:bg-white bg-black" : "border border-gray-100",
                               )}
                             >
-                              {variant}{" "}
-                              {isActive && (
-                                <FontAwesome6
-                                  name="check"
-                                  iconStyle="solid"
-                                  color={isDark ? "#000" : "#fff"}
-                                  size={14}
-                                />
-                              )}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </RadioGroup>
-                  </FormControl>
-                  {!isTimerFinish && (
-                    <FormDescription>
-                      By using this feature merchandiser can scan multi type
-                      inventory at the same time. Like{" "}
-                      <Text className="font-semibold text-sm">
-                        Inventory, Shelf tags, Order
-                      </Text>
-                    </FormDescription>
-                  )}
-                </FormItem>
-              )}
-            />
-          )}
+                              <View className="flex-row items-center justify-center gap-1">
+                                <Text
+                                  className={cn(
+                                    "py-1 px-0 text-center font-semibold text-sm",
+                                    isActive && "dark:text-black text-white",
+                                  )}
+                                >
+                                  {variant}
+                                </Text>
+                                {isActive && (
+                                  <Lucide
+                                    name="check"
+                                    color={isDark ? "#000" : "#fff"}
+                                    size={18}
+                                  />
+                                )}
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </RadioGroup>
+                    </FormControl>
+                    {!isTimerFinish && (
+                      <FormDescription>
+                        By using this feature merchandiser can scan multi type
+                        inventory at the same time. Like{" "}
+                        <Text className="font-semibold text-sm">
+                          Inventory, Shelf tags, Order
+                        </Text>
+                      </FormDescription>
+                    )}
+                  </FormItem>
+                )}
+              />
+            )}
+          </View>
         </View>
-        <Separator className="my-3" />
         <View>
           {itemDetails && itemDetails.data && (
             <ItemDetails

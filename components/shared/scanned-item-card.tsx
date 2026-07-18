@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { getScannedItems } from "@/dal/item/get-item";
 import Lucide from "@react-native-vector-icons/lucide";
 import { DetailsRow } from "./details-row";
@@ -24,7 +23,7 @@ import { useColorScheme } from "nativewind";
 type Item = NonNullable<Awaited<ReturnType<typeof getScannedItems>>['data']>['scannedItems'][number]
 type WithActionBtn = {
   item: Item;
-  enableActionBtn?: true;
+  enableActionBtn: true;
   defaultCollapse: boolean;
   isCollapseAble: boolean;
   onUpdate: (item: Item) => void;
@@ -32,11 +31,11 @@ type WithActionBtn = {
 };
 type WithoutActionBtn = {
   item: Item;
-  enableActionBtn?: false;
+  enableActionBtn: false;
   defaultCollapse?: boolean;
   isCollapseAble?: boolean;
-  onUpdate?: (item: Item) => void;
-  onDelete?: (item: Item) => void;
+  onUpdate?: never;
+  onDelete?: never;
 };
 type ScannedItemCardProps = WithActionBtn | WithoutActionBtn;
 
@@ -87,11 +86,11 @@ const ScannedItemCard = ({
         <CardHeader className="flex-row items-center justify-between px-0">
           <View className="w-2/3">
             <View className="flex-row items-center gap-1">
-              <CardTitle >BARCODE</CardTitle>
+              <CardTitle className="text-sm">BARCODE</CardTitle>
 
               {item.scanFlag && (
                 <Badge variant={"outline"} >
-                  <Text>
+                  <Text className="text-xs">
                     {item.scanFlag === "Inventory" ? "Inv" : item.scanFlag}
                   </Text>
                 </Badge>
@@ -106,26 +105,26 @@ const ScannedItemCard = ({
           <View>
             {enableActionBtn ? (
               <>
-                {!isEditState ? (
-                  <Button
-                    variant={"destructive"}
-                    size={"sm"}
-                    onPress={() => {
-                      onDelete(item);
-                    }}
-                  >
-                    <FontAwesome6 name={"trash"} iconStyle="solid" size={14} color={"#fff"} />
-                  </Button>
-                ) : (
-                  <Button
-                    variant={"outline"}
-                    className="bg-[#E8F1FC]"
-                    size={"sm"}
-                    onPress={onSubmit}
-                  >
-                    <Lucide name={"save"} color={"#124DA1"} size={14} />
-                  </Button>
-                )}
+                {
+                  !isEditState ? (
+                    <Button
+                      variant={"destructive"}
+                      size={"sm"}
+                      onPress={() => { onDelete(item) }}
+                    >
+                      <Lucide name={"trash"} size={14} color={"#fff"} />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant={"outline"}
+                      className="bg-[#E8F1FC]"
+                      size={"sm"}
+                      onPress={onSubmit}
+                    >
+                      <Lucide name={"save"} color={"#124DA1"} size={14} />
+                    </Button>
+                  )
+                }
               </>
             ) : (
               <ItemQuantityUnit

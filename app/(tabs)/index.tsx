@@ -21,6 +21,7 @@ import Lucide from '@react-native-vector-icons/lucide';
 import { useGetScannedItems } from '@/hooks/tanstack/mutation/item/get-item';
 import ScannedItemCard from '@/components/shared/scanned-item-card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 const LOGO = {
   light: require('@/assets/images/react-native-reusables-light.png'),
   dark: require('@/assets/images/react-native-reusables-dark.png'),
@@ -61,6 +62,7 @@ export default function Screen() {
   const { colorScheme } = useColorScheme();
 
   const { success, error } = useMigrations(inventoryDb, migrations);
+  const [activeTab, setActiveTab] = React.useState('Total')
 
   const { data, isPending, isLoading, isFetching, isFetched } = useGetScannedItems()
 
@@ -124,36 +126,113 @@ export default function Screen() {
       {
         scannedItems?.length ? (
           <View className='flex-1'>
-            <FlatList
-              className="pb-0 flex-1"
-              showsVerticalScrollIndicator={false}
-              data={scannedItems}
-              renderItem={({ item, index }) => (
-                <ScannedItemCard
-                  key={item.barcode + index}
-                  item={item}
-                  isCollapseAble
-                  defaultCollapse={false}
-                />
-              )}
-            />
             {
               scannedItemsCount && (
-                <View className='flex-row justify-center items-center gap-3 py-2'>
-                  {
-                    scannedItemsCount.map(
-                      itemCount => (
-                        <Badge
-                          key={itemCount.scanFlag}
-                        >
-                          <Text className='font-semibold text-sm'>
-                            {itemCount.scanFlag} : {itemCount.count}
-                          </Text>
-                        </Badge>
-                      )
-                    )
-                  }
-                </View>
+                // <View className='flex-row justify-center items-center gap-1 py-2'>
+                //   {
+                //     scannedItemsCount.map(
+                //       itemCount => (
+                //         <Badge
+                //           key={itemCount.scanFlag}
+                //         >
+                //           <Text className='font-semibold text-sm'>
+                //             {itemCount.scanFlag === 'Inventory' ? "Inv" : itemCount.scanFlag} : {itemCount.count}
+                //           </Text>
+                //         </Badge>
+                //       )
+                //     )
+                //   }
+                // </View>
+
+
+                <Tabs
+                  value={activeTab}
+                  onValueChange={(v) => setActiveTab(v)}
+                  className="flex-1"
+                >
+                  <TabsContent value={'Total'} className='flex-1'>
+                    <FlatList
+                      className="pb-0 flex-1"
+                      showsVerticalScrollIndicator={false}
+                      data={scannedItems}
+                      renderItem={({ item, index }) => (
+                        <ScannedItemCard
+                          key={item.barcode + index}
+                          item={item}
+                          isCollapseAble
+                          defaultCollapse={false}
+                          enableActionBtn={false}
+                        />
+                      )}
+                    />
+                  </TabsContent>
+                  <TabsContent value={'Order'} className='flex-1'>
+                    <FlatList
+                      className="pb-0 flex-1"
+                      showsVerticalScrollIndicator={false}
+                      data={scannedItems.filter(i => i.scanFlag === 'Order')}
+                      renderItem={({ item, index }) => (
+                        <ScannedItemCard
+                          key={item.barcode + index}
+                          item={item}
+                          isCollapseAble
+                          defaultCollapse={false}
+                          enableActionBtn={false}
+                        />
+                      )}
+                    />
+                  </TabsContent>
+                  <TabsContent value={'Tags'} className='flex-1'>
+                    <FlatList
+                      className="pb-0 flex-1"
+                      showsVerticalScrollIndicator={false}
+                      data={scannedItems.filter(i => i.scanFlag === 'Tags')}
+                      renderItem={({ item, index }) => (
+                        <ScannedItemCard
+                          key={item.barcode + index}
+                          item={item}
+                          isCollapseAble
+                          defaultCollapse={false}
+                          enableActionBtn={false}
+                        />
+                      )}
+                    />
+                  </TabsContent>
+                  <TabsContent value={'Inventory'} className='flex-1'>
+                    <FlatList
+                      className="pb-0 flex-1"
+                      showsVerticalScrollIndicator={false}
+                      data={scannedItems.filter(i => i.scanFlag === 'Inventory')}
+                      renderItem={({ item, index }) => (
+                        <ScannedItemCard
+                          key={item.barcode + index}
+                          item={item}
+                          isCollapseAble
+                          defaultCollapse={false}
+                          enableActionBtn={false}
+                        />
+                      )}
+                    />
+                  </TabsContent>
+
+                  <TabsList className="w-full justify-around mt-auto h-8">
+                    {
+                      scannedItemsCount.map((tab) => (
+                        <TabsTrigger key={tab.scanFlag} value={tab.scanFlag ?? "Total"}>
+                          {/* <Text className={cn(tab === activeTab && "font-semibold")}>
+                            {capitalizeFirstLetter(splitWord(tab, '-'))}
+                          </Text> */}
+                          <View>
+                            <Text className='font-semibold text-sm'>
+                              {tab.scanFlag === 'Inventory' ? "Inv" : tab.scanFlag} : {tab.count}
+                            </Text>
+                          </View>
+                        </TabsTrigger>
+                      ))
+                    }
+
+                  </TabsList>
+                </Tabs>
               )
             }
           </View>
