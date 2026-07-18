@@ -50,8 +50,8 @@ export default function AddItemForm() {
   const { isTimerFinish, startTimer } = useCountDown(5);
   const isDark = useColorScheme().colorScheme === 'dark';
 
-  // const quantityInputRef = React.useRef<any>(null);
-  // const barcodeInputRef = React.useRef<any>(null);
+  const quantityInputRef = React.useRef<any>(null);
+  const barcodeInputRef = React.useRef<any>(null);
 
 
   //! React-hook-form
@@ -101,7 +101,8 @@ export default function AddItemForm() {
         if (success) {
           handleResetForm();
           resetGetItem()
-          // barcodeInputRef.current?.focus();
+          // OK
+          barcodeInputRef.current?.focus();
           queryClient.invalidateQueries({
             queryKey: [MUTATION_KEY.SCANNED_ITEM.READ]
           })
@@ -126,10 +127,8 @@ export default function AddItemForm() {
             )
 
             if (success) {
-              // quantityInputRef.current?.focus()
-            } else {
-
-              // barcodeInputRef.current?.focus()
+              // Ok
+              quantityInputRef.current?.focus()
             }
 
           }
@@ -169,7 +168,7 @@ export default function AddItemForm() {
               return (
                 <View className="relative">
                   <InputField
-                    // ref={barcodeInputRef}
+                    ref={barcodeInputRef}
                     placeholder="Barcode/Item-Code"
                     keyboardType="numeric"
                     // returnKeyType="next"
@@ -267,7 +266,7 @@ export default function AddItemForm() {
                 render={({ field }) => (
                   <InputField
                     {...field}
-                    // ref={quantityInputRef}
+                    ref={quantityInputRef}
                     placeholder="Quantity"
                     keyboardType="numeric"
                     // returnKeyType="go"

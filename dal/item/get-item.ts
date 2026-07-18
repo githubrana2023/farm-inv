@@ -76,9 +76,16 @@ export const getScannedItems = async () => {
         const scannedItems = await inventoryDb.select().from(inventoryTable).orderBy(desc(inventoryTable.createdAt))
         const scannedItemsCount = await inventoryDb.select({ scanFlag: inventoryTable.scanFlag, count: sql<number>`cast(count(*) as int)` }).from(inventoryTable).groupBy(inventoryTable.scanFlag)
 
+        const total = scannedItemsCount.reduce((current, item) => {
+            current.count = current.count + item.count
+            return current
+        }, {
+            scanFlag: ("Total" as const),
+            count: 0
+        })
         return successResponse({
             scannedItems,
-            scannedItemsCount
+            scannedItemsCount: [...scannedItemsCount, ...[total]]
         })
 
     } catch (error) {
