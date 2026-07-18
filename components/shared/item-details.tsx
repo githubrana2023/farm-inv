@@ -83,9 +83,7 @@ export const ItemDetails = ({
             !!onDelete &&
             item.orderItem &&
             item.orderItem.id
-        ) {
-            onDelete(item);
-        }
+        ) { onDelete(item); }
         if (
             // isUpdateAlertModalOpen &&
             !!onUpdate &&
@@ -115,21 +113,13 @@ export const ItemDetails = ({
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
-                <Card
-                    className="mt-1 p-3 gap-4"
-                >
-                    <CardHeader
-                        className="flex-row items-center justify-between px-0"
-                    >
+                <Card className="mt-1 p-3 gap-4"                >
+                    <CardHeader className="flex-row items-center justify-between px-0"                    >
                         <View>
-                            <CardTitle
-                            // className="text-black"
-                            >{header.title}</CardTitle>
+                            <CardTitle>{header.title}</CardTitle>
                             {
                                 header.description && (
-                                    <CardDescription
-                                    //  className="text-black"
-                                    >
+                                    <CardDescription>
                                         {header.description}
                                     </CardDescription>
                                 )
@@ -170,7 +160,6 @@ export const ItemDetails = ({
                                     <DetailsRow
                                         library="Lucide"
                                         iconName="file-text"
-                                        // icon={{ library: "FontAwesome", name: "file-text" }}
                                         label="description"
                                         value={item.item?.description ?? ""}
                                     />

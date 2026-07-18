@@ -6,7 +6,6 @@ import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Pressable, TouchableOpacity, View } from "react-native";
 import InputField from "@/components/shared/input-field";
-// import { ItemDetails } from "@/components/shared/item-details";
 import {
   Form,
   FormControl,
@@ -26,10 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import { Text } from "../ui/text";
-import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { useColorScheme } from "nativewind";
 import { addItemFormSchema, AddItemFormValue } from "@/lib/zod/add-item-form-schema";
 import { usePersistAdvanceMode } from "@/hooks/use-persist-advance-mode";
@@ -312,66 +309,68 @@ export default function AddItemForm() {
           />
 
           {/* Multitask Scan*/}
-          {isAdvanceMode && (
-            <FormField
-              control={control}
-              name="scanType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <RadioGroup
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      className="flex-row gap-2"
-                    >
-                      {SCAN_FLAG.map((variant) => {
-                        const isActive = field.value === variant;
+          <View className="mb-2">
+            {isAdvanceMode && (
+              <FormField
+                control={control}
+                name="scanType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <RadioGroup
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        className="flex-row gap-2"
+                      >
+                        {SCAN_FLAG.map((variant) => {
+                          const isActive = field.value === variant;
 
-                        return (
-                          <Pressable
-                            onPress={() => field.onChange(variant)}
-                            key={variant}
-                            className={cn(
-                              "flex-1 rounded-md",
-                              isActive ? "dark:bg-white bg-black" : "border border-gray-100",
-                            )}
-                          >
-                            <Text
+                          return (
+                            <Pressable
+                              onPress={() => field.onChange(variant)}
+                              key={variant}
                               className={cn(
-                                "py-1 px-0 text-center font-semibold text-sm",
-                                isActive && "dark:text-black text-white",
+                                "flex-1 rounded-md",
+                                isActive ? "dark:bg-white bg-black" : "border border-gray-100",
                               )}
                             >
-                              {variant}{" "}
-                              {isActive && (
-                                <FontAwesome6
-                                  name="check"
-                                  iconStyle="solid"
-                                  color={isDark ? "#000" : "#fff"}
-                                  size={12}
-                                />
-                              )}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </RadioGroup>
-                  </FormControl>
-                  {!isTimerFinish && (
-                    <FormDescription>
-                      By using this feature merchandiser can scan multi type
-                      inventory at the same time. Like{" "}
-                      <Text className="font-semibold text-sm">
-                        Inventory, Shelf tags, Order
-                      </Text>
-                    </FormDescription>
-                  )}
-                </FormItem>
-              )}
-            />
-          )}
+                              <View className="flex-row items-center justify-center gap-1">
+                                <Text
+                                  className={cn(
+                                    "py-1 px-0 text-center font-semibold text-sm",
+                                    isActive && "dark:text-black text-white",
+                                  )}
+                                >
+                                  {variant}
+                                </Text>
+                                {isActive && (
+                                  <Lucide
+                                    name="check"
+                                    color={isDark ? "#000" : "#fff"}
+                                    size={18}
+                                  />
+                                )}
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </RadioGroup>
+                    </FormControl>
+                    {!isTimerFinish && (
+                      <FormDescription>
+                        By using this feature merchandiser can scan multi type
+                        inventory at the same time. Like{" "}
+                        <Text className="font-semibold text-sm">
+                          Inventory, Shelf tags, Order
+                        </Text>
+                      </FormDescription>
+                    )}
+                  </FormItem>
+                )}
+              />
+            )}
+          </View>
         </View>
-        <Separator className="my-3" />
         <View>
           {itemDetails && itemDetails.data && (
             <ItemDetails
