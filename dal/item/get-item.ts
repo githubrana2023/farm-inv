@@ -93,3 +93,19 @@ export const getScannedItems = async () => {
         return failureResponse('Failed to get scanned items')
     }
 }
+
+export const getItemPriceCheckByBarcode = async (barcode: string) => {
+    try {
+        const [existItem] = await farmDb.select().from(itemMasterTable).where(
+            eq(itemMasterTable.barcode, barcode)
+        )
+
+        if (!existItem) return failureResponse('Item not found!')
+
+        return successResponse(existItem, 'Item retrieved!')
+
+    } catch (error) {
+        console.log('Failed to check item price!', error)
+        return failureResponse('Failed to check item price!')
+    }
+}

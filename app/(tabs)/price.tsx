@@ -6,8 +6,9 @@ import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { useGetItemByBarcode } from "@/hooks/tanstack/mutation/item/get-item";
+import { useCheckItemPrice, useGetItemByBarcode } from "@/hooks/tanstack/mutation/item/get-item";
 import { showDynamicToast } from "@/lib/toast/dynamic";
+import Lucide from "@react-native-vector-icons/lucide";
 
 const Price = () => {
     const barcodeInputRef = useRef<any>(null);
@@ -15,13 +16,14 @@ const Price = () => {
         defaultValues: { barcode: "" },
     });
 
-    const { mutate: getItemByBarcode, data: item } = useGetItemByBarcode()
+    const { mutate: checkItemPrice, data: item } = useCheckItemPrice()
 
     const onSubmit = form.handleSubmit(({ barcode }) => {
-        getItemByBarcode(barcode, {
+        checkItemPrice(barcode, {
             onSuccess({ success, message }) {
                 if (success) {
                     barcodeInputRef?.current?.focus();
+                    form.reset()
                 }
                 showDynamicToast(success, message)
             }
@@ -51,11 +53,12 @@ const Price = () => {
                             {value.length > 0 && (
                                 <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
                                     <TouchableOpacity
-                                        onPress={async () => {
-                                            form.reset({ barcode: "" });
+                                        onPress={() => {
+                                            form.reset();
                                         }}
                                     >
                                         {/* <Feather name="x-circle" size={24} /> */}
+                                        <Lucide name='x-circle' size={20} />
                                     </TouchableOpacity>
                                 </View>
                             )}
