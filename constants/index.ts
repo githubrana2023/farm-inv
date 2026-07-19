@@ -15,6 +15,8 @@ export const valueIsItemCode = (code: string) => ITEM_CODE_REGEX.test(code);
 export const SCAN_FLAG = ["Inventory", "Tags", "Order"] as const;
 export const SAVE_FLAG = ["Inventory", "Order"] as const;
 
+export const PAGE_SIZE = 50
+
 
 export const multitaskVariants = [
     {

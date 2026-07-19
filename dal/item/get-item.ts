@@ -2,6 +2,7 @@ import { farmDb } from "@/drizzle/db/farm-db"
 import { inventoryDb } from "@/drizzle/db/inventory-db"
 import { itemMasterTable } from "@/drizzle/schema/farm-schema"
 import { inventoryTable } from "@/drizzle/schema/inventory"
+import { inventoryTable as farmInventoryTable } from "@/drizzle/schema/farm-schema"
 import { storeData } from "@/lib/async-storage"
 import { failureResponse, successResponse } from "@/lib/response"
 import { AddItemFormValue } from "@/lib/zod/add-item-form-schema"
@@ -143,29 +144,28 @@ export const getSearchItems = async (query?: string) => {
 };
 
 
-export const getGlobalSearchItems = async (query: string) => {
+export const getGlobalSearchItems = async ({ limit, offset, query }: { query: string; limit: number; offset: number }) => {
     try {
+        const words = query.trim().toLowerCase().split(/\s+/);
+
+
         const storeScannedItemsQuery = farmDb
             .select()
             .from(itemMasterTable)
-
-        if (query) {
-            const words = query.trim().toLowerCase().split(/\s+/);
-
-            storeScannedItemsQuery.where(
+            .where(
                 or(
-                    like(inventoryTable.barcode, `%${query}%`),
-                    like(inventoryTable.item_number, `%${query}%`),
-                    ...words.map((word) => like(inventoryTable.description, `%${word}%`)),
+                    like(itemMasterTable.barcode, `%${query}%`),
+                    like(itemMasterTable.item_number, `%${query}%`),
+                    ...words.map((word) => like(itemMasterTable.description, `%${word}%`)),
                 ),
-            );
-        }
+            )
+            .limit(limit)
+            .offset(offset)
 
-        const storedData = await storeScannedItemsQuery
-
-        return successResponse(storedData, 'Items retrieved!')
+        const data = await storeScannedItemsQuery
+        return data
     } catch (error) {
-        return failureResponse('Failed to get search data')
+        return null
     }
 
 };
