@@ -26,6 +26,7 @@ export default function RootLayout() {
   const { colorScheme } = useColorScheme();
 
   const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   const toastConfig = {
     success: (props: any) => (
@@ -59,6 +60,10 @@ export default function RootLayout() {
       />
     ),
   };
+
+
+  console.log({ screenHeight });
+
 
   return (
     <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
