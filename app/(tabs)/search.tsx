@@ -43,14 +43,18 @@ const Search = () => {
                             value={searchValue}
                         />
 
-                        <View className='absolute top-5 right-4'>
-                            <Lucide
-                                name='x-circle'
-                                size={24}
-                                onPress={() => setSearchValue("")}
-                                color={isDark ? "white" : "black"}
-                            />
-                        </View>
+                        {
+                            searchValue.length > 0 && (
+                                <View className='absolute top-5 right-4'>
+                                    <Lucide
+                                        name='x-circle'
+                                        size={24}
+                                        onPress={() => setSearchValue("")}
+                                        color={isDark ? "white" : "black"}
+                                    />
+                                </View>
+                            )
+                        }
                     </View>
 
                     <FlatList

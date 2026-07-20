@@ -58,7 +58,6 @@ const Price = () => {
                                                 resetCheckItemMutation()
                                             }}
                                         >
-                                            {/* <Feather name="x-circle" size={24} /> */}
                                             <Lucide name='x-circle' size={20} />
                                         </TouchableOpacity>
                                     </View>

@@ -219,10 +219,7 @@ export default function Screen() {
                     {
                       scannedItemsCount.map((tab) => (
                         <TabsTrigger key={tab.scanFlag} value={tab.scanFlag ?? "Total"}>
-                          {/* <Text className={cn(tab === activeTab && "font-semibold")}>
-                            {capitalizeFirstLetter(splitWord(tab, '-'))}
-                          </Text> */}
-                          <View>
+                          <View className='items-center justify-center'>
                             <Text className='font-semibold text-sm'>
                               {tab.scanFlag === 'Inventory' ? "Inv" : tab.scanFlag} : {tab.count}
                             </Text>

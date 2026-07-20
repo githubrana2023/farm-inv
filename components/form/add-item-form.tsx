@@ -343,7 +343,7 @@ export default function AddItemForm() {
                               onPress={() => field.onChange(variant)}
                               key={variant}
                               className={cn(
-                                "flex-1 rounded-md",
+                                "flex-1 rounded",
                                 isActive ? "dark:bg-white bg-black" : "border border-gray-100",
                               )}
                             >
@@ -356,13 +356,6 @@ export default function AddItemForm() {
                                 >
                                   {variant}
                                 </Text>
-                                {isActive && (
-                                  <Lucide
-                                    name="check"
-                                    color={isDark ? "#000" : "#fff"}
-                                    size={18}
-                                  />
-                                )}
                               </View>
                             </Pressable>
                           );

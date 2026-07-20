@@ -16,7 +16,7 @@ import { File } from 'expo-file-system';
 
 interface FileCardProps {
     file: File
-    onShare?: () => void;
+    onShare?: () => Promise<void>;
 }
 
 export function FileCard({
@@ -48,10 +48,10 @@ export function FileCard({
         }).format(date);
     };
 
-    const handleShare = () => {
+    const handleShare = async () => {
         setIsSharing(true);
 
-        onShare?.();
+        await onShare?.();
 
         setTimeout(() => {
             setIsSharing(false);
