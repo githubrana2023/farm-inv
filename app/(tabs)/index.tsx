@@ -22,6 +22,7 @@ import { useGetScannedItems } from '@/hooks/tanstack/mutation/item/get-item';
 import ScannedItemCard from '@/components/shared/scanned-item-card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LoadingState } from '@/components/shared/loading-state';
 const LOGO = {
   light: require('@/assets/images/react-native-reusables-light.png'),
   dark: require('@/assets/images/react-native-reusables-dark.png'),
@@ -37,25 +38,6 @@ const IMAGE_STYLE: ImageStyle = {
   height: 76,
   width: 76,
 };
-
-
-function MigrationInProgress() {
-  return (
-    <View className="flex-1 items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardContent className="items-center gap-4 p-6">
-          <ActivityIndicator size="large" />
-          <Text className="text-xl font-semibold">
-            Preparing Database
-          </Text>
-          <Text className="text-center text-muted-foreground">
-            Database migration is in progress. Please wait...
-          </Text>
-        </CardContent>
-      </Card>
-    </View>
-  );
-}
 
 
 export default function Screen() {
@@ -78,7 +60,7 @@ export default function Screen() {
   if (!success) {
     return (
       <Container>
-        <MigrationInProgress />
+        <LoadingState title='Preparing Database' description='Database migration is in progress. Please wait...' indicatorSize={'large'} />
       </Container>
     );
   }

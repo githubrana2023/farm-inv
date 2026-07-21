@@ -41,8 +41,8 @@ export const insertScannedItem = async (formValue: AddItemFormValue) => {
             description: existItem.description,
             barcode: existItem.barcode,
             item_number: existItem.item_number,
-            packing: Number(packing),
-            quantity: Number(data.quantity),
+            packing: packing,
+            quantity: data.quantity,
             scanFlag: data.scanType
         }).returning()
         return successResponse(newAdded, 'Item added!')
@@ -72,8 +72,8 @@ export const insertPriceCheckerTag = async (barcode: string) => {
             description: existItem.description,
             barcode: existItem.barcode,
             item_number: existItem.item_number,
-            packing: existItem.packing,
-            quantity: 1,
+            packing: String(existItem.packing),
+            quantity: String(1),
             scanFlag: 'Tags'
         }).returning()
         return successResponse(newAdded, 'Shelf tag added!')

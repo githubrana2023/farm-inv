@@ -32,27 +32,32 @@ export function validateDirectory(directory: Directory | null): directory is Dir
 
 
 export async function getDirectory(): Promise<Directory | null> {
-    const stored = await getNonStringStoredData<StoredDirectoryInfo>(
-        DIRECTORY_PERMISSION_KEY
-    );
+    try {
+        const stored = await getNonStringStoredData<StoredDirectoryInfo>(
+            DIRECTORY_PERMISSION_KEY
+        );
 
-    if (!stored) {
-        const directory = await directoryPicker();
+        if (!stored) {
+            const directory = await directoryPicker();
+
+            if (!validateDirectory(directory)) {
+                return null;
+            }
+
+            return directory;
+        }
+
+        const directory = new Directory(stored.directoryUri);
 
         if (!validateDirectory(directory)) {
             return null;
         }
 
         return directory;
+    } catch (error) {
+        showError('Please select the folder')
+        return null
     }
-
-    const directory = new Directory(stored.directoryUri);
-
-    if (!validateDirectory(directory)) {
-        return null;
-    }
-
-    return directory;
 }
 
 

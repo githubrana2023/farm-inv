@@ -12,6 +12,9 @@ import { format, setDate, setHours } from 'date-fns'
 
 import * as ShareFile from 'expo-sharing'
 import { showError } from '@/lib/toast/error'
+import { FolderSelector } from '@/components/shared/folder-selector'
+import { useDirectory } from '@/hooks/use-directory'
+import { LoadingState } from '@/components/shared/loading-state'
 
 const fileShare = async (existFile: File) => {
     try {
@@ -62,17 +65,14 @@ const fileShare = async (existFile: File) => {
 
 
 const Files = () => {
-    const [directory, setDirectory] = useState<Directory | null>(null)
 
-    useEffect(() => {
-        const loadDirectory = async () => {
-            const directory = await getDirectory()
-            setDirectory(directory)
-        }
-        loadDirectory()
-    }, [])
+    const { directory, pickFolder, loading, clearFolder } = useDirectory()
 
-    if (!directory) return null
+    if (loading) return <LoadingState title='Precessing...' description='Please select folder!' />
+
+    if (!directory) return (
+        <FolderSelector handlePick={pickFolder} />
+    )
 
     const list = directory.list()
     const files = list.filter((file): file is File => file instanceof File)
@@ -116,8 +116,10 @@ const Files = () => {
                 </View>
             </ScrollView>
 
-            <Button onPress={() => deleteFiles(new Date())} >
-                <Text >Delete files</Text>
+            <Button onPress={clearFolder} >
+                <Text >Remove Permission</Text>
+                {/* <Button onPress={() => deleteFiles(new Date())} >
+                <Text >Delete files</Text> */}
             </Button>
         </Container>
     )

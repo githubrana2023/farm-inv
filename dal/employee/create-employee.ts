@@ -22,7 +22,7 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
             // Create first emp as Edp
             const [emp] = await inventoryDb.insert(employeeTable).values({
                 ...value,
-                employeeId: Number(value.employeeId),
+                employeeId: value.employeeId,
                 employeeTitle: value.employeeTitle.toUpperCase(),
                 password: hashedPw
             }).returning()
@@ -36,7 +36,7 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
 
         if (isEdpEmployee) return failureResponse('I.T can not more than one!')
 
-        const [existEmp] = await inventoryDb.select().from(employeeTable).where(eq(employeeTable.employeeId, Number(value.employeeId)))
+        const [existEmp] = await inventoryDb.select().from(employeeTable).where(eq(employeeTable.employeeId, value.employeeId))
 
         if (existEmp) return failureResponse('Employee already exist!')
 
@@ -52,7 +52,6 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
 
         const [emp] = await inventoryDb.insert(employeeTable).values({
             ...value,
-            employeeId: Number(value.employeeId),
             password: hashedPw
         }).returning()
         return successResponse(emp, 'Employee created successfully')

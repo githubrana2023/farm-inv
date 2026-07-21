@@ -7,10 +7,11 @@ import { invalidateEmployeeGetQuery } from '@/lib/tanstack-query/employee'
 import { invalidateLabelingGetQuery } from '@/lib/tanstack-query/labeling'
 
 import * as xlsx from 'xlsx'
-import { getDirectory } from '@/lib/expo-file-system/directory-picker'
+import { ensureDbDir, getDirectory } from '@/lib/expo-file-system/directory-picker'
 import { showSuccess } from '@/lib/toast/success'
 import { getScannedItems } from '@/dal/item/get-item'
 import { deleteScannedItems } from '@/dal/item/delete-items'
+import { File } from 'expo-file-system'
 
 
 const createXl = async () => {
@@ -92,6 +93,18 @@ const createXl = async () => {
 const EmployeeSettings = () => {
 
 
+    const deleteInventoryDb = async () => {
+        const directory = ensureDbDir()
+        const list = directory.list()
+        for (const f of list) {
+            const file = new File(f.uri)
+            directory.list()
+            if (file.name === 'inventory.db' && file.exists) {
+                file.delete()
+            }
+            console.log(file.name);
+        }
+    }
 
 
 
@@ -117,6 +130,9 @@ const EmployeeSettings = () => {
             </Button>
             <Button onPress={deleteScannedItems}>
                 <Text>delete scanned data</Text>
+            </Button>
+            <Button onPress={deleteInventoryDb}>
+                <Text>delete db</Text>
             </Button>
         </View>
     )

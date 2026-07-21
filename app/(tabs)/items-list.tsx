@@ -350,7 +350,7 @@ const Order = ({ orderLabels, fileName }: {
 const Tag = ({ employees, fileName }: {
     employees: {
         emp: {
-            employeeId: number;
+            employeeId: string;
             name: string;
             employeeTitle: string;
             createdAt: Date;

@@ -1,4 +1,4 @@
-import { View, FlatList } from 'react-native'
+import { View, FlatList, ActivityIndicator } from 'react-native'
 import Container from '@/components/shared/container'
 import { useGetGlobalSearchItems } from '@/hooks/tanstack/mutation/item/get-item'
 import React, { useEffect, useState } from 'react'
@@ -12,12 +12,16 @@ import Lucide from '@react-native-vector-icons/lucide'
 import { useColorScheme } from 'nativewind'
 import * as Clipboard from 'expo-clipboard'
 import { showSuccess } from '@/lib/toast/success'
+import { EmptySearch } from '@/components/shared/empty-search'
+import { EmptyState } from '@/components/shared/empty-state'
+import { NoSearchResults } from '../../components/shared/no-result-found'
+import { LoadingState } from '@/components/shared/loading-state'
 const Search = () => {
     const [searchValue, setSearchValue] = useState('')
-    const search = useDebounce(searchValue)
+    const { debouncedValue, isLoading } = useDebounce(searchValue)
     const isDark = useColorScheme().colorScheme === 'dark'
 
-    const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useGetGlobalSearchItems(search)
+    const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useGetGlobalSearchItems(debouncedValue)
 
     const items = data?.pages.flatMap(page => page).filter(item => !!item) ?? []
 
@@ -57,18 +61,36 @@ const Search = () => {
                         }
                     </View>
 
-                    <FlatList
-                        className="pb-0 flex-1"
-                        showsVerticalScrollIndicator={false}
-                        data={items}
-                        keyExtractor={item => item.barcode}
-                        renderItem={({ item, index }) => renderSearchItemDetailsCard({ item, isDark, index })}
-                        onEndReached={() => {
-                            if (hasNextPage && !isFetchingNextPage) {
-                                fetchNextPage()
-                            }
-                        }}
-                    />
+                    {
+                        debouncedValue.length === 0 && (
+                            <EmptySearch />
+                        )
+                    }
+
+                    {
+                        isLoading ? (
+                            <LoadingState
+                                title='Searching...'
+                                description='Please wait'
+                            />
+                        ) :
+                            (debouncedValue.length > 0 && items.length > 0) ? (
+                                <FlatList
+                                    className="pb-0 flex-1"
+                                    showsVerticalScrollIndicator={false}
+                                    data={items}
+                                    keyExtractor={item => item.barcode}
+                                    renderItem={({ item, index }) => renderSearchItemDetailsCard({ item, isDark, index })}
+                                    onEndReached={() => {
+                                        if (hasNextPage && !isFetchingNextPage) {
+                                            fetchNextPage()
+                                        }
+                                    }}
+                                />
+                            ) : (debouncedValue.length > 0 && items.length < 1) ? (
+                                <NoSearchResults query={debouncedValue} />
+                            ) : null
+                    }
                 </View>
                 {/* TODO: total item count remaining */}
                 {/* <View className='py-4'>
@@ -121,6 +143,7 @@ const SearchItemDetailsCard = React.memo(
             showSuccess(`Barcode ${barcode} copied!`)
             setIsCopied(true)
         }
+
 
         return (
             <Card className='p-1 gap-1 mb-2'>

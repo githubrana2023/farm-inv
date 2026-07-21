@@ -15,7 +15,7 @@ export const updateOrderItemByBarcode = async (barcode: string, quantity: string
         if (!existOrderItem) return failureResponse('Order item not found to update!')
 
         const [updatedOrderItem] = await inventoryDb.update(inventoryTable).set({
-            quantity: Number(quantity)
+            quantity
         }).where(
             and(
                 eq(inventoryTable.barcode, barcode),
@@ -39,7 +39,7 @@ export const updateItemById = async (id: string, quantity: string,) => {
         if (!existItem) return failureResponse('Order item not found to update!')
 
         const [updatedOrderItem] = await inventoryDb.update(inventoryTable).set({
-            quantity: Number(quantity)
+            quantity
         }).where(
             eq(inventoryTable.id, id),
         ).returning()

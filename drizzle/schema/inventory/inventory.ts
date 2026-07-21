@@ -1,5 +1,5 @@
 
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { v4 as uuid } from 'uuid'
 
 import { createdAt, updatedAt, SCAN_FLAG } from '@/drizzle/schema-helper'
@@ -12,7 +12,7 @@ export const inventoryTable = sqliteTable('inventory', {
     item_number: text('item_number').notNull(),
     description: text('description').notNull(),
     uom: text('uom').notNull(),
-    packing: integer('packing').notNull(),
+    packing: text('packing').notNull(),
     quantity: text('quantity').notNull(),
     scanFlag: text('scan_flag', { enum: SCAN_FLAG }),
     pflag: text('pflag'),

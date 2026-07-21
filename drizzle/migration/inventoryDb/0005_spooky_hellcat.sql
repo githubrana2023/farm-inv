@@ -1,1 +1,0 @@
-ALTER TABLE `inventory` ADD `description` text NOT NULL;

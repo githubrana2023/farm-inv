@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1784110834835,
-      "tag": "0000_past_red_skull",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1784145604186,
-      "tag": "0001_minor_vindicator",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1784151783932,
-      "tag": "0002_messy_proudstar",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1784287502699,
-      "tag": "0003_strange_ben_urich",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1784287804918,
-      "tag": "0004_aromatic_gamma_corps",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1784318023468,
-      "tag": "0005_spooky_hellcat",
+      "when": 1784663067853,
+      "tag": "0000_sad_silverclaw",
       "breakpoints": true
     }
   ]

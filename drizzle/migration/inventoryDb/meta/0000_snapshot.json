@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "6665dfd6-41e6-4858-b91e-998b5d1d8d14",
+  "id": "3a2f7630-a222-436a-bafe-b6cab5bade39",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "employee": {
@@ -9,7 +9,7 @@
       "columns": {
         "employeeId": {
           "name": "employeeId",
-          "type": "integer",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
@@ -74,9 +74,23 @@
           "notNull": true,
           "autoincrement": false
         },
-        "employeeId": {
-          "name": "employeeId",
-          "type": "integer",
+        "barcode": {
+          "name": "barcode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "item_number": {
+          "name": "item_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -90,20 +104,27 @@
         },
         "packing": {
           "name": "packing",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "quantity": {
           "name": "quantity",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "scan_flag": {
           "name": "scan_flag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pflag": {
+          "name": "pflag",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -155,11 +176,11 @@
           "notNull": true,
           "autoincrement": false
         },
-        "scan_flag": {
-          "name": "scan_flag",
+        "save_flag": {
+          "name": "save_flag",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "createdAt": {
@@ -189,7 +210,7 @@
           "name": "labeling_save_flag_unique",
           "columns": [
             "label",
-            "scan_flag"
+            "save_flag"
           ],
           "isUnique": true
         }

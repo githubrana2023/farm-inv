@@ -13,11 +13,11 @@ import { File } from 'expo-file-system'
 import { useColorScheme } from 'nativewind'
 import { Card } from './ui/card'
 import Lucide from '@react-native-vector-icons/lucide'
+import { useDirectory } from '@/hooks/use-directory'
 
 const AppSettings = () => {
-    // const permission = usePermission()
-    // const file = useFile(FILE_URI_KEY)
     const { colorScheme } = useColorScheme()
+    const { clearFolder } = useDirectory()
     const color = colorScheme === 'dark' ? "black" : 'white'
 
     const test = () => {
@@ -88,7 +88,8 @@ const AppSettings = () => {
                 </View>
                 <Separator className='my-4' />
 
-                <Button onPress={() => removeStoredData(DIRECTORY_PERMISSION_KEY)} size={'sm'}>
+                <Button onPress={clearFolder} size={'sm'}>
+                    {/* <Button onPress={() => removeStoredData(DIRECTORY_PERMISSION_KEY)} size={'sm'}> */}
                     <Text>Remove Folder Permission</Text>
                 </Button>
                 <Separator className='my-4' />
