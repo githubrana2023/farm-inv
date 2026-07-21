@@ -50,8 +50,8 @@ export default function AddItemForm() {
   const { isTimerFinish, startTimer } = useCountDown(5);
   const isDark = useColorScheme().colorScheme === 'dark';
 
-  const quantityInputRef = React.useRef<any>(null);
-  const barcodeInputRef = React.useRef<any>(null);
+  // const quantityInputRef = React.useRef<any>(null);
+  // const barcodeInputRef = React.useRef<any>(null);
 
 
   //! React-hook-form
@@ -62,6 +62,8 @@ export default function AddItemForm() {
       quantity: "",
       isAdvanceMode: false,
     },
+    resolver: zodResolver(addItemFormSchema),
+    shouldFocusError: false
   });
 
 
@@ -105,7 +107,7 @@ export default function AddItemForm() {
           handleResetForm();
           resetGetItem()
           // OK
-          barcodeInputRef.current?.focus();
+          // barcodeInputRef.current?.focus();
           console.log('barcode focused from onSubmit')
           await queryClient.invalidateQueries({
             queryKey: [MUTATION_KEY.SCANNED_ITEM.READ]
@@ -132,7 +134,7 @@ export default function AddItemForm() {
 
             if (success) {
               // Ok
-              quantityInputRef.current?.focus()
+              // quantityInputRef.current?.focus()
               console.log('Quantity focused from onSubmit')
 
             }
@@ -174,17 +176,31 @@ export default function AddItemForm() {
             control={control}
             name="barcode"
             render={({ field }) => {
+              console.log("================================");
+              console.log("Barcode rendered");
+              console.log("================================");
               return (
                 <View className="relative">
                   <InputField
-                    ref={barcodeInputRef}
+                    ref={field.ref}
+                    autoFocus
                     placeholder="Barcode/Item-Code"
-                    keyboardType="numeric"
+                    keyboardType="decimal-pad"
+                    returnKeyType="next"
                     onChangeText={(text) => {
-                      field.onChange(text)
                       if (text.length === 0) {
                         resetGetItem()
                         handleResetForm();
+                      }
+                      if (/^\d*\.?\d*$/.test(text)) {
+                        field.onChange(text)
+                      } else {
+                        const [before, after, ...rest] = text.split(".")
+
+                        field.onChange(`${before}.${after}`)
+                        console.log({
+                          before, after, rest
+                        })
                       }
                     }}
                     value={field.value}
@@ -271,18 +287,23 @@ export default function AddItemForm() {
               <FormField
                 control={control}
                 name="quantity"
-                render={({ field }) => (
-                  <InputField
-                    {...field}
-                    ref={quantityInputRef}
-                    placeholder="Quantity"
-                    keyboardType="numeric"
-                    // returnKeyType="go"
-                    value={field.value.toString()}
-                    onChangeText={field.onChange}
-                    onSubmitEditing={onSubmit}
-                  />
-                )}
+                render={({ field }) => {
+                  console.log("================================");
+                  console.log("quantity rendered");
+                  console.log("================================");
+                  return (
+                    <InputField
+                      {...field}
+                      ref={field.ref}
+                      placeholder="Quantity"
+                      keyboardType="numeric"
+                      returnKeyType="go"
+                      value={field.value.toString()}
+                      onChangeText={field.onChange}
+                      onSubmitEditing={onSubmit}
+                    />
+                  )
+                }}
               />
             </View>
           </View>

@@ -2,7 +2,7 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { v4 as uuid } from 'uuid'
 
-import { createdAt, updatedAt, SAVE_FLAG, SCAN_FLAG } from '@/drizzle/schema-helper'
+import { createdAt, updatedAt, SCAN_FLAG } from '@/drizzle/schema-helper'
 
 
 //TODO : need new col called pflag -> 'P' | 'R' | null
@@ -13,8 +13,9 @@ export const inventoryTable = sqliteTable('inventory', {
     description: text('description').notNull(),
     uom: text('uom').notNull(),
     packing: integer('packing').notNull(),
-    quantity: integer('quantity').notNull(),
+    quantity: text('quantity').notNull(),
     scanFlag: text('scan_flag', { enum: SCAN_FLAG }),
+    pflag: text('pflag'),
     createdAt: createdAt('createdAt'),
     updatedAt: updatedAt('updatedAt'),
 })
