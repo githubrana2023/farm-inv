@@ -31,7 +31,8 @@ function createTextFile(
 
 type InventoryOrderContentGeneratorReturnType = {
     type: Exclude<ScanFlag, 'Tags'>,
-    content: string
+    content: string,
+    hasItem: boolean
 }
 
 type TagsContentGeneratorReturnType = {
@@ -39,7 +40,8 @@ type TagsContentGeneratorReturnType = {
     content: {
         regularContent: string;
         promoContent: string;
-    }
+    },
+    hasItem: boolean
 }
 
 type GeneratorReturnType = InventoryOrderContentGeneratorReturnType | TagsContentGeneratorReturnType
@@ -55,17 +57,18 @@ const generateInventoryContent = (items: NonNullable<Awaited<ReturnType<typeof g
 
     return {
         type: SCAN_FLAG_TYPE.Inventory,
-        content
+        content,
+        hasItem: items.length > 0
     }
 }
 
 
-type Item = NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'][number] & { pFlag: 'P' | 'R' | null }
+type Item = NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'][number]
 
 const generateTagsContent = (items: Item[], maxLength: number): GeneratorReturnType => {
 
-    const promoItems = items.filter(item => item.pFlag === 'P')
-    const regularItems = items.filter(item => item.pFlag === 'R')
+    const promoItems = items.filter(item => item.pflag === 'P')
+    const regularItems = items.filter(item => item.pflag === 'R')
 
 
     const promoContent = promoItems.map(item => {
@@ -84,7 +87,8 @@ const generateTagsContent = (items: Item[], maxLength: number): GeneratorReturnT
         content: {
             regularContent,
             promoContent
-        }
+        },
+        hasItem: items.length > 0
     }
 }
 
@@ -95,18 +99,26 @@ export async function saveFile(prefix: ScanFlag, saveFlag?: string) {
         const res = await getSavedItems()
         if (!res.data) return showError('Failed to get items to save')
 
-        const generated = generator[prefix](res.data.scannedItems.map(item => ({ ...item, pFlag: null })), 30)
+        const generated = generator[prefix](res.data.scannedItems.filter(item => item.scanFlag === prefix), 30)
 
         const directory = await getDirectory();
 
         if (!directory) {
             return;
         }
+
+        if (!generated.hasItem) return showError(`No item to create ${prefix}`)
+
+
         let fileName: string
+
 
         fileName = generateFileName(saveFlag ? `${prefix}_${saveFlag}` : `${prefix}`);
         if (generated.type === SCAN_FLAG_TYPE.Tags) {
             // generating regular tags file name
+
+            if (!generated.hasItem) return showError('No item to create shelf tags')
+
             fileName = generateFileName(saveFlag ? `r-${prefix}_${saveFlag}` : `r-${prefix}`);
             createTextFile(directory, fileName, generated.content.regularContent);
 
@@ -137,7 +149,8 @@ export const generateOrderContent = (items: Item[], maxLength: number): Generato
 
     return {
         type: SCAN_FLAG_TYPE.Order,
-        content
+        content,
+        hasItem: items.length > 0
     }
 }
 

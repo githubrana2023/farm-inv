@@ -6,6 +6,7 @@ import Toast from "react-native-toast-message"
 import { showError } from "../toast/error"
 import { showSuccess } from "../toast/success"
 import { ensureDbDir } from "./directory-picker"
+import { format, setHours } from "date-fns"
 
 
 
@@ -31,9 +32,29 @@ const validateDbFile = (file: File) => {
 const copyDb = async (sourceFile: File) => {
 
     const databaseDir = await ensureDbDir()
-    const destination = new File(databaseDir, 'Farm.db')
+    const destination = new File(databaseDir, sourceFile.name)
+
+    const list = databaseDir.list()
+
+    const today = new Date().setHours(0, 0, 0, 0)
+    if (sourceFile.lastModified) {
+
+        console.log({
+            today: format(new Date(today), 'ddMMMyyyy hh:mm:ss aaa'),
+            lastModified: format(new Date(sourceFile.lastModified), 'ddMMMyyyy hh:mm:ss aaa'),
+            isUpdated: sourceFile.lastModified > today
+        })
+    }
+
+    //deleting old db
+    for (const element of list) {
+        if (element.name === sourceFile.name) {
+            element.delete()
+        }
+    }
 
     await sourceFile.copy(destination, { overwrite: true })
+
     showSuccess('Database imported!')
 }
 

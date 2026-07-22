@@ -15,6 +15,7 @@ import { showSuccess } from '@/lib/toast/success'
 import { queryClient } from '../provider/tanstack-query-client'
 import { MUTATION_KEY } from '@/constants/tanstack-query'
 import { useModalAction } from '@/hooks/redux/use-modal'
+import { showDynamicToast } from '@/lib/toast/dynamic'
 
 const EmployeeCreateForm = () => {
 
@@ -33,7 +34,8 @@ const EmployeeCreateForm = () => {
 
     const onSubmitHandler = form.handleSubmit(values => {
         createEmployee(values, {
-            async onSuccess() {
+            async onSuccess({ data, success, message }) {
+                showDynamicToast(success, message)
                 await queryClient.invalidateQueries({ queryKey: [MUTATION_KEY.EMPLOYEE.READ] })
                 // form.reset()
                 // onClose()

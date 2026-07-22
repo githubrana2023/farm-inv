@@ -130,7 +130,7 @@ const ScannedItemCard = ({
                 </>
               ) : (
                 <ItemQuantityUnit
-                  quantity={item.quantity}
+                  quantity={Number(item.quantity)}
                   uom={item.uom}
                   onPress={() => setIsEditState((prev) => !prev)}
                 />
@@ -209,7 +209,7 @@ const ScannedItemCard = ({
                     </View>
                   ) : (
                     <ItemQuantityUnit
-                      quantity={item.quantity}
+                      quantity={Number(item.quantity)}
                       uom={item.uom}
                       onPress={() => {
                         setIsEditState((prev) => !prev);

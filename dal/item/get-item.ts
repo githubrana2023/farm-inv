@@ -104,6 +104,8 @@ export const getItemPriceCheckByBarcode = async (barcode: string) => {
 
         if (!existItem) return failureResponse('Item not found!')
 
+        // console.log(existItem)
+
         return successResponse(existItem, 'Item retrieved!')
 
     } catch (error) {
