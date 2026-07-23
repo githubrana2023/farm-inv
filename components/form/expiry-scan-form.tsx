@@ -16,15 +16,8 @@ import Modal from '../shared/modal'
 import { Text } from '../ui/text'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
+import { ExpireScanFormValue, expiryScanFormSchema } from '@/lib/zod/expiry-monitor-form-schema'
 
-export const expiryScanFormSchema = z.object({
-    barcode: z.string().trim().nonempty(),
-    expireIn: z.string().trim().nonempty().min(6, { error: 'Minimum 6 characters long!' }).max(10, { error: 'Maximum 10 characters long!' }),
-    remindBefore: z.string().trim().nonempty({ error: 'Select remind before day' }),
-    shelfNo: z.string().trim().nonempty({ error: 'Select Shelf NO' }),
-})
-
-export type ExpireScanFormValue = z.infer<typeof expiryScanFormSchema>
 
 export const ExpiryScanForm = () => {
 
@@ -143,7 +136,12 @@ export const ExpiryScanForm = () => {
 
                                                             <SelectItem
                                                                 value="B1"
-                                                                label="B1"
+                                                                label="B1 hello"
+                                                                onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
+                                                            />
+                                                            <SelectItem
+                                                                value="B2"
+                                                                label="B2 hello"
                                                                 onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
                                                             />
                                                         </SelectGroup>
