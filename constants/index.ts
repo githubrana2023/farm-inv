@@ -48,7 +48,7 @@ export const multitaskVariants = [
 export type MultitaskVariantValues = (typeof SCAN_FLAG)[number];
 
 
-type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD'
+type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD' | 'SHELF_NO' | 'REMIND_BEFORE'
 type Type = 'CREATE' | 'UPDATE'
 
 
@@ -73,10 +73,18 @@ export const MODAL_TYPE: ModalTypeMap = {
     LABELING: {
         CREATE: 'LABELING_CREATE_MODAL',
         UPDATE: 'LABELING_UPDATE_MODAL',
+    },
+    REMIND_BEFORE: {
+        CREATE: 'REMIND_BEFORE_CREATE_MODAL',
+        UPDATE: 'REMIND_BEFORE_UPDATE_MODAL',
+    },
+    SHELF_NO: {
+        CREATE: 'SHELF_NO_CREATE_MODAL',
+        UPDATE: 'SHELF_NO_UPDATE_MODAL'
     }
 }
 
-type AlertModal = 'ORDER' | 'SCANNED_ITEM'//| 'LABELING' | 'EMPLOYEE'
+type AlertModal = 'ORDER' | 'SCANNED_ITEM' | 'SHELF_NO' | 'REMIND_BEFORE'//| 'LABELING' | 'EMPLOYEE'
 type AlertType = 'DELETE' | 'UPDATE'
 
 type AlertModalTypeMap = {
@@ -95,5 +103,13 @@ export const ALERT_MODAL_TYPE: AlertModalTypeMap = {
     SCANNED_ITEM: {
         UPDATE: 'SCANNED_ITEM_UPDATE_ALERT_MODAL',
         DELETE: 'SCANNED_ITEM_DELETE_ALERT_MODAL'
-    }
+    },
+    SHELF_NO: {
+        UPDATE: 'SHELF_NO_UPDATE_ALERT_MODAL',
+        DELETE: 'SHELF_NO_DELETE_ALERT_MODAL'
+    },
+    REMIND_BEFORE: {
+        UPDATE: 'REMIND_BEFORE_UPDATE_ALERT_MODAL',
+        DELETE: 'REMIND_BEFORE_DELETE_ALERT_MODAL'
+    },
 }

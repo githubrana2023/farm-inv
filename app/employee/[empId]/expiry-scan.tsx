@@ -17,7 +17,7 @@ const EmployeeScanExpiry = () => {
     return (
         <Container>
             <CardWrapper
-                title="Expiry Scan Form"
+                title={`Expiry Scan Form - Emp : ${empId}`}
                 description="Scan items to monitor your expiry"
             >
                 <ExpiryScanForm />
