@@ -46,7 +46,6 @@ export const ExpiryScanForm = () => {
     const { mutate: insertExpiry } = useExpiryMonitorInsert()
 
 
-
     const form = useForm<ExpireScanFormValue>({
         defaultValues: {
             barcode: "",
@@ -62,13 +61,18 @@ export const ExpiryScanForm = () => {
 
 
 
+
     const onSubmit = form.handleSubmit((values) => {
         insertExpiry(
             { ...values, empId: stringEmpId },
             {
                 onSuccess({ data, success, message }) {
                     if (success) {
-                        form.reset()
+                        form.reset({
+                            barcode: "",
+                            remindBefore: "",
+                            shelfNo: ""
+                        })
                         resetGetItemMutation()
                     }
                 }
@@ -120,55 +124,57 @@ export const ExpiryScanForm = () => {
                             <FormField
                                 control={form.control}
                                 name='shelfNo'
-                                render={({ field }) => (
-                                    <View className='flex-1'>
-                                        <FormItem >
-                                            <FormControl>
-                                                <Select
-                                                    onValueChange={(option) => {
-                                                        field.onChange(option?.value);
-                                                    }}
-                                                    value={
-                                                        field.value ? {
+                                render={({ field, }) => {
+                                    return (
+                                        <View className='flex-1'>
+                                            <FormItem >
+                                                <FormControl>
+                                                    <Select
+                                                        key={String(field.value)}
+                                                        onValueChange={(option) => {
+                                                            field.onChange(option?.value);
+                                                        }}
+                                                        value={field.value === "" ? undefined : {
                                                             value: field.value,
                                                             label: field.value
-                                                        } : undefined
-                                                    }
-                                                    ref={shelfNoRef}
-                                                >
-                                                    <SelectTrigger
-                                                        onLayout={(e) =>
-                                                            setTriggerWidth(e.nativeEvent.layout.width)
-                                                        }
-                                                        className='rounded-r-none'
-                                                    >
-                                                        <SelectValue placeholder="Shelf No" />
-                                                    </SelectTrigger>
-                                                    <SelectContent
-                                                        style={{ width: triggerWidth }}
-                                                        className="mt-2">
-                                                        <SelectGroup >
-                                                            <SelectLabel>Shelf No</SelectLabel>
-                                                            <SelectSeparator />
+                                                        }}
 
-                                                            <SelectItem
-                                                                label="B1 id"
-                                                                value="B1"
-                                                                onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
-                                                            />
-                                                            <SelectItem
-                                                                value="B2"
-                                                                label="B2 hello"
-                                                                onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
-                                                            />
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    </View>
-                                )}
+                                                        ref={shelfNoRef}
+                                                    >
+                                                        <SelectTrigger
+                                                            onLayout={(e) =>
+                                                                setTriggerWidth(e.nativeEvent.layout.width)
+                                                            }
+                                                            className='rounded-r-none'
+                                                        >
+                                                            <SelectValue placeholder="Shelf No" />
+                                                        </SelectTrigger>
+                                                        <SelectContent
+                                                            style={{ width: triggerWidth }}
+                                                            className="mt-2">
+                                                            <SelectGroup >
+                                                                <SelectLabel>Shelf No</SelectLabel>
+                                                                <SelectSeparator />
+
+                                                                <SelectItem
+                                                                    label="B1 id"
+                                                                    value="B1"
+                                                                    onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
+                                                                />
+                                                                <SelectItem
+                                                                    value="B2"
+                                                                    label="B2 hello"
+                                                                    onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
+                                                                />
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        </View>
+                                    )
+                                }}
                             />
                             <View>
                                 <Button
@@ -192,6 +198,7 @@ export const ExpiryScanForm = () => {
                                         <FormItem>
                                             <FormControl>
                                                 <Select
+                                                    key={String(field.value)}
                                                     onValueChange={(option) => {
                                                         field.onChange(option?.value);
                                                     }}

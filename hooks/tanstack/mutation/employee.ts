@@ -9,6 +9,7 @@ import 'react-native-get-random-values';
 import bcrypt from 'bcryptjs'
 import { showError } from "@/lib/toast/error"
 import { saveFile } from "@/lib/expo-file-system/save-file"
+import { employeeLogin } from "@/dal/employee/login"
 
 export const useEmployeeCreateMutation = () => {
     return useMutation({
@@ -82,5 +83,13 @@ export const useEmployeesGetQuery = () => {
                 return null
             }
         }
+    })
+}
+
+
+export const useEmployeeLogin = () => {
+    return useMutation({
+        mutationFn: async ({ empId, password }: { empId: string; password: string }) => await employeeLogin({ empId, password }),
+        mutationKey: ['employee-login']
     })
 }
