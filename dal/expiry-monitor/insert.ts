@@ -3,10 +3,11 @@ import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { itemMasterTable } from "@/drizzle/schema/farm-schema";
 import { employeeTable } from "@/drizzle/schema/inventory";
 import { expiryMonitorTable } from "@/drizzle/schema/inventory/expiry-monitor";
-import { failureResponse } from "@/lib/response";
+import { shelfTable } from "@/drizzle/schema/inventory/shelf";
+import { failureResponse, successResponse } from "@/lib/response";
 import { splitWord } from "@/lib/utils";
 import { ExpireScanFormValue } from "@/lib/zod/expiry-monitor-form-schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export const insertExpiryMonitor = async (value: (ExpireScanFormValue & { empId: string })) => {
     try {
@@ -16,16 +17,19 @@ export const insertExpiryMonitor = async (value: (ExpireScanFormValue & { empId:
         if (!existItem) return failureResponse('Item not found!')
 
         const [date, month, year] = splitWord(value.expireIn, '.')
-        const expireIn = new Date().setFullYear(Number(year), Number(month), Number(date))
+        const expireIn = new Date(new Date().setFullYear(Number(year), Number(month), Number(date)))
 
         const newExpiry = await inventoryDb.insert(expiryMonitorTable).values({
             barcode: existItem.barcode,
             expireIn,
-            remindBefore: value.remindBefore,
-            shelfId
+            remindBefore: Number(value.remindBefore),
+            shelfNo: value.shelfNo,
         })
 
-    } catch (error) {
+        return successResponse(newExpiry)
 
+    } catch (error) {
+        console.log('Failed to insert expiry')
+        return failureResponse('Failed to insert expiry')
     }
 }

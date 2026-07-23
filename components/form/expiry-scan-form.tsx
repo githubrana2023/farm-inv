@@ -17,11 +17,15 @@ import { Text } from '../ui/text'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { ExpireScanFormValue, expiryScanFormSchema } from '@/lib/zod/expiry-monitor-form-schema'
+import { useExpiryMonitorInsert } from '@/hooks/tanstack/mutation/expiry-monitor/insert'
 
 
 export const ExpiryScanForm = () => {
 
     const { empId } = useLocalSearchParams()
+
+    const stringEmpId = Array.isArray(empId) ? empId[0] : empId
+
     const [triggerWidth, setTriggerWidth] = React.useState(0);
     const barcodeRef = useRef<any>(null)
     const expireInRef = useRef<any>(null)
@@ -39,6 +43,7 @@ export const ExpiryScanForm = () => {
 
 
     const { mutate: getItemDetails, data: item } = useGetItemDetailsByBarcode()
+    const { mutate: insertExpiry } = useExpiryMonitorInsert()
 
 
 
@@ -58,8 +63,19 @@ export const ExpiryScanForm = () => {
 
 
     const onSubmit = form.handleSubmit((values) => {
-        console.log({ values })
+        insertExpiry(
+            { ...values, empId: stringEmpId },
+            {
+                onSuccess({ data, success, message }) {
+                    if (success) {
+                        form.reset()
+                    }
+                }
+            }
+        )
     })
+
+
     const onBarcodeSubmit = () => {
         const barcode = form.getValues('barcode')
         getItemDetails(barcode, {
