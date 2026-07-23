@@ -29,7 +29,7 @@ export const insertExpiryMonitor = async (value: (ExpireScanFormValue & { empId:
         return successResponse(newExpiry)
 
     } catch (error) {
-        console.log('Failed to insert expiry')
+        console.log('Failed to insert expiry', error)
         return failureResponse('Failed to insert expiry')
     }
 }

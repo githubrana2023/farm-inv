@@ -42,7 +42,7 @@ export const ExpiryScanForm = () => {
     const description = 'Fill the following fields'
 
 
-    const { mutate: getItemDetails, data: item } = useGetItemDetailsByBarcode()
+    const { mutate: getItemDetails, data: item, reset: resetGetItemMutation } = useGetItemDetailsByBarcode()
     const { mutate: insertExpiry } = useExpiryMonitorInsert()
 
 
@@ -69,6 +69,7 @@ export const ExpiryScanForm = () => {
                 onSuccess({ data, success, message }) {
                     if (success) {
                         form.reset()
+                        resetGetItemMutation()
                     }
                 }
             }
@@ -151,8 +152,8 @@ export const ExpiryScanForm = () => {
                                                             <SelectSeparator />
 
                                                             <SelectItem
+                                                                label="B1 id"
                                                                 value="B1"
-                                                                label="B1 hello"
                                                                 onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
                                                             />
                                                             <SelectItem
