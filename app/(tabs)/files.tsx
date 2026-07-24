@@ -68,7 +68,7 @@ const Files = () => {
 
     const { directory, pickFolder, loading, clearFolder } = useDirectory()
 
-    if (loading) return <LoadingState title='Precessing...' description='Please select folder!' />
+    if (loading) return <LoadingState title='Precessing...' description='Wait! file is loading...!' />
 
     if (!directory) return (
         <FolderSelector handlePick={pickFolder} />

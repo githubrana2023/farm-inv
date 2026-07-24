@@ -28,16 +28,15 @@ export const useCheckItemPrice = () => {
 export const useGetScannedItems = () => useQuery({
     queryKey: [MUTATION_KEY.SCANNED_ITEM.READ],
     queryFn: getScannedItems,
-    networkMode: 'offlineFirst'
 })
 
 
 export const useGetGlobalSearchItems = (search: string) => useInfiniteQuery(
     {
         queryKey: [MUTATION_KEY["GLOBAL-QUERY"].READ, search],
-        queryFn: async ({ pageParam }) => {
+        queryFn: ({ pageParam }) => {
             console.log({ pageParam })
-            return await getGlobalSearchItems({
+            return getGlobalSearchItems({
                 limit: PAGE_SIZE,
                 offset: pageParam,
                 query: search

@@ -173,7 +173,8 @@ export const getGlobalSearchItems = async ({ limit, offset, query }: { query: st
         const words = query.trim().toLowerCase().split(/\s+/);
 
 
-        const storeScannedItemsQuery = farmDb
+
+        const searchItems = await farmDb
             .select()
             .from(itemMasterTable)
             .where(
@@ -186,8 +187,33 @@ export const getGlobalSearchItems = async ({ limit, offset, query }: { query: st
             .limit(limit)
             .offset(offset)
 
-        const data = await storeScannedItemsQuery
-        return data
+
+        let items: (typeof searchItems[0] & {
+            itemUoms: {
+                barcode: string;
+                packing: number;
+                uom: string
+            }[]
+        })[] = []
+
+        for (const searchItem of searchItems) {
+            const duplicateItemUoms = await farmDb
+                .select({
+                    uom: itemMasterTable.uom,
+                    packing: itemMasterTable.packing,
+                    barcode: itemMasterTable.barcode
+                })
+                .from(itemMasterTable)
+                .where(
+                    eq(itemMasterTable.item_number, searchItem.item_number)
+                )
+
+            const itemUoms = [...new Map(duplicateItemUoms.map(duplicateItemUom => ([duplicateItemUom.packing, duplicateItemUom]))).values()]
+
+            items = [...items, { ...searchItem, itemUoms }]
+        }
+
+        return items
     } catch (error) {
         return null
     }
