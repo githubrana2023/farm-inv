@@ -61,6 +61,7 @@ const Price = () => {
                         render={({ field: { onChange, value } }) => (
                             <View className="relative">
                                 <Input
+                                    selectTextOnFocus
                                     placeholder="Barcode"
                                     keyboardType="numeric"
                                     returnKeyType="go"

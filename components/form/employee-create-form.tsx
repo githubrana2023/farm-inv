@@ -28,7 +28,10 @@ const EmployeeCreateForm = () => {
             employeeId: "",
             name: ""
         },
-        resolver: zodResolver(employeeCreateFormSchema)
+        resolver: zodResolver(employeeCreateFormSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
+        shouldFocusError: false
     })
 
 

@@ -33,7 +33,7 @@ const Search = () => {
     const { debouncedValue, isLoading } = useDebounce(searchValue)
     const isDark = useColorScheme().colorScheme === 'dark'
 
-    const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useGetGlobalSearchItems(debouncedValue)
+    const { data, hasNextPage, isFetchingNextPage, fetchNextPage, isFetching, isFetched } = useGetGlobalSearchItems(debouncedValue)
 
     const items = data?.pages.flatMap(page => page).filter(item => !!item) ?? []
 
@@ -74,35 +74,38 @@ const Search = () => {
                     </View>
 
                     {
-                        debouncedValue.length === 0 && (
-                            <EmptySearch />
-                        )
-                    }
-
-                    {
-                        isLoading ? (
+                        (isFetching) && (
                             <LoadingState
                                 title='Searching...'
                                 description='Please wait'
                             />
-                        ) :
-                            (debouncedValue.length > 0 && items.length > 0) ? (
-                                <FlatList
-                                    className="pb-0 flex-1"
-                                    showsVerticalScrollIndicator={false}
-                                    data={items}
-                                    keyExtractor={item => item.barcode}
-                                    renderItem={({ item, index }) => renderSearchItemDetailsCard({ item, isDark, index })}
-                                    onEndReached={() => {
-                                        if (hasNextPage && !isFetchingNextPage) {
-                                            fetchNextPage()
-                                        }
-                                    }}
-                                />
-                            ) : (debouncedValue.length > 0 && items.length < 1) ? (
-                                <NoSearchResults query={debouncedValue} />
-                            ) : null
+                        )
                     }
+                    {
+                        (debouncedValue.length === 0 && !isFetching) && (<EmptySearch />)
+                    }
+                    {
+                        (!isFetching && debouncedValue.length > 0 && items?.length < 1) && (
+                            <NoSearchResults query={debouncedValue} />
+                        )
+                    }
+                    {
+                        (!isFetching && debouncedValue.length > 0 && items.length > 0) && (
+                            <FlatList
+                                className="pb-0 flex-1"
+                                showsVerticalScrollIndicator={false}
+                                data={items}
+                                keyExtractor={item => item.barcode}
+                                renderItem={({ item, index }) => renderSearchItemDetailsCard({ item, isDark, index })}
+                                onEndReached={() => {
+                                    if (hasNextPage && !isFetchingNextPage) {
+                                        fetchNextPage()
+                                    }
+                                }}
+                            />
+                        )
+                    }
+
                 </View>
                 {/* TODO: total item count remaining */}
                 {/* <View className='py-4'>

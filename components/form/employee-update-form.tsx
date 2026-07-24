@@ -22,7 +22,10 @@ const EmployeeUpdateForm = ({ employee }: EmployeeUpdateFormProp) => {
             ...employee,
             edpPassword: ""
         },
-        resolver: zodResolver(employeeUpdateFormSchema)
+        resolver: zodResolver(employeeUpdateFormSchema),
+        shouldFocusError: false,
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit'
     })
 
 

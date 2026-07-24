@@ -117,8 +117,11 @@ export const getScannedItems = async () => {
 
 export const getItemPriceCheckByBarcode = async (barcode: string) => {
     try {
+
+        const trimmedBarcode = barcode.trim()
+
         const [existItem] = await farmDb.select().from(itemMasterTable).where(
-            eq(itemMasterTable.barcode, barcode)
+            eq(itemMasterTable.barcode, trimmedBarcode)
         )
 
         if (!existItem) return failureResponse('Item not found!')

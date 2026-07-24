@@ -24,7 +24,10 @@ const LabelingCreateForm = () => {
             label: "",
             password: ""
         },
-        resolver: zodResolver(labelingCreateFormSchema)
+        resolver: zodResolver(labelingCreateFormSchema),
+        shouldFocusError: false,
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit'
     })
 
 

@@ -1,8 +1,4 @@
-import { View, } from 'react-native'
-import React from 'react'
 import Modal from '../shared/modal'
-import { Text } from '../ui/text'
-import { Button } from '../ui/button'
 import EmployeeCreateForm from '../form/employee-create-form'
 import { useModal, useModalAction } from '@/hooks/redux/use-modal'
 import { MODAL_TYPE } from '@/constants'

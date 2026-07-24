@@ -19,7 +19,10 @@ const ChangePasswordForm = ({ employeeId }: ChangePasswordFormProp) => {
             oldPassword: "",
             newPassword: ""
         },
-        // resolver: zodResolver(employeeUpdateFormSchema)
+        // resolver: zodResolver(employeeUpdateFormSchema),
+        shouldFocusError: false,
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit'
     })
 
 

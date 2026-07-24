@@ -29,7 +29,7 @@ export function PriceCheckCard({
     //     : 0
 
     function formatPrice(value: number) {
-        return value.toLocaleString("en-US", {
+        return (value ? value : 0).toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         })
