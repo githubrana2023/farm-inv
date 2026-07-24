@@ -8,6 +8,13 @@
       "when": 1784663067853,
       "tag": "0000_sad_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1784821119996,
+      "tag": "0001_cold_tyrannus",
+      "breakpoints": true
     }
   ]
 }

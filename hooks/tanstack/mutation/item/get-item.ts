@@ -1,6 +1,6 @@
 import { PAGE_SIZE } from "@/constants"
 import { MUTATION_KEY } from "@/constants/tanstack-query"
-import { getGlobalSearchItems, getItemByBarcode, getItemPriceCheckByBarcode, getScannedItems, getSearchItems } from "@/dal/item/get-item"
+import { getGlobalSearchItems, getItemByBarcode, getItemDetailsByBarcode, getItemPriceCheckByBarcode, getScannedItems, getSearchItems } from "@/dal/item/get-item"
 import { AddItemFormValue } from "@/lib/zod/add-item-form-schema"
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
@@ -8,6 +8,13 @@ export const useGetItemByBarcode = () => {
     return useMutation({
         mutationKey: [MUTATION_KEY.ITEM.READ],
         mutationFn: (payload: Pick<AddItemFormValue, 'scanType' | 'isAdvanceMode' | 'barcode'>) => getItemByBarcode(payload),
+    })
+}
+
+export const useGetItemDetailsByBarcode = () => {
+    return useMutation({
+        mutationKey: [MUTATION_KEY.ITEM.READ],
+        mutationFn: (barcode: string) => getItemDetailsByBarcode(barcode),
     })
 }
 

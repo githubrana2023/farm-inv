@@ -73,6 +73,25 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
     }
 }
 
+export const getItemDetailsByBarcode = async (barcode: string) => {
+    try {
+
+        if (!barcode) return failureResponse('Barcode is missing!')
+
+        const [item] = await farmDb.select().from(itemMasterTable).where(
+            eq(itemMasterTable.barcode, barcode)
+        )
+
+        if (!item) return failureResponse('Item not found!')
+
+        return successResponse(item)
+
+    } catch (error) {
+        console.log('error', error)
+        return failureResponse('Failed to get item details!')
+    }
+}
+
 export const getScannedItems = async () => {
     try {
         const scannedItems = await inventoryDb.select().from(inventoryTable).orderBy(desc(inventoryTable.createdAt))

@@ -28,7 +28,7 @@ export const EmployeeCard = (
 
                 {isLoginState ? (
                     <View className='flex-1'>
-                        <EmployeeLoginForm employeeId={employeeId} />
+                        <EmployeeLoginForm employeeId={employeeId} onSubmitCallback={() => setIsLoginState(false)} />
                     </View>
                 ) : (
                     <View>
