@@ -63,7 +63,6 @@ export default function AddItemForm() {
       isAdvanceMode: false,
     },
     resolver: zodResolver(addItemFormSchema),
-    shouldFocusError: false,
     mode: 'onSubmit',
     reValidateMode: 'onSubmit'
   });
@@ -282,12 +281,7 @@ export default function AddItemForm() {
                       value={field.value}
                       onChangeText={(text) => {
                         if (/^\d*\.?\d*$/.test(text)) {
-                          if (text.length === 0) {
-                            resetGetItem()
-                            handleResetForm();
-                          } else {
-                            field.onChange(text)
-                          }
+                          field.onChange(text)
                         } else {
                           const [before, after, ...rest] = text.split(".")
                           //TODO getting undefined from here

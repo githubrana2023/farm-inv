@@ -14,8 +14,11 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Label } from '../ui/label'
 import { SAVE_FLAG } from '@/constants'
 import { invalidateLabelingGetQuery } from '@/lib/tanstack-query/labeling'
+import { useRef } from 'react'
 
 const LabelingCreateForm = () => {
+    const passwordRef = useRef<any>(null)
+    const saveFlagRef = useRef<any>(null)
     const { mutate: createLabeling } = useLabelingCreateMutation()
     const { onClose } = useModalAction()
 
@@ -56,6 +59,11 @@ const LabelingCreateForm = () => {
                             name='label'
                             render={({ field }) => (
                                 <InputField
+                                    autoFocus
+                                    onSubmitEditing={() => {
+                                        passwordRef?.current?.focus()
+                                        console.log({ current: saveFlagRef.current.open() })
+                                    }}
                                     label='Label'
                                     placeholder="e.g. 45168"
                                     returnKeyType="next"
@@ -73,7 +81,6 @@ const LabelingCreateForm = () => {
                                     <Label>Save Flag</Label>
                                     <FormControl>
                                         <Select
-                                            // onValueChange={field.onChange}
                                             onValueChange={(option) => {
                                                 field.onChange(option?.value);
                                             }}
@@ -82,7 +89,7 @@ const LabelingCreateForm = () => {
                                                 value: field.value
                                             }}
                                         >
-                                            <SelectTrigger>
+                                            <SelectTrigger ref={saveFlagRef}>
                                                 <SelectValue placeholder="Select a label" />
                                             </SelectTrigger>
                                             <SelectContent className='min-w-36 max-w-36'>
@@ -111,6 +118,7 @@ const LabelingCreateForm = () => {
                         name='password'
                         render={({ field }) => (
                             <InputField
+                                ref={passwordRef}
                                 label='Password'
                                 placeholder="******"
                                 secureTextEntry

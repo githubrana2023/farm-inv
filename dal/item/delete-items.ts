@@ -52,7 +52,7 @@ export const deleteItemById = async (id: string) => {
         await inventoryDb.delete(inventoryTable).where(
             eq(inventoryTable.id, id),
         )
-        return successResponse(existItem, 'Order item deleted!')
+        return successResponse(existItem, `${existItem.scanFlag} item deleted!`)
     } catch (error) {
         console.log('failed to delete item', error)
         return failureResponse('Failed to delete item')

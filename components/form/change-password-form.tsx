@@ -5,7 +5,7 @@ import { Button } from '../ui/button'
 import { Text } from '../ui/text'
 import InputField from '../shared/input-field'
 import { zodResolver } from '@hookform/resolvers/zod'
-// import { employeeUpdateFormSchema, ChangePasswordFormValue } from '@/lib/zod/employee-form-schema'
+import { employeeChangePasswordFormSchema, EmployeeChangePasswordFormValue } from '@/lib/zod/employee-form-schema'
 
 type ChangePasswordFormProp = {
     employeeId: string,
@@ -13,13 +13,12 @@ type ChangePasswordFormProp = {
 const ChangePasswordForm = ({ employeeId }: ChangePasswordFormProp) => {
 
 
-    const form = useForm({
+    const form = useForm<EmployeeChangePasswordFormValue>({
         defaultValues: {
-            employeeId,
             oldPassword: "",
             newPassword: ""
         },
-        // resolver: zodResolver(employeeUpdateFormSchema),
+        resolver: zodResolver(employeeChangePasswordFormSchema),
         shouldFocusError: false,
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
@@ -36,20 +35,6 @@ const ChangePasswordForm = ({ employeeId }: ChangePasswordFormProp) => {
     return (
         <Form {...form}>
             <View className='gap-2'>
-                <FormField
-                    control={form.control}
-                    name='employeeId'
-                    render={({ field }) => (
-                        <InputField
-                            label='Employee ID'
-                            placeholder="e.g. 45168"
-                            keyboardType='numeric'
-                            returnKeyType="next"
-                            onChangeText={field.onChange}
-                            value={String(field.value)}
-                        />
-                    )}
-                />
                 <FormField
                     control={form.control}
                     name='oldPassword'

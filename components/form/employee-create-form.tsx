@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import React from 'react'
+import React, { useRef } from 'react'
 import { Form, FormControl, FormField, FormItem } from '../ui/form'
 import { useForm } from 'react-hook-form'
 import { Input } from '../ui/input'
@@ -17,8 +17,12 @@ import { MUTATION_KEY } from '@/constants/tanstack-query'
 import { useModalAction } from '@/hooks/redux/use-modal'
 import { showDynamicToast } from '@/lib/toast/dynamic'
 
-const EmployeeCreateForm = () => {
+type InputLabel = 'employee_name' | 'employee_title' | 'edp_employee_password'
 
+const EmployeeCreateForm = () => {
+    const employeeNameRef = useRef<any>(null)
+    const employeeTitleRef = useRef<any>(null)
+    const edpPasswordRef = useRef<any>(null)
     const { mutate: createEmployee, isPending, } = useEmployeeCreateMutation()
     const { onClose } = useModalAction()
 
@@ -47,6 +51,14 @@ const EmployeeCreateForm = () => {
 
     })
 
+    const onSubmitEditingHandler = (inputLabel: InputLabel) => {
+        const onFocus: Record<InputLabel, () => void> = {
+            edp_employee_password: edpPasswordRef?.current?.focus,
+            employee_name: employeeNameRef?.current?.focus,
+            employee_title: employeeTitleRef?.current?.focus,
+        }
+        onFocus[inputLabel]?.()
+    }
 
 
 
@@ -62,6 +74,8 @@ const EmployeeCreateForm = () => {
                                 name='employeeId'
                                 render={({ field }) => (
                                     <InputField
+                                        autoFocus
+                                        onSubmitEditing={() => employeeNameRef?.current?.focus()}
                                         label='Employee ID'
                                         placeholder="e.g. 45168"
                                         keyboardType='numeric'
@@ -78,6 +92,8 @@ const EmployeeCreateForm = () => {
                                 name='name'
                                 render={({ field }) => (
                                     <InputField
+                                        ref={employeeNameRef}
+                                        onSubmitEditing={() => employeeTitleRef?.current?.focus()}
                                         label='Name'
                                         placeholder="e.g. John"
                                         returnKeyType="next"
@@ -93,6 +109,8 @@ const EmployeeCreateForm = () => {
                         name='employeeTitle'
                         render={({ field }) => (
                             <InputField
+                                ref={employeeTitleRef}
+                                onSubmitEditing={() => { edpPasswordRef?.current?.focus() }}
                                 label='Employee Title'
                                 placeholder="e.g. I.T"
                                 returnKeyType="next"
@@ -106,7 +124,9 @@ const EmployeeCreateForm = () => {
                         name='password'
                         render={({ field }) => (
                             <InputField
-                                label='Password'
+                                ref={edpPasswordRef}
+                                onSubmitEditing={() => { }}
+                                label='EDP Password'
                                 placeholder="******"
                                 secureTextEntry
                                 returnKeyType="next"

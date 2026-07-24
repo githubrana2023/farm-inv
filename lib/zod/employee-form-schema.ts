@@ -14,5 +14,11 @@ export const employeeUpdateFormSchema = z.object({
     edpPassword: z.string().nonempty(),
 })
 
+export const employeeChangePasswordFormSchema = z.object({
+    oldPassword: z.string().nonempty(),
+    newPassword: z.string().nonempty(),
+})
+
+export type EmployeeChangePasswordFormValue = z.infer<typeof employeeChangePasswordFormSchema>
 export type EmployeeUpdateFormValue = z.infer<typeof employeeUpdateFormSchema>
 export type EmployeeCreateFormValue = z.infer<typeof employeeCreateFormSchema>
