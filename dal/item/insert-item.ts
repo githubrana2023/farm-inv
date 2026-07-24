@@ -57,6 +57,7 @@ export const insertScannedItem = async (formValue: AddItemFormValue) => {
 
 export const insertPriceCheckerTag = async (barcode: string) => {
     try {
+
         const trimmedBarcode = barcode.trim()
         if (!trimmedBarcode) return failureResponse('Please enter the barcode!')
 

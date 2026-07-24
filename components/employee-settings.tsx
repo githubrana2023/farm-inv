@@ -122,24 +122,24 @@ const EmployeeSettings = () => {
 
 
     return (
-        <View className='gap-3 '>
+        <ScrollView>
+            <View className='gap-3 '>
 
-            <CardWrapper
-                title="Employees"
-                description="Manage employee's own settings"
-            >
+                <CardWrapper
+                    title="Employees"
+                    description="Manage employee's own settings"
+                >
 
-                <View className='gap-2'>
-                    {
-                        (employees ?? []).map(({ emp }) => (
-                            <EmployeeCard key={emp.employeeId} employeeId={emp.employeeId} employeeName={emp.name} />
-                        ))
-                    }
-                </View>
-            </CardWrapper>
+                    <View className='gap-2'>
+                        {
+                            (employees ?? []).map(({ emp }) => (
+                                <EmployeeCard key={emp.employeeId} employeeId={emp.employeeId} employeeName={emp.name} />
+                            ))
+                        }
+                    </View>
+                </CardWrapper>
 
 
-            <ScrollView>
                 <View className="gap-1 flex-1">
                     <Button onPress={async () => {
                         await inventoryDb.delete(employeeTable)
@@ -166,8 +166,8 @@ const EmployeeSettings = () => {
                         <Text>Delete Inventory DB</Text>
                     </Button>
                 </View>
-            </ScrollView>
-        </View >
+            </View >
+        </ScrollView>
     )
 }
 

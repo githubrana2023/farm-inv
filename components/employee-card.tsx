@@ -16,39 +16,28 @@ export const EmployeeCard = (
         <View className="gap-2 border border-muted rounded-lg px-4 py-2">
             {isLoginState && (
                 <>
-                    <View>
-                        <CardTitle>{employeeId}</CardTitle>
-                        <CardDescription>{employeeName}</CardDescription>
-                    </View>
+                    <Pressable onPress={() => setIsLoginState(prev => !prev)}>
+                        <View>
+                            <CardTitle>{employeeId}</CardTitle>
+                            <CardDescription>{employeeName}</CardDescription>
+                        </View>
+                    </Pressable>
                     <Separator />
                 </>
             )
             }
-            <View className="flex-row items-center justify-between gap-2">
-
-                {isLoginState ? (
-                    <View className='flex-1'>
-                        <EmployeeLoginForm employeeId={employeeId} onSubmitCallback={() => setIsLoginState(false)} />
-                    </View>
-                ) : (
+            {isLoginState ? (
+                <View className='flex-1'>
+                    <EmployeeLoginForm employeeId={employeeId} onSubmitCallback={() => setIsLoginState(false)} />
+                </View>
+            ) : (
+                <Pressable onPress={() => setIsLoginState(prev => !prev)}>
                     <View>
                         <CardTitle>{employeeId}</CardTitle>
                         <CardDescription>{employeeName}</CardDescription>
                     </View>
-                )}
-                <Pressable
-                    className='active:bg-muted-foreground/20 rounded-full border border-muted bg-muted '
-                    onPress={() => setIsLoginState(prev => !prev)}
-                >
-
-                    <View className="items-center justify-center p-3">
-                        <Lucide
-                            name='arrow-right'
-                            size={20}
-                        />
-                    </View>
                 </Pressable>
-            </View>
+            )}
         </View>
     )
 }

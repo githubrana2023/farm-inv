@@ -4,6 +4,6 @@ import { useMutation } from "@tanstack/react-query"
 
 export const useExpiryMonitorInsert = () => {
     return useMutation({
-        mutationFn: (values: (ExpireScanFormValue & { empId: string })) => insertExpiryMonitor(values)
+        mutationFn: insertExpiryMonitor
     })
 }

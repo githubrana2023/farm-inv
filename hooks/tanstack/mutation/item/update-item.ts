@@ -9,5 +9,5 @@ export const useUpdateOrderItem = () => useMutation({
 
 export const useUpdateItemById = () => useMutation({
     mutationKey: [MUTATION_KEY.SCANNED_ITEM.UPDATE],
-    mutationFn: ({ id, quantity }: { id: string; quantity: string }) => updateItemById(id, quantity)
+    mutationFn: async ({ id, quantity }: { id: string; quantity: string }) => updateItemById(id, quantity)
 })

@@ -5,6 +5,10 @@ import bcrypt from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 export const employeeLogin = async ({ empId, password }: { empId: string, password: string }) => {
     try {
+
+        await new Promise<void>(resolve =>
+            requestAnimationFrame(() => resolve())
+        );
         const [existEmployee] = await inventoryDb.select().from(employeeTable).where(
             eq(employeeTable.employeeId, empId)
         )

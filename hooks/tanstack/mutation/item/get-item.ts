@@ -14,14 +14,14 @@ export const useGetItemByBarcode = () => {
 export const useGetItemDetailsByBarcode = () => {
     return useMutation({
         mutationKey: [MUTATION_KEY.ITEM.READ],
-        mutationFn: (barcode: string) => getItemDetailsByBarcode(barcode),
+        mutationFn: getItemDetailsByBarcode,
     })
 }
 
 export const useCheckItemPrice = () => {
     return useMutation({
         mutationKey: [MUTATION_KEY.ITEM.READ],
-        mutationFn: (barcode: string) => getItemPriceCheckByBarcode(barcode),
+        mutationFn: getItemPriceCheckByBarcode
     })
 }
 
@@ -35,9 +35,9 @@ export const useGetScannedItems = () => useQuery({
 export const useGetGlobalSearchItems = (search: string) => useInfiniteQuery(
     {
         queryKey: [MUTATION_KEY["GLOBAL-QUERY"].READ, search],
-        queryFn: ({ pageParam }) => {
+        queryFn: async ({ pageParam }) => {
             console.log({ pageParam })
-            return getGlobalSearchItems({
+            return await getGlobalSearchItems({
                 limit: PAGE_SIZE,
                 offset: pageParam,
                 query: search
@@ -57,7 +57,7 @@ export const useGetStoredScannedItemsSearch = (search: string) => {
     const queryKey = [MUTATION_KEY.SCANNED_ITEM.READ, search];
     return useQuery({
         queryKey,
-        queryFn: () => getSearchItems(search),
+        queryFn: async () => await getSearchItems(search),
         enabled: search.length > 0,
     });
 };

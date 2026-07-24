@@ -9,5 +9,5 @@ export const useDeleteOrderItem = () => useMutation({
 
 export const useDeleteItemById = () => useMutation({
     mutationKey: [MUTATION_KEY.SCANNED_ITEM.UPDATE],
-    mutationFn: (id: string) => deleteItemById(id)
+    mutationFn: deleteItemById
 })
