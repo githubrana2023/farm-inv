@@ -206,7 +206,12 @@ const Search = () => {
                         )
                     }
                     {
-                        (debouncedValue.length === 0 && !isFetching) && (<EmptySearch />)
+                        (debouncedValue.length === 0 && !isFetching) && (
+                            <EmptySearch
+                                description='Enter a item name or keyword to find item'
+                                placeholder='Start typing to search item'
+                            />
+                        )
                     }
                     {
                         (!isFetching && debouncedValue.length > 0 && items?.length < 1) && (
@@ -306,7 +311,7 @@ const SearchItemDetailsCard = React.memo(
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end'>
                                 <DropdownMenuLabel>
-                                    <Text>My Account</Text>
+                                    <Text>Add Into</Text>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem

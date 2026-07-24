@@ -170,7 +170,7 @@ export const getSearchItems = async (query?: string) => {
 
 export const getGlobalSearchItems = async ({ limit, offset, query }: { query: string; limit: number; offset: number }) => {
     try {
-        const words = query.trim().toLowerCase().split(/\s+/);
+        // const words = query.trim().toLowerCase().split(/\s+/);
 
 
 
@@ -181,7 +181,8 @@ export const getGlobalSearchItems = async ({ limit, offset, query }: { query: st
                 or(
                     like(itemMasterTable.barcode, `%${query}%`),
                     like(itemMasterTable.item_number, `%${query}%`),
-                    ...words.map((word) => like(itemMasterTable.description, `%${word}%`)),
+                    // ...words.map((word) => like(itemMasterTable.description, `%${word}%`)),
+                    like(itemMasterTable.description, `%${query.trim()}%`),
                 ),
             )
             .limit(limit)
