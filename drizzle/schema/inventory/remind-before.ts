@@ -5,18 +5,18 @@ import { employeeTable } from "./employee";
 import { relations } from "drizzle-orm";
 import { expiryMonitorTable } from "./expiry-monitor";
 
-export const shelfTable = sqliteTable('shelf', {
+export const remindBeforeTable = sqliteTable('remindBefore', {
     id: text('id').notNull().primaryKey().unique().$defaultFn(() => uuid()),
     employeeId: text('employee_id').notNull().references(() => employeeTable.employeeId),
-    shelfNo: text('shelf_no').notNull(),
+    remindBeforeNo: text('remindBefore_no').notNull(),
     createdAt: createdAt('createdAt'),
     updatedAt: updatedAt('updatedAt'),
 })
 
-export const shelfTableRelation = relations(shelfTable, ({ one }) => ({
+export const remindBeforeTableRelation = relations(remindBeforeTable, ({ many, one }) => ({
     employee: one(employeeTable, {
-        fields: [shelfTable.employeeId],
+        fields: [remindBeforeTable.employeeId],
         references: [employeeTable.employeeId],
-        relationName: 'relation-between-shelf-and-employee'
+        relationName: 'relation-between-remindBefore-and-employee'
     })
 }))

@@ -1,4 +1,4 @@
-type Key = 'EMPLOYEE' | 'LABELING' | 'ITEM' | 'SCANNED_ITEM' | 'ITEM_MASTER' | 'GLOBAL-QUERY'
+type Key = 'EMPLOYEE' | 'LABELING' | 'ITEM' | 'SCANNED_ITEM' | 'ITEM_MASTER' | 'GLOBAL-QUERY' | 'SHELF_NO' | 'REMIND_BEFORE'
 type Action = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE'
 
 
@@ -45,5 +45,18 @@ export const MUTATION_KEY: MutationKey = {
         DELETE: 'ITEM_MASTER-DELETE',
         READ: 'ITEM_MASTER-READ',
         UPDATE: 'ITEM_MASTER-UPDATE'
-    }
+    },
+    REMIND_BEFORE: {
+        CREATE: 'REMIND_BEFORE-CREATE',
+        DELETE: 'REMIND_BEFORE-DELETE',
+        READ: 'REMIND_BEFORE-READ',
+        UPDATE: 'REMIND_BEFORE-UPDATE'
+    },
+    SHELF_NO: {
+        CREATE: 'SHELF_NO-CREATE',
+        DELETE: 'SHELF_NO-DELETE',
+        UPDATE: 'SHELF_NO-UPDATE',
+        READ: 'SHELF_NO-READ'
+    },
+
 }

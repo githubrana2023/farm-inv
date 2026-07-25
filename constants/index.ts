@@ -29,23 +29,8 @@ export const SCAN_FLAG_TYPE: ScanFlagMap = {
 
 export const PAGE_SIZE = 50
 
-
-export const multitaskVariants = [
-    {
-        label: "Inventory",
-        value: "Inventory",
-    },
-    {
-        label: "Tags",
-        value: "Tags",
-    },
-    {
-        label: "Order",
-        value: "Order",
-    },
-] as const;
-
-export type MultitaskVariantValues = (typeof SCAN_FLAG)[number];
+export const shelfNoRegex = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)?$/
+export const remindBeforeRegex = /^\d+(\.\d+)?$/
 
 
 type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD' | 'SHELF_NO' | 'REMIND_BEFORE'
