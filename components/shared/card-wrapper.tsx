@@ -17,7 +17,7 @@ type CardWrapperProp = {
 const CardWrapper = ({ title, description, children, footerContent, headerContent, isSeparated }: CardWrapperProp) => {
     return (
         <Card className='p-2 gap-2'>
-            <CardHeader className='flex-row justify-between px-2'>
+            <CardHeader className='flex-row justify-between px-0'>
                 <View className='gap-1'>
                     <CardTitle>{title}</CardTitle>
                     <CardDescription>{description}</CardDescription>
@@ -26,12 +26,12 @@ const CardWrapper = ({ title, description, children, footerContent, headerConten
             </CardHeader>
             {
                 isSeparated && (
-                    <View className="px-2">
+                    <View className="px-0">
                         <Separator />
                     </View>
                 )
             }
-            <CardContent className='p-2'>{children}</CardContent>
+            <CardContent className='p-0'>{children}</CardContent>
             {footerContent && <CardFooter>{footerContent}</CardFooter>}
         </Card>
     )

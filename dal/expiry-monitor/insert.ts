@@ -11,8 +11,10 @@ import { and, eq } from "drizzle-orm";
 
 export const insertExpiryMonitor = async (value: (ExpireScanFormValue & { empId: string })) => {
     try {
+
         const [existEmp] = await inventoryDb.select().from(employeeTable).where(eq(employeeTable.employeeId, value.empId))
         if (!existEmp) return failureResponse('Employee not found!')
+
         const [existItem] = await farmDb.select().from(itemMasterTable).where(eq(itemMasterTable.barcode, value.barcode))
         if (!existItem) return failureResponse('Item not found!')
 
@@ -21,9 +23,12 @@ export const insertExpiryMonitor = async (value: (ExpireScanFormValue & { empId:
 
         const newExpiry = await inventoryDb.insert(expiryMonitorTable).values({
             barcode: existItem.barcode,
+            item_number: existItem.item_number,
+            description: existItem.description,
             expireIn,
             remindBefore: Number(value.remindBefore),
             shelfNo: value.shelfNo,
+            empId: existEmp.employeeId
         })
 
         return successResponse(newExpiry)
