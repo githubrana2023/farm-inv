@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 
 export const useInsertRemindBeforeMutation = () => {
     return useMutation({
-        mutationKey: [MUTATION_KEY.SHELF_NO.CREATE],
+        mutationKey: [MUTATION_KEY.REMIND_BEFORE.CREATE],
         mutationFn: insertRemindBefore
     })
 }

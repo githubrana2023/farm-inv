@@ -9,6 +9,7 @@ export const insertShelfNo = async ({ empId, shelf }: { shelf: string; empId: st
     try {
         await new Promise((resolve) => requestAnimationFrame(resolve))
         const separator = '.'
+
         const isValidShelfNo = shelfNoRegex.test(shelf)
         const isContainPeriod = shelf.includes(separator)
 

@@ -18,6 +18,14 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { ExpireScanFormValue, expiryScanFormSchema } from '@/lib/zod/expiry-monitor-form-schema'
 import { useExpiryMonitorInsert } from '@/hooks/tanstack/mutation/expiry-monitor/insert'
+import { useGetShelfNoMutation } from '@/hooks/tanstack/mutation/shelf-no/get-mutation'
+import { getRemindBeforeDays } from '@/dal/remind-before/get-remind-before'
+import { useGetRemindBeforeMutation } from '@/hooks/tanstack/mutation/remind-before/get-mutation'
+import { useInsertShelfNoMutation } from '@/hooks/tanstack/mutation/shelf-no/insert-mutation'
+import { showDynamicToast } from '@/lib/toast/dynamic'
+import { useInsertRemindBeforeMutation } from '@/hooks/tanstack/mutation/remind-before/insert-mutation'
+import { queryClient } from '../provider/tanstack-query-client'
+import { MUTATION_KEY } from '@/constants/tanstack-query'
 
 
 export const ExpiryScanForm = () => {
@@ -59,7 +67,8 @@ export const ExpiryScanForm = () => {
         reValidateMode: 'onSubmit'
     })
 
-
+    const { data: shelfs, isPending: shelfIsPending } = useGetShelfNoMutation()
+    const { data: remindBeforeDays, isPending: remindBeforeDaysIsPending } = useGetRemindBeforeMutation()
 
 
     const onSubmit = form.handleSubmit((values) => {
@@ -93,7 +102,10 @@ export const ExpiryScanForm = () => {
         })
     }
 
-
+    console.log({
+        remindBeforeDays,
+        shelfs
+    })
     return (
         <View>
 
@@ -155,17 +167,18 @@ export const ExpiryScanForm = () => {
                                                             <SelectGroup >
                                                                 <SelectLabel>Shelf No</SelectLabel>
                                                                 <SelectSeparator />
-
-                                                                <SelectItem
-                                                                    label="B1 id"
-                                                                    value="B1"
-                                                                    onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
-                                                                />
-                                                                <SelectItem
-                                                                    value="B2"
-                                                                    label="B2 hello"
-                                                                    onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
-                                                                />
+                                                                {
+                                                                    shelfs?.data && shelfs.data.map(({ id, shelfNo }) => {
+                                                                        return (
+                                                                            <SelectItem
+                                                                                key={id}
+                                                                                label={shelfNo}
+                                                                                value={shelfNo}
+                                                                                onLongPress={() => onOpen(MODAL_TYPE.SHELF_NO.UPDATE)}
+                                                                            />
+                                                                        )
+                                                                    })
+                                                                }
                                                             </SelectGroup>
                                                         </SelectContent>
                                                     </Select>
@@ -224,11 +237,18 @@ export const ExpiryScanForm = () => {
                                                         <SelectGroup className="">
                                                             <SelectLabel >Days</SelectLabel>
                                                             <SelectSeparator />
+                                                            {
+                                                                remindBeforeDays?.data && remindBeforeDays.data.map(({ remindBeforeNo, id }) => {
+                                                                    return (
+                                                                        <SelectItem
+                                                                            key={id}
+                                                                            value={remindBeforeNo}
+                                                                            label={`${remindBeforeNo} days`}
+                                                                        />
+                                                                    )
+                                                                })
+                                                            }
 
-                                                            <SelectItem
-                                                                value="10"
-                                                                label="10 Days"
-                                                            />
                                                         </SelectGroup>
                                                     </SelectContent>
                                                 </Select>
@@ -322,18 +342,18 @@ export const ExpiryScanForm = () => {
 
 export const shelfNoCreateFormSchema = z.object({
     shelfNo: z.string().trim().min(2, { error: "Must be 2 characters long" }).nonempty({ error: 'Shelf No is required' }),
-    empPassword: z.string().nonempty({ error: 'Password is required' })
 })
 
 export type ShelfNoCreateFormValue = z.infer<typeof shelfNoCreateFormSchema>
 
 export const ShelfNoForm = ({ empId }: { empId: string | string[] }) => {
 
+    const stringEmpId = Array.isArray(empId) ? empId[0] : empId
+
     const { onClose } = useModalAction()
     const form = useForm<ShelfNoCreateFormValue>({
         defaultValues: {
             shelfNo: "",
-            empPassword: ""
         },
         resolver: zodResolver(shelfNoCreateFormSchema),
         mode: 'onSubmit',
@@ -341,10 +361,24 @@ export const ShelfNoForm = ({ empId }: { empId: string | string[] }) => {
         shouldFocusError: false
     })
 
+    const { mutate: insertShelf, isPending } = useInsertShelfNoMutation()
+
     const onSubmit = form.handleSubmit(values => {
-        console.log({ values })
-        form.reset()
-        onClose()
+        insertShelf(
+            { shelf: values.shelfNo, empId: stringEmpId },
+            {
+                onSuccess({ message, success }) {
+                    showDynamicToast(success, message)
+                    if (success) {
+                        form.reset()
+                        onClose()
+                        queryClient.invalidateQueries({
+                            queryKey: [MUTATION_KEY.SHELF_NO.READ]
+                        })
+                    }
+                },
+            }
+        )
     })
 
     return (
@@ -353,33 +387,26 @@ export const ShelfNoForm = ({ empId }: { empId: string | string[] }) => {
         >
             <View className="gap-1">
                 {/* BARCODE FIELD */}
-                <FormField
-                    control={form.control}
-                    name='shelfNo'
-                    render={({ field }) => (
-                        <InputField
-                            {...field}
-                            placeholder='e.g. B1,B2,A1'
-                            returnKeyType='next'
-                            onChangeText={field.onChange}
-                            value={field.value}
+                {
+                    isPending ? (
+                        <Text>Creating...</Text>
+                    ) : (
+                        <FormField
+                            control={form.control}
+                            name='shelfNo'
+                            render={({ field }) => (
+                                <InputField
+                                    {...field}
+                                    placeholder='e.g. B1,B2,A1'
+                                    returnKeyType='next'
+                                    onChangeText={field.onChange}
+                                    value={field.value}
+                                    onSubmitEditing={onSubmit}
+                                />
+                            )}
                         />
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name='empPassword'
-                    render={({ field }) => (
-                        <InputField
-                            {...field}
-                            placeholder='Employee Password'
-                            returnKeyType='next'
-                            onChangeText={field.onChange}
-                            onSubmitEditing={onSubmit}
-                            value={field.value}
-                        />
-                    )}
-                />
+                    )
+                }
             </View>
         </Form >
     )
@@ -387,29 +414,41 @@ export const ShelfNoForm = ({ empId }: { empId: string | string[] }) => {
 
 export const remindBeforeCreateFormSchema = z.object({
     remindBefore: z.string().trim().min(2, { error: "Must be 2 characters long" }).nonempty({ error: 'Shelf No is required' }),
-    empPassword: z.string().nonempty({ error: 'Password is required' })
 })
 
 export type RemindBeforeCreateFormValue = z.infer<typeof remindBeforeCreateFormSchema>
 
 export const RemindBeforeForm = ({ empId }: { empId: string | string[] }) => {
-
+    const stringEmpId = Array.isArray(empId) ? empId[0] : empId
     const { onClose } = useModalAction()
     const form = useForm<RemindBeforeCreateFormValue>({
         defaultValues: {
             remindBefore: "",
-            empPassword: ""
         },
         resolver: zodResolver(remindBeforeCreateFormSchema),
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
         shouldFocusError: false
     })
+    const { mutate: insertRemindBefore, isPending } = useInsertRemindBeforeMutation()
 
     const onSubmit = form.handleSubmit(values => {
-        console.log({ values })
-        form.reset()
-        onClose()
+        insertRemindBefore({
+            remindBefore: values.remindBefore,
+            empId: stringEmpId
+        }, {
+            onSuccess({ data, success, message }, variables, onMutateResult, context) {
+                showDynamicToast(success, message)
+                if (success) {
+                    form.reset()
+                    onClose()
+                    queryClient.invalidateQueries({
+                        queryKey: [MUTATION_KEY.REMIND_BEFORE.READ]
+                    })
+                }
+            },
+        })
+
     })
 
     return (
@@ -418,33 +457,27 @@ export const RemindBeforeForm = ({ empId }: { empId: string | string[] }) => {
         >
             <View className="gap-1">
                 {/* BARCODE FIELD */}
-                <FormField
-                    control={form.control}
-                    name='remindBefore'
-                    render={({ field }) => (
-                        <InputField
-                            {...field}
-                            placeholder='e.g. 5,7,10 (days)'
-                            returnKeyType='next'
-                            onChangeText={field.onChange}
-                            value={field.value}
+                {
+                    isPending ? (
+                        <Text>Creating...</Text>
+                    ) : (
+                        <FormField
+                            control={form.control}
+                            name='remindBefore'
+                            render={({ field }) => (
+                                <InputField
+                                    {...field}
+                                    placeholder='e.g. 5,7,10 (days)'
+                                    returnKeyType='next'
+                                    onChangeText={field.onChange}
+                                    value={field.value}
+                                    onSubmitEditing={onSubmit}
+                                />
+                            )}
                         />
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name='empPassword'
-                    render={({ field }) => (
-                        <InputField
-                            {...field}
-                            placeholder='Employee Password'
-                            returnKeyType='next'
-                            onChangeText={field.onChange}
-                            onSubmitEditing={onSubmit}
-                            value={field.value}
-                        />
-                    )}
-                />
+                    )
+                }
+
             </View>
         </Form >
     )

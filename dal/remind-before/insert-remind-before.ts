@@ -62,7 +62,7 @@ export const insertRemindBefore = async ({ empId, remindBefore }: { remindBefore
         return successResponse(newRemindBefore, 'Remind Before created!')
 
     } catch (error) {
-        console.log('Failed to create remindBefore no!', error)
-        return failureResponse('Failed to create remindBefore no!')
+        console.log('Failed to create remindBefore!', error)
+        return failureResponse('Failed to create remindBefore!')
     }
 }
