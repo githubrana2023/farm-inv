@@ -77,12 +77,11 @@ export const ExpiryScanForm = () => {
             {
                 onSuccess({ data, success, message }) {
                     if (success) {
-                        form.reset({
-                            barcode: "",
-                            remindBefore: "",
-                            shelfNo: ""
-                        })
+                        form.reset()
                         resetGetItemMutation()
+                        queryClient.invalidateQueries({
+                            queryKey: [MUTATION_KEY.EXPIRY_MONITOR.READ]
+                        })
                     }
                 }
             }
@@ -328,7 +327,7 @@ export const ExpiryScanForm = () => {
                             itemUoms: []
                         }}
                         title='Item Details'
-                        description='Item scanned for expiry monitoring!'
+                        description='expiry monitoring!'
                     />
                 </>
             )}

@@ -37,14 +37,16 @@ const EmployeeScanExpiry = () => {
                 <ExpiryScanForm />
             </CardWrapper>
             <Separator className='my-2' />
-            <View>
+            <View className='flex-1'>
                 <FlatList
                     data={data?.data ?? []}
                     keyExtractor={item => String(item.id)}
                     renderItem={({ item }) => {
 
                         return (
-                            <ExpiryItemCard item={item} />
+                            <View className='mb-2'>
+                                <ExpiryItemCard item={item} />
+                            </View>
                         )
                     }}
                 />

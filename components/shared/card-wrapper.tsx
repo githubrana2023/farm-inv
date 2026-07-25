@@ -22,7 +22,7 @@ const CardWrapper = ({ title, description, children, footerContent, headerConten
                     <CardTitle>{title}</CardTitle>
                     <CardDescription>{description}</CardDescription>
                 </View>
-                {headerContent && <View>{headerContent}</View>}
+                {headerContent && <View className='items-end'>{headerContent}</View>}
             </CardHeader>
             {
                 isSeparated && (

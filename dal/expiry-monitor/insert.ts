@@ -30,7 +30,6 @@ export const insertExpiryMonitor = async (value: (ExpireScanFormValue & { empId:
             shelfNo: value.shelfNo,
             empId: existEmp.employeeId
         })
-
         return successResponse(newExpiry)
 
     } catch (error) {
