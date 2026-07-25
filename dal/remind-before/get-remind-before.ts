@@ -10,7 +10,6 @@ export const getRemindBeforeDays = async (empId: string) => {
         const [existEmp] = await inventoryDb.select().from(employeeTable).where(eq(employeeTable.employeeId, empId))
         if (!existEmp) return failureResponse('Employee not found!')
 
-
         const remindBefores = await inventoryDb.select().from(remindBeforeTable).where(
             eq(remindBeforeTable.employeeId, existEmp.employeeId)
         )

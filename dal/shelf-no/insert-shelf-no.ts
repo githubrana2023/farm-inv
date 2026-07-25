@@ -9,8 +9,9 @@ export const insertShelfNo = async ({ empId, shelf }: { shelf: string; empId: st
     try {
         await new Promise((resolve) => requestAnimationFrame(resolve))
         const separator = '.'
-
-        const isValidShelfNo = shelfNoRegex.test(shelf)
+        const trimmedShelfNo = shelf.trim()
+        console.log({ trimmedShelfNo })
+        const isValidShelfNo = shelfNoRegex.test(trimmedShelfNo)
         const isContainPeriod = shelf.includes(separator)
 
         if (!isValidShelfNo) return failureResponse('Invalid shelf no!')
@@ -20,7 +21,7 @@ export const insertShelfNo = async ({ empId, shelf }: { shelf: string; empId: st
 
         if (isContainPeriod) {
 
-            const shelfs = splitWord(shelf, separator)
+            const shelfs = splitWord(trimmedShelfNo, separator)
 
             let noExists: string[] = []
 
@@ -36,27 +37,27 @@ export const insertShelfNo = async ({ empId, shelf }: { shelf: string; empId: st
                 }
             }
 
-            for (const noExist of noExists) {
-                await inventoryDb.insert(shelfTable).values({
-                    employeeId: existEmp.employeeId,
-                    shelfNo: noExist
-                })
-            }
+            const newShelf = noExists.map(noExist => ({
+                employeeId: existEmp.employeeId,
+                shelfNo: noExist
+            }))
 
-            return successResponse({ total: noExists.length })
+            const total = await inventoryDb.insert(shelfTable).values(newShelf).returning()
+
+            return successResponse({ total: total.length })
 
         }
         const [existShelf] = await inventoryDb.select().from(shelfTable).where(
             and(
                 eq(shelfTable.employeeId, existEmp.employeeId),
-                eq(shelfTable.shelfNo, shelf)
+                eq(shelfTable.shelfNo, trimmedShelfNo)
             )
         )
         if (!existShelf) return failureResponse('Shelf no already exist!')
 
         const newShelfNo = await inventoryDb.insert(shelfTable).values({
             employeeId: existEmp.employeeId,
-            shelfNo: shelf
+            shelfNo: trimmedShelfNo
         })
 
         return successResponse(newShelfNo, 'Shelf No created!')

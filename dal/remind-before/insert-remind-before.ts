@@ -9,8 +9,12 @@ export const insertRemindBefore = async ({ empId, remindBefore }: { remindBefore
     try {
         await new Promise((resolve) => requestAnimationFrame(resolve))
         const separator = '.'
-        const isValidRemindBefore = remindBeforeRegex.test(remindBefore)
+        const trimmedRemindBefore = remindBefore.trim()
+
+        const isValidRemindBefore = remindBeforeRegex.test(trimmedRemindBefore)
+        console.log({ trimmedRemindBefore, isValidRemindBefore })
         const isContainPeriod = remindBefore.includes(separator)
+
         if (!isValidRemindBefore) return failureResponse('Invalid day!')
 
         const [existEmp] = await inventoryDb.select().from(employeeTable).where(eq(employeeTable.employeeId, empId))
@@ -19,7 +23,7 @@ export const insertRemindBefore = async ({ empId, remindBefore }: { remindBefore
 
         if (isContainPeriod) {
 
-            const remindBefores = splitWord(remindBefore, separator)
+            const remindBefores = splitWord(trimmedRemindBefore, separator)
 
             let noExists: string[] = []
 
@@ -35,12 +39,12 @@ export const insertRemindBefore = async ({ empId, remindBefore }: { remindBefore
                 }
             }
 
-            for (const noExist of noExists) {
-                await inventoryDb.insert(remindBeforeTable).values({
-                    employeeId: existEmp.employeeId,
-                    remindBeforeNo: noExist
-                })
-            }
+            const newCreateData = noExists.map(noExist => ({
+                employeeId: existEmp.employeeId,
+                remindBeforeNo: noExist
+            }))
+
+            await inventoryDb.insert(remindBeforeTable).values(newCreateData).returning()
 
             return successResponse({ total: noExists.length })
 
@@ -49,14 +53,14 @@ export const insertRemindBefore = async ({ empId, remindBefore }: { remindBefore
         const [existRemindBefore] = await inventoryDb.select().from(remindBeforeTable).where(
             and(
                 eq(remindBeforeTable.employeeId, existEmp.employeeId),
-                eq(remindBeforeTable.remindBeforeNo, remindBefore)
+                eq(remindBeforeTable.remindBeforeNo, trimmedRemindBefore)
             )
         )
         if (!existRemindBefore) return failureResponse('Shelf no already exist!')
 
         const newRemindBefore = await inventoryDb.insert(remindBeforeTable).values({
             employeeId: existEmp.employeeId,
-            remindBeforeNo: remindBefore
+            remindBeforeNo: trimmedRemindBefore
         })
 
         return successResponse(newRemindBefore, 'Remind Before created!')

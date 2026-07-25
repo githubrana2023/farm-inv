@@ -29,8 +29,8 @@ export const SCAN_FLAG_TYPE: ScanFlagMap = {
 
 export const PAGE_SIZE = 50
 
-export const shelfNoRegex = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)?$/
-export const remindBeforeRegex = /^\d+(\.\d+)?$/
+export const shelfNoRegex = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/
+export const remindBeforeRegex = /^\d+(?:\.\d+)*$/
 
 
 type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD' | 'SHELF_NO' | 'REMIND_BEFORE'

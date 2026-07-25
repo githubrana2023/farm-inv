@@ -67,8 +67,8 @@ export const ExpiryScanForm = () => {
         reValidateMode: 'onSubmit'
     })
 
-    const { data: shelfs, isPending: shelfIsPending } = useGetShelfNoMutation()
-    const { data: remindBeforeDays, isPending: remindBeforeDaysIsPending } = useGetRemindBeforeMutation()
+    const { data: shelfs, isPending: shelfIsPending } = useGetShelfNoMutation(stringEmpId)
+    const { data: remindBeforeDays, isPending: remindBeforeDaysIsPending } = useGetRemindBeforeMutation(stringEmpId)
 
 
     const onSubmit = form.handleSubmit((values) => {
@@ -102,10 +102,6 @@ export const ExpiryScanForm = () => {
         })
     }
 
-    console.log({
-        remindBeforeDays,
-        shelfs
-    })
     return (
         <View>
 
@@ -373,7 +369,7 @@ export const ShelfNoForm = ({ empId }: { empId: string | string[] }) => {
                         form.reset()
                         onClose()
                         queryClient.invalidateQueries({
-                            queryKey: [MUTATION_KEY.SHELF_NO.READ]
+                            queryKey: [MUTATION_KEY.SHELF_NO.READ, stringEmpId]
                         })
                     }
                 },
@@ -443,7 +439,7 @@ export const RemindBeforeForm = ({ empId }: { empId: string | string[] }) => {
                     form.reset()
                     onClose()
                     queryClient.invalidateQueries({
-                        queryKey: [MUTATION_KEY.REMIND_BEFORE.READ]
+                        queryKey: [MUTATION_KEY.REMIND_BEFORE.READ, stringEmpId]
                     })
                 }
             },
