@@ -25,67 +25,48 @@ import { useState } from 'react'
 import { Separator } from './ui/separator'
 import { useRouter } from 'expo-router'
 import { EmployeeCard } from './employee-card'
+import { getExpiryItemsRemoveDateIsToday } from '@/dal/expiry-monitor/get-expiry-item'
+import { useGetExpiryRemovableItems } from '@/hooks/tanstack/mutation/expiry-monitor/get-expiry'
+import { format } from 'date-fns'
 
 
-const createXl = async () => {
+type Data = {
+    Employee_Id: string;
+    items: {
+        Employee_Id: string;
+        Barcode: string;
+        Item_Code: string;
+        Description: string;
+        Expire_In: string;
+        Shelf_Number: string;
+        Pull_Out_Date: string;
+        Remark: string;
+    }[]
+}[]
+
+
+const createXl = async (data: Data) => {
     try {
-        const ws = xlsx.utils.json_to_sheet([
-            {
-                barcode: "628569655824",
-                item_code: "01010101-0001",
-                description: "items-description1",
-                expireIn: "12.08.26",
-                itemShelfNo: "shelf-5"
-            },
-            {
-                barcode: "628569655824",
-                item_code: "01010101-0001",
-                description: "items-description1",
-                expireIn: "12.08.26",
-                itemShelfNo: "shelf-5"
-            },
-            {
-                barcode: "628569655824",
-                item_code: "01010101-0001",
-                description: "items-description1",
-                expireIn: "12.08.26",
-                itemShelfNo: "shelf-5"
-            },
-            {
-                barcode: "628569655824",
-                item_code: "01010101-0001",
-                description: "items-description1",
-                expireIn: "12.08.26",
-                itemShelfNo: "shelf-5"
-            },
-            {
-                barcode: "628569655824",
-                item_code: "01010101-0001",
-                description: "items-description1",
-                expireIn: "12.08.26",
-                itemShelfNo: "shelf-5"
-            },
-            {
-                barcode: "628569655824",
-                item_code: "01010101-0001",
-                description: "items-description1",
-                expireIn: "12.08.26",
-                itemShelfNo: "shelf-5"
-            },
-        ])
         const wb = xlsx.utils.book_new()
 
-        xlsx.utils.book_append_sheet(wb, ws, '50667')
 
-        const wbout = xlsx.write(wb, {
-            type: "base64",
-            bookType: "xlsx",
-        });
+        for (const item of data) {
+            const ws = xlsx.utils.json_to_sheet(item.items)
+            xlsx.utils.book_append_sheet(wb, ws, item.Employee_Id)
+        }
+
+        const wbout = xlsx.write(
+            wb,
+            {
+                type: "base64",
+                bookType: "xlsx",
+            }
+        );
 
         const directory = await getDirectory()
         if (!directory) return
         const xlFile = await directory.createFile(
-            'expiry-monitor.xlsx',
+            `expiry-monitor_${format(new Date(), 'ddMMyyyy_hhmmss')}.xlsx`,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
@@ -119,7 +100,7 @@ const EmployeeSettings = () => {
         }
     }
 
-
+    const { data, } = useGetExpiryRemovableItems()
 
     return (
         <ScrollView>
@@ -153,7 +134,7 @@ const EmployeeSettings = () => {
                     }}>
                         <Text>Delete Labeling</Text>
                     </Button>
-                    <Button onPress={createXl}>
+                    <Button onPress={() => { }}>
                         <Text>create xl</Text>
                     </Button>
                     <Button onPress={getScannedItems}>
@@ -165,6 +146,13 @@ const EmployeeSettings = () => {
                     <Button onPress={deleteInventoryDb}>
                         <Text>Delete Inventory DB</Text>
                     </Button>
+                    {
+                        data?.data && (
+                            <Button onPress={() => { createXl(data.data) }}>
+                                <Text>get all expiry before today</Text>
+                            </Button>
+                        )
+                    }
                 </View>
             </View >
         </ScrollView>

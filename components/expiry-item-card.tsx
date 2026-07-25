@@ -5,6 +5,8 @@ import { Button } from "./ui/button";
 import Lucide from "@react-native-vector-icons/lucide";
 import { splitWord } from "@/lib/utils";
 import { parse, differenceInDays, subDays, isAfter, format, formatDistanceToNow } from "date-fns";
+import { DetailsRow } from "./shared/details-row";
+import React, { Dispatch, SetStateAction, useState } from "react";
 
 
 type ExpiryItemCardProp = {
@@ -16,27 +18,27 @@ type ExpiryItemCardProp = {
         description: string;
         expireIn: Date;
         shelfNo: string;
-        remindBefore: number;
+        remindBefore: Date;
         createdAt: Date;
         updatedAt: Date;
     },
-
+    index: number;
+    onPress: () => void
 }
 
-export const ExpiryItemCard = ({ item }: ExpiryItemCardProp) => {
-
-    const removeAfter = subDays(item.expireIn, item.remindBefore)
+export const ExpiryItemCard = ({ item, index, onPress }: ExpiryItemCardProp) => {
     const dayLeft = formatDistanceToNow(item.expireIn, { addSuffix: true })
 
 
     return (
         <CardWrapper
-            title={item.barcode}
-            description={item.description}
+            title={`Monitoring Date - ${format(item.remindBefore, 'dd-MMM-yyyy')}`}
+            description={`Day Left - ${dayLeft}`}
             headerContent={
                 <Button
                     variant={'destructive'}
                     size={'sm'}
+                    onPress={onPress}
                 >
                     <Text>
                         <Lucide name="trash" size={16} color={'white'} />
@@ -44,30 +46,24 @@ export const ExpiryItemCard = ({ item }: ExpiryItemCardProp) => {
                 </Button>
             }
         >
-            <View className='flex-row items-center justify-between'>
-                <View className="flex-1">
-                    <Text>Expiry Date</Text>
-                </View>
-                <View>
-                    <Text>{format(item.expireIn, 'dd-MMM-yyyy')}</Text>
-                </View>
-            </View>
-            <View className='flex-row items-center justify-between'>
-                <View className="flex-1">
-                    <Text>Remove Date</Text>
-                </View>
-                <View>
-                    <Text>{format(removeAfter, 'dd-MMM-yyyy')}</Text>
-                </View>
-            </View>
-            <View className='flex-row items-center justify-between'>
-                <View className="flex-1">
-                    <Text>Day Left</Text>
-                </View>
-                <View>
-                    <Text>{dayLeft}</Text>
-                </View>
-            </View>
+            <DetailsRow
+                library="Lucide"
+                iconName="barcode"
+                label="Barcode"
+                value={item.barcode}
+            />
+            <DetailsRow
+                library="Lucide"
+                iconName="file-text"
+                label="Description"
+                value={item.description}
+            />
+            <DetailsRow
+                library="Lucide"
+                iconName="calendar-check"
+                label="Expire Date"
+                value={format(item.expireIn, 'dd-MMM-yyyy')}
+            />
         </CardWrapper>
     )
 }

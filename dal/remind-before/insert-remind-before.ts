@@ -56,7 +56,7 @@ export const insertRemindBefore = async ({ empId, remindBefore }: { remindBefore
                 eq(remindBeforeTable.remindBeforeNo, trimmedRemindBefore)
             )
         )
-        if (!existRemindBefore) return failureResponse('Shelf no already exist!')
+        if (existRemindBefore) return failureResponse('Remind before already exist!')
 
         const newRemindBefore = await inventoryDb.insert(remindBeforeTable).values({
             employeeId: existEmp.employeeId,

@@ -31,6 +31,9 @@ export const PAGE_SIZE = 50
 
 export const shelfNoRegex = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/
 export const remindBeforeRegex = /^\d+(?:\.\d+)*$/
+export const dateRegex = /^[1-9]\d?\.[1-9]\d?\.\d{4}$/
+export const barcodeRegex = /^[0-9]+$/
+export const itemCodeRegex = /^0\d{7}-\d{4}$/
 
 
 type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD' | 'SHELF_NO' | 'REMIND_BEFORE'
@@ -69,7 +72,7 @@ export const MODAL_TYPE: ModalTypeMap = {
     }
 }
 
-type AlertModal = 'ORDER' | 'SCANNED_ITEM' | 'SHELF_NO' | 'REMIND_BEFORE'//| 'LABELING' | 'EMPLOYEE'
+type AlertModal = 'ORDER' | 'SCANNED_ITEM' | 'SHELF_NO' | 'REMIND_BEFORE' | 'EXPIRY_MONITOR'//| 'LABELING' | 'EMPLOYEE'
 type AlertType = 'DELETE' | 'UPDATE'
 
 type AlertModalTypeMap = {
@@ -97,4 +100,8 @@ export const ALERT_MODAL_TYPE: AlertModalTypeMap = {
         UPDATE: 'REMIND_BEFORE_UPDATE_ALERT_MODAL',
         DELETE: 'REMIND_BEFORE_DELETE_ALERT_MODAL'
     },
+    EXPIRY_MONITOR: {
+        DELETE: 'EXPIRY_MONITOR_DELETE_ALERT_MODAL',
+        UPDATE: 'EXPIRY_MONITOR_UPDATE_ALERT_MODAL'
+    }
 }

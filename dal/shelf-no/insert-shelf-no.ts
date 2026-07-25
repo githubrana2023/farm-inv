@@ -53,7 +53,8 @@ export const insertShelfNo = async ({ empId, shelf }: { shelf: string; empId: st
                 eq(shelfTable.shelfNo, trimmedShelfNo)
             )
         )
-        if (!existShelf) return failureResponse('Shelf no already exist!')
+
+        if (existShelf) return failureResponse('Shelf no already exist!')
 
         const newShelfNo = await inventoryDb.insert(shelfTable).values({
             employeeId: existEmp.employeeId,

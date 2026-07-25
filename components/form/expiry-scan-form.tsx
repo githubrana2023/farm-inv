@@ -77,8 +77,8 @@ export const ExpiryScanForm = () => {
             {
                 onSuccess({ data, success, message }) {
                     if (success) {
-                        form.reset()
-                        resetGetItemMutation()
+                        // form.reset()
+                        // resetGetItemMutation()
                         queryClient.invalidateQueries({
                             queryKey: [MUTATION_KEY.EXPIRY_MONITOR.READ]
                         })
@@ -300,7 +300,7 @@ export const ExpiryScanForm = () => {
                         render={({ field }) => (
                             <InputField
                                 {...field}
-                                placeholder='e.g. 10.10.26'
+                                placeholder='e.g. 10.10.2026 or 1.1.2026'
                                 returnKeyType='next'
                                 onChangeText={field.onChange}
                                 value={field.value}
