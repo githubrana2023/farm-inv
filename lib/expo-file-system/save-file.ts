@@ -117,8 +117,6 @@ export async function saveFile(prefix: ScanFlag, saveFlag?: string) {
         if (generated.type === SCAN_FLAG_TYPE.Tags) {
             // generating regular tags file name
 
-            if (!generated.hasItem) return showError('No item to create shelf tags')
-
             fileName = generateFileName(saveFlag ? `r-${prefix}_${saveFlag}` : `r-${prefix}`);
             createTextFile(directory, fileName, generated.content.regularContent);
 
@@ -144,7 +142,7 @@ export const generateOrderContent = (items: Item[], maxLength: number): Generato
     const content = items.map(item => {
         const alinedBarcode = item.barcode.padEnd(maxLength, " ")
 
-        return `${alinedBarcode}${item.uom}|${item.packing}|${item.quantity}|`
+        return `${alinedBarcode}|${item.uom}|${item.packing}|${item.quantity}|`
     }).join('\n')
 
     return {

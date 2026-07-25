@@ -34,6 +34,11 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import InputField from '@/components/shared/input-field'
 import Modal from '@/components/shared/modal'
 import ShowMessage from '@/components/show-message'
+import { SearchItem, SearchItemDetailsCard } from '@/components/search-item-card'
+import { useInventoryInsertMutation, useOrderInsertMutation, useTagInsertMutation } from '@/hooks/tanstack/mutation/item/insert-item'
+import { showDynamicToast } from '@/lib/toast/dynamic'
+import { queryClient } from '@/components/provider/tanstack-query-client'
+import { MUTATION_KEY } from '@/constants/tanstack-query'
 
 const Search = () => {
     const [searchValue, setSearchValue] = useState('')
@@ -43,6 +48,9 @@ const Search = () => {
     const isDark = useColorScheme().colorScheme === 'dark'
 
     const { data, hasNextPage, isFetchingNextPage, fetchNextPage, isFetching, isFetched } = useGetGlobalSearchItems(debouncedValue)
+    const { mutate: insertTag } = useTagInsertMutation()
+    const { mutate: insertInventory } = useInventoryInsertMutation()
+    const { mutate: insertOrder } = useOrderInsertMutation()
 
     const items = data?.pages.flatMap(page => page).filter(item => !!item) ?? []
 
@@ -61,7 +69,7 @@ const Search = () => {
 
     const renderSearchItemDetailsCard = React.useCallback(
         ({ index, isDark, item, setRequestedItemIndex }: {
-            item: Item,
+            item: SearchItem,
             index: number;
             isDark: boolean;
             setRequestedItemIndex: React.Dispatch<React.SetStateAction<{ index: number; addTo: 'Tags' | 'Inventory' | 'Order' } | null>>
@@ -73,7 +81,59 @@ const Search = () => {
 
 
     const onSubmit = form.handleSubmit(value => {
-        setRequestedItemIndex(null)
+        if (requestedItem && requestedItemIndex) {
+            if (requestedItemIndex.addTo === 'Inventory') {
+                insertInventory(
+                    { barcode: requestedItem.barcode, quantity: value.quantity },
+                    {
+                        onSuccess({ success, message }) {
+                            showDynamicToast(success, message)
+                            if (success) {
+                                setRequestedItemIndex(null)
+                                form.reset()
+                                queryClient.invalidateQueries({
+                                    queryKey: [MUTATION_KEY.SCANNED_ITEM.READ]
+                                })
+                            }
+                        },
+                    }
+                )
+            }
+            if (requestedItemIndex.addTo === 'Tags') {
+                insertTag(
+                    requestedItem.barcode,
+                    {
+                        onSuccess({ success, message }) {
+                            showDynamicToast(success, message)
+                            if (success) {
+                                setRequestedItemIndex(null)
+                                form.reset()
+                                queryClient.invalidateQueries({
+                                    queryKey: [MUTATION_KEY.SCANNED_ITEM.READ]
+                                })
+                            }
+                        },
+                    }
+                )
+            }
+            if (requestedItemIndex.addTo === 'Order') {
+                insertOrder(
+                    { barcode: requestedItem.barcode, quantity: value.quantity, uomWithPacking: value.uom },
+                    {
+                        onSuccess({ success, message }) {
+                            showDynamicToast(success, message)
+                            if (success) {
+                                setRequestedItemIndex(null)
+                                form.reset()
+                                queryClient.invalidateQueries({
+                                    queryKey: [MUTATION_KEY.SCANNED_ITEM.READ]
+                                })
+                            }
+                        },
+                    }
+                )
+            }
+        }
     })
 
 
@@ -257,105 +317,3 @@ const Search = () => {
 export default Search
 
 
-type Item = {
-    barcode: string;
-    item_number: string;
-    description: string;
-    uom: string;
-    packing: number;
-    sales_price: number;
-    vendor: string;
-    vendor_code: string;
-    promo: "P" | "R" | null;
-    cat3: string;
-    cat4: string;
-    itemUoms: {
-        barcode: string;
-        packing: number;
-        uom: string;
-    }[];
-}
-
-const SearchItemDetailsCard = React.memo(
-    (
-        { item, index, isDark, setRequestedItemIndex }: {
-            item: Item;
-            index: number;
-            isDark: boolean;
-            setRequestedItemIndex: React.Dispatch<React.SetStateAction<{ index: number; addTo: 'Tags' | 'Inventory' | 'Order' } | null>>
-        }
-    ) => {
-
-        return (
-            <Card className='p-1 gap-1 mb-2'>
-                <CardHeader className='flex-row items-center justify-between p-1'>
-                    <View className="flex-1">
-                        <CardTitle>Search Item {index + 1}</CardTitle>
-                        <CardDescription>Item details</CardDescription>
-                    </View>
-                    <View >
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant={'outline'}
-                                    size={'sm'}
-                                >
-                                    <Text>
-                                        <Lucide
-                                            name='ellipsis-vertical'
-                                            color={'black'}
-                                            size={16}
-                                        />
-                                    </Text>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align='end'>
-                                <DropdownMenuLabel>
-                                    <Text>Add Into</Text>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onPress={() => setRequestedItemIndex({ index, addTo: 'Inventory' })}
-                                >
-                                    <Text>Inventory</Text>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onPress={() => setRequestedItemIndex({ index, addTo: 'Tags' })}
-                                >
-                                    <Text>Tags</Text>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onPress={() => setRequestedItemIndex({ index, addTo: 'Order' })}
-                                >
-                                    <Text>Order</Text>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </View>
-                </CardHeader>
-
-                <CardContent className='p-1 gap-1'>
-                    <DetailsRow
-                        library='Lucide'
-                        iconName='barcode'
-                        label='Barcode'
-                        value={item.barcode}
-                    />
-                    <DetailsRow
-                        library='Lucide'
-                        iconName='hash'
-                        label='Item Code'
-                        value={item.item_number}
-                    />
-                    <DetailsRow
-                        library='Lucide'
-                        iconName='file-text'
-                        label='Description'
-                        value={item.description}
-                    />
-                    {/* <AddToForm barcode={item.barcode} uoms={item.itemUoms} /> */}
-                </CardContent>
-            </Card>
-        )
-    }
-)
