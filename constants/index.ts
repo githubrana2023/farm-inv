@@ -34,6 +34,8 @@ export const remindBeforeRegex = /^\d+(?:\.\d+)*$/
 export const dateRegex = /^[1-9]\d?\.[1-9]\d?\.\d{4}$/
 export const barcodeRegex = /^[0-9]+$/
 export const itemCodeRegex = /^0\d{7}-\d{4}$/
+export const DOT_SEPARATOR = '.'
+export const DEVIDER_SEPARATOR = "|"
 
 
 type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD' | 'SHELF_NO' | 'REMIND_BEFORE'

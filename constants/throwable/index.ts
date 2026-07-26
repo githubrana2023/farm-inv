@@ -1,0 +1,2 @@
+
+export const THROW_ABLE_SCAN_TYPE = ['ONE_PLUS_ONE', 'THROWING', 'OVERSTOCK'] as const
