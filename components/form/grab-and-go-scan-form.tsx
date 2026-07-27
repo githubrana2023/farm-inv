@@ -5,6 +5,7 @@ import InputField from "../shared/input-field"
 import { useRef } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { grabAndGoCreateFormSchema, TGrabAndGoCreateFormValue } from "@/lib/zod/grab-and-go-form-schema"
+import { Text } from "../ui/text"
 
 
 export const GrabAndGoForm = () => {
@@ -28,9 +29,10 @@ export const GrabAndGoForm = () => {
 
 
     return (
+
         <View>
             <Form {...form}>
-                <View className="gap-2 py-2">
+                <View className="gap-1 py-1.5">
                     {/* BARCODE FIELD START*/}
                     <FormField
                         control={form.control}
@@ -38,7 +40,7 @@ export const GrabAndGoForm = () => {
                         render={({ field }) => {
                             return (
                                 <InputField
-                                    autoFocus
+                                    // autoFocus
                                     ref={barcodeRef}
                                     placeholder="Barcode"
                                     returnKeyType="go"
@@ -53,29 +55,30 @@ export const GrabAndGoForm = () => {
                     {/* BARCODE FIELD END*/}
 
 
-                    {/* QUANTITY FIELD START*/}
+                    {/* QUANTITY & EXPIRY FIELD START*/}
                     <FormField
                         control={form.control}
                         name="quantity"
                         render={({ field }) => {
                             return (
-                                <View className="flex-1">
-                                    <InputField
-                                        ref={quantityRef}
-                                        placeholder="Quantity"
-                                        returnKeyType="next"
-                                        keyboardType="number-pad"
-                                        value={field.value}
-                                        onChangeText={field.onChange}
-                                        onSubmitEditing={() => { onSubmit }}
-                                    />
-                                </View>
+                                <InputField
+                                    ref={quantityRef}
+                                    placeholder="Quantity"
+                                    returnKeyType="next"
+                                    keyboardType="number-pad"
+                                    value={field.value}
+                                    onChangeText={field.onChange}
+                                    onSubmitEditing={() => { onSubmit }}
+                                />
                             )
                         }}
                     />
-                    {/* QUANTITY FIELD END*/}
+                    {/* HAS IMPORTED LABEL FIELD END*/}
                 </View>
             </Form>
+            <View>
+                <Text>Show Details and List conditionally</Text>
+            </View>
         </View>
     )
 }

@@ -41,9 +41,9 @@ export const ThrowableForm = () => {
 
 
     return (
-        <View>
+        <View className="flex-1">
             <Form {...form}>
-                <View className="gap-2">
+                <View className="gap-1 py-1.5">
                     {/* BARCODE FIELD START*/}
                     <FormField
                         control={form.control}
@@ -51,7 +51,7 @@ export const ThrowableForm = () => {
                         render={({ field }) => {
                             return (
                                 <InputField
-                                    autoFocus
+                                    // autoFocus
                                     ref={barcodeRef}
                                     placeholder="Barcode"
                                     returnKeyType="go"
@@ -203,7 +203,7 @@ export const ThrowableForm = () => {
                     {/* HAS IMPORTED LABEL FIELD END*/}
                 </View>
             </Form>
-            <View>
+            <View className="flex-1">
                 <Text>Show Details and List conditionally</Text>
             </View>
         </View>
