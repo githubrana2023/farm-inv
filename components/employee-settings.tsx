@@ -120,7 +120,7 @@ const EmployeeSettings = () => {
                     </View>
                 </CardWrapper>
 
-                <Link asChild href={'/throwable'}>
+                <Link asChild href={'/(throwable)/throwable'}>
                     <Button size={'sm'}>
                         <Text className='text-xs'>Go to Discount & Throwing</Text>
                     </Button>

@@ -124,11 +124,11 @@ export const OrderItemDetails = ({
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
-                <Card className="mt-1 p-3 gap-4"                >
+                <Card className="mt-1 p-3 gap-4 bg-destructive/20 border border-destructive"                >
                     <CardHeader className="flex-row items-center justify-between px-0"                    >
                         <View>
-                            <CardTitle>{title}</CardTitle>
-                            <CardDescription>{description}</CardDescription>
+                            <CardTitle className="text-destructive">{title}</CardTitle>
+                            <CardDescription className="text-destructive/70">{description}</CardDescription>
                         </View>
 
                         {/* /Card Header Component Like BUTTON OR BADGE */}
@@ -147,24 +147,18 @@ export const OrderItemDetails = ({
 
                     <CardContent className="flex-col gap-2 px-0 py-0">
 
-                        <View className="flex-row justify-between items-center gap-1">
-                            <View className="flex-1">
-                                <DetailsRow
-                                    library="Lucide"
-                                    iconName="barcode"
-                                    label="Barcode"
-                                    value={orderItem.barcode}
-                                />
-                            </View>
-                            <View className="flex-1">
-                                <DetailsRow
-                                    library="Lucide"
-                                    iconName="hash"
-                                    label="Item Code"
-                                    value={orderItem.item_number}
-                                />
-                            </View>
-                        </View>
+                        <DetailsRow
+                            library="Lucide"
+                            iconName="barcode"
+                            label="Barcode"
+                            value={orderItem.barcode}
+                        />
+                        <DetailsRow
+                            library="Lucide"
+                            iconName="hash"
+                            label="Item Code"
+                            value={orderItem.item_number}
+                        />
 
                         <DetailsRow
                             library="Lucide"
@@ -177,7 +171,7 @@ export const OrderItemDetails = ({
 
 
                     {/*! Order item details card footer */}
-                    <Separator />
+                    <Separator className="bg-destructive" />
                     <CardFooter className="items-center justify-between px-0">
                         <View className="flex-row items-center gap-2">
                             <View className="flex-row items-center justify-center w-8 h-8 bg-[#E8F1FC] rounded-md">

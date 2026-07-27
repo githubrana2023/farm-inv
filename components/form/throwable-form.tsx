@@ -41,167 +41,172 @@ export const ThrowableForm = () => {
 
 
     return (
-        <Form {...form}>
-            <View className="gap-2">
-                {/* BARCODE FIELD START*/}
-                <FormField
-                    control={form.control}
-                    name="barcode"
-                    render={({ field }) => {
-                        return (
-                            <InputField
-                                autoFocus
-                                ref={barcodeRef}
-                                placeholder="Barcode"
-                                returnKeyType="go"
-                                keyboardType="number-pad"
-                                value={field.value}
-                                onChangeText={field.onChange}
-                                onSubmitEditing={() => { quantityRef?.current?.focus() }}
-                            />
-                        )
-                    }}
-                />
-                {/* BARCODE FIELD END*/}
-
-
-                {/* QUANTITY & EXPIRY FIELD START*/}
-                <View className="flex-row gap-2">
+        <View>
+            <Form {...form}>
+                <View className="gap-2">
+                    {/* BARCODE FIELD START*/}
                     <FormField
                         control={form.control}
-                        name="quantity"
+                        name="barcode"
                         render={({ field }) => {
                             return (
-                                <View className="flex-1">
-                                    <InputField
-                                        ref={quantityRef}
-                                        placeholder="Quantity"
-                                        returnKeyType="next"
-                                        keyboardType="number-pad"
-                                        value={field.value}
-                                        onChangeText={field.onChange}
-                                        onSubmitEditing={() => { expireInRef?.current?.focus() }}
-                                    />
-                                </View>
+                                <InputField
+                                    autoFocus
+                                    ref={barcodeRef}
+                                    placeholder="Barcode"
+                                    returnKeyType="go"
+                                    keyboardType="number-pad"
+                                    value={field.value}
+                                    onChangeText={field.onChange}
+                                    onSubmitEditing={() => { quantityRef?.current?.focus() }}
+                                />
                             )
                         }}
                     />
+                    {/* BARCODE FIELD END*/}
 
+
+                    {/* QUANTITY & EXPIRY FIELD START*/}
+                    <View className="flex-row gap-2">
+                        <FormField
+                            control={form.control}
+                            name="quantity"
+                            render={({ field }) => {
+                                return (
+                                    <View className="flex-1">
+                                        <InputField
+                                            ref={quantityRef}
+                                            placeholder="Quantity"
+                                            returnKeyType="next"
+                                            keyboardType="number-pad"
+                                            value={field.value}
+                                            onChangeText={field.onChange}
+                                            onSubmitEditing={() => { expireInRef?.current?.focus() }}
+                                        />
+                                    </View>
+                                )
+                            }}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="expireIn"
+                            render={({ field }) => {
+                                return (
+                                    <View className="flex-1">
+                                        <InputField
+                                            ref={expireInRef}
+                                            placeholder="e.g. 1.1.2026"
+                                            returnKeyType="next"
+                                            keyboardType="number-pad"
+                                            value={field.value}
+                                            onChangeText={field.onChange}
+                                            onSubmitEditing={onSubmit}
+                                        />
+                                    </View>
+                                )
+                            }}
+                        />
+                    </View>
+                    {/* QUANTITY & EXPIRY FIELD END*/}
+
+
+
+                    {/* SCAN TYPE FIELD START*/}
                     <FormField
                         control={form.control}
-                        name="expireIn"
+                        name="type"
                         render={({ field }) => {
                             return (
-                                <View className="flex-1">
-                                    <InputField
-                                        ref={expireInRef}
-                                        placeholder="e.g. 1.1.2026"
-                                        returnKeyType="next"
-                                        keyboardType="number-pad"
-                                        value={field.value}
-                                        onChangeText={field.onChange}
-                                        onSubmitEditing={onSubmit}
-                                    />
-                                </View>
+                                <FormItem>
+                                    <FormControl>
+                                        <RadioGroup
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                            className="flex-row gap-2"
+                                        >
+                                            {THROW_ABLE_SCAN_TYPE.map((type) => {
+                                                const isActive = field.value === type;
+
+                                                return (
+                                                    <Pressable
+                                                        onPress={() => field.onChange(type)}
+                                                        key={type}
+                                                        className={cn(
+                                                            "flex-1 rounded",
+                                                            isActive ? "dark:bg-white bg-black" : "border border-gray-100",
+                                                        )}
+                                                    >
+                                                        <View className="flex-row items-center justify-center gap-1">
+                                                            <Text
+                                                                className={cn(
+                                                                    "py-1 px-0 text-center font-semibold text-xs",
+                                                                    isActive && "dark:text-black text-white",
+                                                                )}
+                                                            >
+                                                                {type}
+                                                            </Text>
+                                                        </View>
+                                                    </Pressable>
+                                                );
+                                            })}
+                                        </RadioGroup>
+
+                                    </FormControl>
+                                </FormItem>
                             )
                         }}
                     />
-                </View>
-                {/* QUANTITY & EXPIRY FIELD END*/}
+                    {/* SCAN TYPE FIELD END*/}
 
 
 
-                {/* SCAN TYPE FIELD START*/}
-                <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => {
-                        return (
-                            <FormItem>
-                                <FormControl>
-                                    <RadioGroup
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                        className="flex-row gap-2"
-                                    >
-                                        {THROW_ABLE_SCAN_TYPE.map((type) => {
-                                            const isActive = field.value === type;
-
-                                            return (
-                                                <Pressable
-                                                    onPress={() => field.onChange(type)}
-                                                    key={type}
-                                                    className={cn(
-                                                        "flex-1 rounded",
-                                                        isActive ? "dark:bg-white bg-black" : "border border-gray-100",
-                                                    )}
-                                                >
-                                                    <View className="flex-row items-center justify-center gap-1">
-                                                        <Text
-                                                            className={cn(
-                                                                "py-1 px-0 text-center font-semibold text-xs",
-                                                                isActive && "dark:text-black text-white",
-                                                            )}
-                                                        >
-                                                            {type}
-                                                        </Text>
-                                                    </View>
-                                                </Pressable>
-                                            );
-                                        })}
-                                    </RadioGroup>
-
-                                </FormControl>
-                            </FormItem>
-                        )
-                    }}
-                />
-                {/* SCAN TYPE FIELD END*/}
-
-
-
-                {/* HAS IMPORTED LABEL FIELD START*/}
-                <FormField
-                    control={form.control}
-                    name="hasImportedLabel"
-                    render={({ field }) => {
-                        return (
-                            <FormItem>
-                                <FormControl>
-                                    <Label
-                                        onPress={() => {
-                                            field.onChange(!field.value)
-                                        }}
-                                        className={cn(
-                                            'border border-border flex flex-row rounded-lg p-2',
-                                            field.value && "border-emerald-200 bg-emerald-100"
-                                        )}
-                                    >
-                                        <View className="flex flex-1 flex-row items-start gap-3">
-                                            <Checkbox
-                                                id="toggle-2"
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                                checkedClassName="border-emerald-700 bg-emerald-700"
-                                                indicatorClassName="bg-emerald-700"
-                                                iconClassName="text-emerald-100"
-                                            />
-                                            <View className="flex-1">
-                                                <Text className={cn("text-sm font-medium leading-none", field.value && 'text-emerald-700')}>Has imported label</Text>
-                                                <Text className={cn("text-muted-foreground text-sm", field.value && 'text-emerald-600')}>
-                                                    This item is imported by Farm
-                                                </Text>
+                    {/* HAS IMPORTED LABEL FIELD START*/}
+                    <FormField
+                        control={form.control}
+                        name="hasImportedLabel"
+                        render={({ field }) => {
+                            return (
+                                <FormItem>
+                                    <FormControl>
+                                        <Label
+                                            onPress={() => {
+                                                field.onChange(!field.value)
+                                            }}
+                                            className={cn(
+                                                'border border-border flex flex-row rounded-lg p-2',
+                                                field.value && "border-emerald-200 bg-emerald-100"
+                                            )}
+                                        >
+                                            <View className="flex flex-1 flex-row items-start gap-3">
+                                                <Checkbox
+                                                    id="toggle-2"
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                    checkedClassName="border-emerald-700 bg-emerald-700"
+                                                    indicatorClassName="bg-emerald-700"
+                                                    iconClassName="text-emerald-100"
+                                                />
+                                                <View className="flex-1">
+                                                    <Text className={cn("text-sm font-medium leading-none", field.value && 'text-emerald-700')}>Has imported label</Text>
+                                                    <Text className={cn("text-muted-foreground text-sm", field.value && 'text-emerald-600')}>
+                                                        This item is imported by Farm
+                                                    </Text>
+                                                </View>
                                             </View>
-                                        </View>
-                                    </Label>
-                                </FormControl>
-                            </FormItem>
-                        )
-                    }}
-                />
-                {/* HAS IMPORTED LABEL FIELD END*/}
+                                        </Label>
+                                    </FormControl>
+                                </FormItem>
+                            )
+                        }}
+                    />
+                    {/* HAS IMPORTED LABEL FIELD END*/}
+                </View>
+            </Form>
+            <View>
+                <Text>Show Details and List conditionally</Text>
             </View>
-        </Form>
+        </View>
     )
 }
 

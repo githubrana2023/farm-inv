@@ -401,8 +401,8 @@ export default function AddItemForm() {
         {
           (itemDetails?.data && itemDetails.data.orderItem) && (
             <OrderItemDetails
-              title="Item Details"
-              description="Scanned item"
+              title="Duplicate Scanned"
+              description="Duplicate Order Item Details"
               orderItem={itemDetails.data.orderItem}
               onDelete={(item) => {
                 deleteOrderItemByBarcode(item.barcode, {
