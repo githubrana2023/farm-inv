@@ -23,7 +23,7 @@ import InputField from './shared/input-field'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { Separator } from './ui/separator'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { EmployeeCard } from './employee-card'
 import { getExpiryItemsRemoveDateIsToday } from '@/dal/expiry-monitor/get-expiry-item'
 import { useGetExpiryRemovableItems } from '@/hooks/tanstack/mutation/expiry-monitor/get-expiry'
@@ -119,6 +119,12 @@ const EmployeeSettings = () => {
                         }
                     </View>
                 </CardWrapper>
+
+                <Link asChild href={'/throwable'}>
+                    <Button size={'sm'}>
+                        <Text className='text-xs'>Go to Discount & Throwing</Text>
+                    </Button>
+                </Link>
 
 
                 <View className="gap-1 flex-1">

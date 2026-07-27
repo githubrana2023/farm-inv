@@ -13,10 +13,10 @@ function Checkbox({
   iconClassName,
   ...props
 }: React.ComponentProps<typeof CheckboxPrimitive.Root> & {
-    checkedClassName?: string;
-    indicatorClassName?: string;
-    iconClassName?: string;
-  }) {
+  checkedClassName?: string;
+  indicatorClassName?: string;
+  iconClassName?: string;
+}) {
   return (
     <CheckboxPrimitive.Root
       className={cn(

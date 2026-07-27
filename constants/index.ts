@@ -9,7 +9,6 @@ export const FILE_URI_KEY = 'file-uri' as const
 export const ADVANCE_MODE_KEY = 'ADVANCE_MODE_KEY'
 export const SCAN_TYPE_KEY = 'SCAN_TYPE_KEY'
 
-export const ITEM_CODE_REGEX = /^0\d{7}-\d{4}$/;
 export const valueIsItemCode = (code: string) => ITEM_CODE_REGEX.test(code);
 
 export const SCAN_FLAG = ["Inventory", "Tags", "Order"] as const;
@@ -35,7 +34,8 @@ export const dateRegex = /^[1-9]\d?\.[1-9]\d?\.\d{4}$/
 export const barcodeRegex = /^[0-9]+$/
 export const itemCodeRegex = /^0\d{7}-\d{4}$/
 export const DOT_SEPARATOR = '.'
-export const DEVIDER_SEPARATOR = "|"
+export const DiVIDER_SEPARATOR = "|"
+export const ITEM_CODE_REGEX = /^0\d{7}-\d{4}$/;
 
 
 type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD' | 'SHELF_NO' | 'REMIND_BEFORE'
