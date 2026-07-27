@@ -3,11 +3,13 @@ import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { itemMasterTable } from "@/drizzle/schema/farm-schema";
 import { grabAndGoTable } from "@/drizzle/schema/inventory";
 import { failureResponse, successResponse } from "@/lib/response";
+import { needPendingState } from "@/lib/utils";
 import { grabAndGoCreateFormSchema, TGrabAndGoCreateFormValue } from "@/lib/zod/grab-and-go-form-schema";
 import { and, eq, like } from "drizzle-orm";
 
 export const insertGrabAndGo = async (values: TGrabAndGoCreateFormValue) => {
     try {
+        await needPendingState()
         const validation = grabAndGoCreateFormSchema.safeParse(values)
         if (!validation.success) return failureResponse('Invalid fields');
         const [existItem] = await farmDb.select().from(itemMasterTable).where(eq(
@@ -15,20 +17,21 @@ export const insertGrabAndGo = async (values: TGrabAndGoCreateFormValue) => {
         ))
         if (!existItem) return failureResponse('Item not found');
 
-        const [fifthyPercentBarcode] = await farmDb.select().from(itemMasterTable).where(
+        const [fiftyPercentBarcode] = await farmDb.select().from(itemMasterTable).where(
             and(
                 eq(itemMasterTable.item_number, existItem.item_number),
                 like(itemMasterTable.barcode, '6699%%')
             )
         )
 
-        if (!fifthyPercentBarcode) return failureResponse('Fifty percent item barcode not found!')
+        if (!fiftyPercentBarcode) return failureResponse('Fifty percent item barcode not found!')
 
-        const [newFifhyPercentBarcode] = await inventoryDb.insert(grabAndGoTable).values({
-            barcode: fifthyPercentBarcode.barcode,
+        const [newFiftyPercentBarcode] = await inventoryDb.insert(grabAndGoTable).values({
+            barcode: fiftyPercentBarcode.barcode,
+            // description: existItem.description,
             quantity: values.quantity
         }).returning()
-        return successResponse(newFifhyPercentBarcode)
+        return successResponse(newFiftyPercentBarcode)
     } catch (error) {
         console.log('Failed to insert fifty percent barcode', error)
         return failureResponse('Failed to insert fifty percent barcode')

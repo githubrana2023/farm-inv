@@ -39,12 +39,16 @@ const Throwable = () => {
                 </View>
 
                 {/* Toggle button */}
-                <View className="flex-row items-center justify-center ">
-                    <View className="flex-row items-center justify-center gap-2 p-2 bg-secondary rounded-full">
-                        <Label className={cn("px-2 py-0.5 rounded-full", tab === 'throwable' && 'bg-white')} onPress={() => setTab('throwable')}>
+                <View className="flex-row items-center justify-center py-6">
+                    <View className="flex-row items-center justify-center gap-2 p-2 bg-white rounded-full"
+                        style={{
+                            boxShadow: "0px 6px 20px rgba(0,0,0,0.2)",
+                        }}
+                    >
+                        <Label className={cn("px-2 py-0.5 rounded-full", tab === 'throwable' && 'bg-muted')} onPress={() => setTab('throwable')}>
                             Damage & Discount
                         </Label>
-                        <Label className={cn("px-2 py-0.5 rounded-full", tab === 'grab&go' && 'bg-white')} onPress={() => setTab('grab&go')}>
+                        <Label className={cn("px-2 py-0.5 rounded-full", tab === 'grab&go' && 'bg-muted')} onPress={() => setTab('grab&go')}>
                             Grab & Go
                         </Label>
                     </View>

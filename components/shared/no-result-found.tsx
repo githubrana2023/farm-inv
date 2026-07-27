@@ -14,7 +14,7 @@ export function NoSearchResults({
     onClear,
 }: NoSearchResultsProps) {
     return (
-        <View className="flex-1 items-center justify-center px-6">
+        <View className=" items-center justify-center px-6">
             <View className="w-full max-w-sm items-center rounded-xl border border-dashed border-border bg-card p-8">
                 <View className="mb-6 rounded-full bg-muted p-5">
                     <SearchX

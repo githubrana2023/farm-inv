@@ -26,6 +26,7 @@ import { showDynamicToast } from '@/lib/toast/dynamic'
 import { useInsertRemindBeforeMutation } from '@/hooks/tanstack/mutation/remind-before/insert-mutation'
 import { queryClient } from '../provider/tanstack-query-client'
 import { MUTATION_KEY } from '@/constants/tanstack-query'
+import { usePersistShelfAndRemindBefore } from '@/hooks/use-persist-shelf-remind-before'
 
 
 export const ExpiryScanForm = () => {
@@ -70,6 +71,7 @@ export const ExpiryScanForm = () => {
     const { data: shelfs, isPending: shelfIsPending } = useGetShelfNoMutation(stringEmpId)
     const { data: remindBeforeDays, isPending: remindBeforeDaysIsPending } = useGetRemindBeforeMutation(stringEmpId)
 
+    usePersistShelfAndRemindBefore(form)
 
     const onSubmit = form.handleSubmit((values) => {
         insertExpiry(

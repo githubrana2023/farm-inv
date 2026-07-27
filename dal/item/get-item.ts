@@ -7,6 +7,7 @@ import { storeData } from "@/lib/async-storage"
 import { failureResponse, successResponse } from "@/lib/response"
 import { AddItemFormValue } from "@/lib/zod/add-item-form-schema"
 import { and, asc, desc, eq, like, or, sql } from "drizzle-orm"
+import { needPendingState } from "@/lib/utils"
 
 export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pick<AddItemFormValue, 'scanType' | 'isAdvanceMode' | 'barcode'>) => {
     try {
@@ -75,7 +76,7 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
 
 export const getItemDetailsByBarcode = async (barcode: string) => {
     try {
-
+        await needPendingState()
         if (!barcode) return failureResponse('Barcode is missing!')
 
         const [item] = await farmDb.select().from(itemMasterTable).where(

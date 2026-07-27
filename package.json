@@ -8,6 +8,7 @@
     "android": "expo start -c --android",
     "ios": "expo start -c --ios",
     "web": "expo start -c --web",
+    "generate": "pnpm drizzle-kit generate",
     "clean": "rm -rf .expo node_modules"
   },
   "dependencies": {

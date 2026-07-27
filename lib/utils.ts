@@ -42,5 +42,5 @@ export const copy = async (text: string) => {
 
 
 export const needPendingState = async () => {
-  await new Promise((resolve) => requestAnimationFrame(resolve))
+  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 }

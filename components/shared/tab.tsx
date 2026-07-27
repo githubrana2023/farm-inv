@@ -1,17 +1,19 @@
-import { View, Text } from 'react-native'
-import React, { ComponentType, JSX, useState } from 'react'
+import { View } from 'react-native'
+import { ComponentType, useState } from 'react'
 import Container from './container';
 import { Label } from '../ui/label';
 import { cn } from '@/lib/utils';
 
-
-const Tab = <T extends readonly string[],>({ tabLabels, tabContent }: {
+type TabProps<T extends readonly string[]> = {
     tabContent: Record<T[number], ComponentType>;
     tabLabels: T
-}) => {
-    const [activeTab, setActivTab] = useState<typeof tabLabels[number]>(tabLabels[0])
+}
 
-    const TabContent = tabContent[activeTab]
+function ReusableTab<const T extends readonly string[],>({ tabLabels, tabContent }: TabProps<T>) {
+    const [activeTab, setActiveTab] = useState<typeof tabLabels[number]>(tabLabels[0])
+
+    const TabContent = tabContent[activeTab] as ComponentType<{}>
+
 
     return (
         <Container>
@@ -25,11 +27,11 @@ const Tab = <T extends readonly string[],>({ tabLabels, tabContent }: {
                     <View className="flex-row items-center justify-center gap-2 p-2 bg-secondary rounded-full">
                         {
                             tabLabels.map(tabLabel => {
-                                const actived = tabLabel === activeTab
+                                const activated = tabLabel === activeTab
                                 return (
                                     <Label
-                                        className={cn("px-2 py-0.5 rounded-full", actived && 'bg-white')}
-                                        onPress={() => setActivTab(tabLabel)}>
+                                        className={cn("px-2 py-0.5 rounded-full", activated && 'bg-white')}
+                                        onPress={() => setActiveTab(tabLabel)}>
                                         Damage & Discount
                                     </Label>
                                 )
@@ -42,4 +44,5 @@ const Tab = <T extends readonly string[],>({ tabLabels, tabContent }: {
     )
 }
 
-export default Tab
+export default ReusableTab
+
