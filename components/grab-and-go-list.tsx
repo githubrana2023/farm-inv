@@ -18,7 +18,6 @@ export const GrabAndGoItemList = () => {
     if (isPending) return <LoadingState title="Fetching grab and go items" description="Please wait!" />
 
     const OnDelete = (id: string) => {
-        console.log(id)
         grabAndGoDeleteMutation(id, {
             async onSuccess({ data, success, message }) {
                 showDynamicToast(success, message)
@@ -31,7 +30,7 @@ export const GrabAndGoItemList = () => {
 
     console.log(data?.data)
     return (
-        <View className="gap-1">
+        <View className="pb-28 gap-1">
             <FlatList
                 data={data?.data ?? []}
                 keyExtractor={item => String(item.id)}
@@ -56,7 +55,7 @@ export const GrabAndGoItemCard = ({ item, onPress }: {
 }) => {
 
     return (
-        <View className="flex-row border border-dashed border-neutral-50 p-2 rounded-lg mb-1">
+        <View className="flex-row border border-dashed  p-2 rounded-lg mb-1">
             <View className="flex-1 gap-1">
                 <DetailsRow
                     label="Barcode"
@@ -64,12 +63,12 @@ export const GrabAndGoItemCard = ({ item, onPress }: {
                     library="Lucide"
                     iconName="barcode"
                 />
-                <DetailsRow
+                {/* <DetailsRow
                     label="Description"
                     value={item.description ?? "no description"}
                     library="Lucide"
                     iconName="file-text"
-                />
+                /> */}
                 <DetailsRow
                     label="Quantity"
                     value={item.quantity}

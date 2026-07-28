@@ -37,17 +37,9 @@ const AppSettings = () => {
                     onChangeText={(v) => { }}
                     placeholder='Branch Code (eg. 001)'
                 />
-                <Separator />
+                <Separator className='my-2' />
             </View>
             {/* BRANCH INPUT AREA FINISH */}
-
-
-
-
-            <Card>
-
-            </Card>
-
 
             <CardWrapper
                 title="Database settings"

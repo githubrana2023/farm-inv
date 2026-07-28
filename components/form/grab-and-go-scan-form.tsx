@@ -74,14 +74,12 @@ export const GrabAndGoForm = () => {
                     form.reset()
                     resetItemDetailsGetMutation()
                     await invalidQueries([QUERY_KEY.GRAB_AND_GO.READ])
-                    console.log('invalidated')
                 }
             },
         })
 
     })
 
-    console.log((!itemDetails?.data && barcode.length < 1), itemDetails?.data, barcode.length)
 
     return (
 
@@ -167,10 +165,21 @@ export const GrabAndGoForm = () => {
                     </View>
                 }
                 {
-                    (!itemDetails?.data && barcode.length < 1) && <GrabAndGoItemList />
+                    (!itemDetails?.data && barcode.length < 1) &&
+                    <View className="pb-24">
+                        <GrabAndGoItemList />
+                    </View>
                 }
                 {
-
+                    (itemDetails?.data && itemDetails?.data) && (
+                        <GrabAndGoItemCard item={{
+                            id: itemDetails.data.barcode,
+                            barcode: itemDetails?.data?.barcode,
+                            quantity: "0"
+                        }}
+                            onPress={() => { }}
+                        />
+                    )
                 }
             </View>
         </View >

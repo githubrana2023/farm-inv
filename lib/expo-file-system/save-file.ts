@@ -7,6 +7,8 @@ import { directoryPicker, getDirectory } from "@/lib/expo-file-system/directory-
 import { getSavedItems } from "@/dal/item/get-item-save-file";
 import { showError } from "../toast/error";
 import { showSuccess } from "../toast/success";
+import { inventoryDb } from "@/drizzle/db/inventory-db";
+import { grabAndGoTable } from "@/drizzle/schema/inventory";
 
 
 function generateFileName(prefix: string) {
@@ -29,6 +31,7 @@ function createTextFile(
     });
 }
 
+
 type InventoryOrderContentGeneratorReturnType = {
     type: Exclude<ScanFlag, 'Tags'>,
     content: string,
@@ -45,52 +48,9 @@ type TagsContentGeneratorReturnType = {
 }
 
 type GeneratorReturnType = InventoryOrderContentGeneratorReturnType | TagsContentGeneratorReturnType
-
-
-
-const generateInventoryContent = (items: NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'], maxLength: number): GeneratorReturnType => {
-
-    const content = items.map(item => {
-        const alinedBarcode = item.barcode.padEnd(maxLength, " ")
-        return `${alinedBarcode}|${item.quantity}`
-    }).join('\n')
-
-    return {
-        type: SCAN_FLAG_TYPE.Inventory,
-        content,
-        hasItem: items.length > 0
-    }
-}
-
-
 type Item = NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'][number]
 
-const generateTagsContent = (items: Item[], maxLength: number): GeneratorReturnType => {
 
-    const promoItems = items.filter(item => item.pflag === 'P')
-    const regularItems = items.filter(item => item.pflag === 'R')
-
-
-    const promoContent = promoItems.map(item => {
-        const alinedBarcode = item.barcode.padEnd(maxLength, " ")
-
-        return `${alinedBarcode}|${item.quantity}`
-    }).join('\n')
-
-    const regularContent = regularItems.map(item => {
-        const alinedBarcode = item.barcode.padEnd(maxLength, " ")
-        return `${alinedBarcode}|${item.quantity}`
-    }).join('\n')
-
-    return {
-        type: SCAN_FLAG_TYPE.Tags,
-        content: {
-            regularContent,
-            promoContent
-        },
-        hasItem: items.length > 0
-    }
-}
 
 
 
@@ -137,6 +97,8 @@ export async function saveFile(prefix: ScanFlag, saveFlag?: string) {
 }
 
 
+// GENERATING ORDER
+
 export const generateOrderContent = (items: Item[], maxLength: number): GeneratorReturnType => {
 
     const content = items.map(item => {
@@ -152,8 +114,88 @@ export const generateOrderContent = (items: Item[], maxLength: number): Generato
     }
 }
 
+
+// GENERATING INVENTORY
+const generateInventoryContent = (items: NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'], maxLength: number): GeneratorReturnType => {
+
+    const content = items.map(item => {
+        const alinedBarcode = item.barcode.padEnd(maxLength, " ")
+        return `${alinedBarcode}|${item.quantity}`
+    }).join('\n')
+
+    return {
+        type: SCAN_FLAG_TYPE.Inventory,
+        content,
+        hasItem: items.length > 0
+    }
+}
+
+
+
+// GENERATING TAGS
+const generateTagsContent = (items: Item[], maxLength: number): GeneratorReturnType => {
+
+    const promoItems = items.filter(item => item.pflag === 'P')
+    const regularItems = items.filter(item => item.pflag === 'R')
+
+
+    const promoContent = promoItems.map(item => {
+        const alinedBarcode = item.barcode.padEnd(maxLength, " ")
+
+        return `${alinedBarcode}|${item.quantity}`
+    }).join('\n')
+
+    const regularContent = regularItems.map(item => {
+        const alinedBarcode = item.barcode.padEnd(maxLength, " ")
+        return `${alinedBarcode}|${item.quantity}`
+    }).join('\n')
+
+    return {
+        type: SCAN_FLAG_TYPE.Tags,
+        content: {
+            regularContent,
+            promoContent
+        },
+        hasItem: items.length > 0
+    }
+}
+
+
 const generator: Record<ScanFlag, (items: Item[], maxLength: number) => GeneratorReturnType> = {
     Inventory: generateInventoryContent,
     Tags: generateTagsContent,
     Order: generateOrderContent
+}
+
+
+
+
+export async function saveFileModified({ content, prefix, saveFlag }: { content: string, prefix: string, saveFlag?: string }) {
+    try {
+
+        const directory = await getDirectory();
+
+        if (!directory) {
+            return;
+        }
+
+        const fileName = generateFileName(saveFlag ? `${prefix}_${saveFlag}` : `${prefix}`);
+
+        createTextFile(directory, fileName, content);
+
+        showSuccess("File saved!");
+    } catch (error) {
+        console.error(error);
+        showError("Failed to save file.");
+    }
+}
+
+export const saveGrabAndGoFiftyPercent = async () => {
+    const items = await inventoryDb.select().from(grabAndGoTable)
+    if (items.length < 1) return showError('No items found to generate!')
+    const content = items.map(item => (`${item.barcode.padEnd(25, " ")}|${item.quantity}`)).join('\n')
+    saveFileModified({
+        content,
+        prefix: 'grab_and_go'
+    })
 }
