@@ -33,6 +33,8 @@ export const ThrowableForm = () => {
         shouldFocusError: false
     })
 
+    const isOverStock = form.watch('type')
+
     usePersistThrowingDiscountType(form)
     const onSubmit = form.handleSubmit(values => {
         quantityRef?.current?.focus()
@@ -162,44 +164,48 @@ export const ThrowableForm = () => {
 
 
                     {/* HAS IMPORTED LABEL FIELD START*/}
-                    <FormField
-                        control={form.control}
-                        name="hasImportedLabel"
-                        render={({ field }) => {
-                            return (
-                                <FormItem>
-                                    <FormControl>
-                                        <Label
-                                            onPress={() => {
-                                                field.onChange(!field.value)
-                                            }}
-                                            className={cn(
-                                                'border border-border flex flex-row rounded-lg p-2',
-                                                field.value && "border-emerald-200 bg-emerald-100"
-                                            )}
-                                        >
-                                            <View className="flex flex-1 flex-row items-start gap-3">
-                                                <Checkbox
-                                                    id="toggle-2"
-                                                    checked={field.value}
-                                                    onCheckedChange={field.onChange}
-                                                    checkedClassName="border-emerald-700 bg-emerald-700"
-                                                    indicatorClassName="bg-emerald-700"
-                                                    iconClassName="text-emerald-100"
-                                                />
-                                                <View className="flex-1">
-                                                    <Text className={cn("text-sm font-medium leading-none", field.value && 'text-emerald-700')}>Has imported label</Text>
-                                                    <Text className={cn("text-muted-foreground text-sm", field.value && 'text-emerald-600')}>
-                                                        This item is imported by Farm
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </Label>
-                                    </FormControl>
-                                </FormItem>
-                            )
-                        }}
-                    />
+                    {
+                        (!isOverStock) && (
+                            <FormField
+                                control={form.control}
+                                name="hasImportedLabel"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Label
+                                                    onPress={() => {
+                                                        field.onChange(!field.value)
+                                                    }}
+                                                    className={cn(
+                                                        'border border-border flex flex-row rounded-lg p-2',
+                                                        field.value && "border-emerald-200 bg-emerald-100"
+                                                    )}
+                                                >
+                                                    <View className="flex flex-1 flex-row items-start gap-3">
+                                                        <Checkbox
+                                                            id="toggle-2"
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                            checkedClassName="border-emerald-700 bg-emerald-700"
+                                                            indicatorClassName="bg-emerald-700"
+                                                            iconClassName="text-emerald-100"
+                                                        />
+                                                        <View className="flex-1">
+                                                            <Text className={cn("text-sm font-medium leading-none", field.value && 'text-emerald-700')}>Has imported label</Text>
+                                                            <Text className={cn("text-muted-foreground text-sm", field.value && 'text-emerald-600')}>
+                                                                This item is imported by Farm
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                </Label>
+                                            </FormControl>
+                                        </FormItem>
+                                    )
+                                }}
+                            />
+                        )
+                    }
                     {/* HAS IMPORTED LABEL FIELD END*/}
                 </View>
             </Form>

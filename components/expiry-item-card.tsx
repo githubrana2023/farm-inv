@@ -26,7 +26,7 @@ type ExpiryItemCardProp = {
     onPress: () => void
 }
 
-export const ExpiryItemCard = ({ item, index, onPress }: ExpiryItemCardProp) => {
+export const ExpiryItemCard = ({ item, onPress }: ExpiryItemCardProp) => {
     const dayLeft = formatDistanceToNow(item.expireIn, { addSuffix: true })
 
 

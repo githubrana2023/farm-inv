@@ -450,12 +450,12 @@ const Tag = ({ employees, fileName, items }: {
                                         await onPress({
                                             items: items.regularItems,
                                             prefix: 'r-tags',
-                                            saveFlag: fileName
+                                            saveFlag: emp.name
                                         })
                                         await onPress({
                                             items: items.promoItems,
                                             prefix: 'p-tags',
-                                            saveFlag: fileName
+                                            saveFlag: emp.name
                                         })
                                     }}
                                     onLongPress={(c) => router.push(`/employee/${emp.employeeId}`)}

@@ -1,12 +1,13 @@
 import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { employeeTable, expiryMonitorTable } from "@/drizzle/schema/inventory";
 import { failureResponse, successResponse } from "@/lib/response";
+import { needPendingState } from "@/lib/utils";
 import { differenceInDays, format } from "date-fns";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 
 export const getExpiryItemByEmpId = async ({ empId, after = new Date(), before }: { empId: string; after?: Date; before?: Date }) => {
     try {
-        await new Promise((resolve) => requestAnimationFrame(resolve))
+        await needPendingState()
         const afterTime = new Date(new Date(after).setHours(0, 0, 0, 0))
         // const beforeTime = new Date(before).setHours(23, 59, 59, 0)
 
@@ -20,7 +21,7 @@ export const getExpiryItemByEmpId = async ({ empId, after = new Date(), before }
                 eq(expiryMonitorTable.empId, existEmp.employeeId),
                 gte(expiryMonitorTable.createdAt, afterTime)
             )
-        )
+        ).orderBy(desc(expiryMonitorTable.createdAt))
 
 
         return successResponse(employeeExpiryItems)

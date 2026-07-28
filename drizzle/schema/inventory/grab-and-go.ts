@@ -7,7 +7,7 @@ export const grabAndGoTable = sqliteTable('grab_and_go', {
     id: text('id').primaryKey().unique().notNull().$defaultFn(() => uuid()),
     barcode: text('barcode').notNull(),
     quantity: text('quantity').notNull(),
-    // description: text('quantity').notNull(),
+    description: text('description').notNull(),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
 })

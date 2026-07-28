@@ -39,7 +39,7 @@ export const getGrabAndGoFiftyPercentBarcode = async (barcode: string) => {
 export const getGrabAndGoFiftyPercentBarcodes = async () => {
     try {
         try {
-            const grabAndGoFiftyPercentBarcodes = await inventoryDb.select({ id: grabAndGoTable.id, barcode: grabAndGoTable.barcode, quantity: grabAndGoTable.quantity }).from(grabAndGoTable).orderBy(desc(grabAndGoTable.createdAt))
+            const grabAndGoFiftyPercentBarcodes = await inventoryDb.select().from(grabAndGoTable).orderBy(desc(grabAndGoTable.createdAt))
 
             return successResponse(grabAndGoFiftyPercentBarcodes)
 

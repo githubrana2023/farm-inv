@@ -4,7 +4,6 @@ import { ThrowableForm } from '@/components/form/throwable-form';
 import Container from '@/components/shared/container';
 import { GrabAndGoForm } from '@/components/form/grab-and-go-scan-form';
 import { Label } from '@/components/ui/label'
-import { usePathname } from 'expo-router';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -18,14 +17,6 @@ const Throwable = () => {
 
     const [tab, setTab] = React.useState<TabComponentName>('throwable')
     const { data, isPending } = useGetGrabAndGoFiftyPercentBarcodes()
-
-    const pathName = usePathname()
-    const isGrabAndGoActive = pathName === '/grab-and-go'
-    const isThrowableActive = pathName === '/throwable'
-    console.log({
-        isGrabAndGoActive,
-        isThrowableActive
-    })
 
     const TabComponents: TabComponentMap = {
         "grab&go": GrabAndGoForm,

@@ -28,7 +28,7 @@ export const GrabAndGoItemList = () => {
         })
     }
 
-    console.log(data?.data)
+
     return (
         <View className="pb-28 gap-1">
             <FlatList
@@ -49,13 +49,13 @@ export const GrabAndGoItemCard = ({ item, onPress }: {
         id: string;
         barcode: string;
         quantity: string;
-        // description: string;
+        description: string;
     },
     onPress: (barcode: string) => void
 }) => {
 
     return (
-        <View className="flex-row border border-dashed  p-2 rounded-lg mb-1">
+        <View className="flex-row border border-dashed  p-2 rounded-lg mb-2"        >
             <View className="flex-1 gap-1">
                 <DetailsRow
                     label="Barcode"
@@ -63,12 +63,12 @@ export const GrabAndGoItemCard = ({ item, onPress }: {
                     library="Lucide"
                     iconName="barcode"
                 />
-                {/* <DetailsRow
+                <DetailsRow
                     label="Description"
                     value={item.description ?? "no description"}
                     library="Lucide"
                     iconName="file-text"
-                /> */}
+                />
                 <DetailsRow
                     label="Quantity"
                     value={item.quantity}

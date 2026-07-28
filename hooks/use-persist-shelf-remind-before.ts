@@ -18,7 +18,6 @@ export const usePersistShelfAndRemindBefore = (form: UseFormReturn<ExpireScanFor
                 const persistedRemindBefore = await getStringStoredData(ASYNC_STORAGE_KEY.REMIND_BEFORE)
 
                 reset({
-                    ...getValues(),
                     shelfNo: persistedShelf ?? undefined,
                     remindBefore: persistedRemindBefore ?? undefined
                 })

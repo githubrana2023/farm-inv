@@ -26,9 +26,11 @@ export const insertGrabAndGo = async (values: TGrabAndGoCreateFormValue) => {
 
         if (!fiftyPercentBarcode) return failureResponse('Fifty percent item barcode not found!')
 
+        console.log({ description: existItem.description })
+
         const [newFiftyPercentBarcode] = await inventoryDb.insert(grabAndGoTable).values({
             barcode: fiftyPercentBarcode.barcode,
-            // description: existItem.description,
+            description: existItem.description,
             quantity: values.quantity
         }).returning()
         return successResponse(newFiftyPercentBarcode)

@@ -11,7 +11,7 @@ import { ItemDetails } from '../shared/item-details'
 import { useGetItemByBarcode, useGetItemDetailsByBarcode } from '@/hooks/tanstack/mutation/item/get-item'
 import { useAlertModal, useAlertModalAction } from '@/hooks/redux/use-alert-modal'
 import { useModal, useModalAction } from '@/hooks/redux/use-modal'
-import { MODAL_TYPE } from '@/constants'
+import { DOT_SEPARATOR, MODAL_TYPE } from '@/constants'
 import Modal from '../shared/modal'
 import { Text } from '../ui/text'
 import { Button } from '../ui/button'
@@ -27,6 +27,9 @@ import { useInsertRemindBeforeMutation } from '@/hooks/tanstack/mutation/remind-
 import { queryClient } from '../provider/tanstack-query-client'
 import { MUTATION_KEY } from '@/constants/tanstack-query'
 import { usePersistShelfAndRemindBefore } from '@/hooks/use-persist-shelf-remind-before'
+import { invalidQueries } from '@/lib/tanstack-query/invalid-query'
+import { splitWord } from '@/lib/utils'
+import { differenceInDays, endOfMonth } from 'date-fns'
 
 
 export const ExpiryScanForm = () => {
@@ -74,20 +77,30 @@ export const ExpiryScanForm = () => {
     usePersistShelfAndRemindBefore(form)
 
     const onSubmit = form.handleSubmit((values) => {
-        insertExpiry(
-            { ...values, empId: stringEmpId },
-            {
-                onSuccess({ data, success, message }) {
-                    if (success) {
-                        // form.reset()
-                        // resetGetItemMutation()
-                        queryClient.invalidateQueries({
-                            queryKey: [MUTATION_KEY.EXPIRY_MONITOR.READ]
-                        })
-                    }
-                }
-            }
-        )
+        const [date, month, year] = splitWord(values.expireIn, DOT_SEPARATOR).map(v => Number(v))
+        const current = new Date()
+        const expectedExpiryDate = new Date(year, (month - 1), 1)
+        const endOfMonthDate = endOfMonth(expectedExpiryDate).getDate()
+
+        const difference = differenceInDays(new Date(year, month - 1, date), current)
+
+        console.log({ difference })
+
+        // const endOfMonthDate = endOfMonth()
+
+        // insertExpiry(
+        //     { ...values, empId: stringEmpId },
+        //     {
+        //         async onSuccess({ data, success, message }) {
+        //             if (success) {
+        //                 form.reset()
+        //                 resetGetItemMutation()
+        //                 await invalidQueries([MUTATION_KEY.EXPIRY_MONITOR.READ])
+        //                 barcodeRef.current?.focus()
+        //             }
+        //         }
+        //     }
+        // )
     })
 
 

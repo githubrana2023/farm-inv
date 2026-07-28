@@ -8,7 +8,7 @@ import { getSavedItems } from "@/dal/item/get-item-save-file";
 import { showError } from "../toast/error";
 import { showSuccess } from "../toast/success";
 import { inventoryDb } from "@/drizzle/db/inventory-db";
-import { grabAndGoTable } from "@/drizzle/schema/inventory";
+import { grabAndGoTable, inventoryTable } from "@/drizzle/schema/inventory";
 
 
 type InventoryOrderContentGeneratorReturnType = {
@@ -191,13 +191,14 @@ export async function saveFileModified(
 }
 
 export const saveGrabAndGoFiftyPercent = async () => {
-    // const items = await inventoryDb.select().from(grabAndGoTable)
-    // if (items.length < 1) return showError('No items found to generate!')
-    // const content = items.map(item => (`${item.barcode.padEnd(25, " ")}|${item.quantity}`)).join('\n')
-    // saveFileModified({
-    //     content,
-    //     prefix: 'grab_and_go'
-    // })
+
+    const items = await inventoryDb.select().from(grabAndGoTable)
+    if (items.length < 1) return showError('No items found to generate!')
+    const content = items.map(item => (`${item.barcode.padEnd(25, " ")}|${item.quantity}`)).join('\n')
+    saveFileModified({
+        content,
+        fileName: generateFileName('inv', 'grab_&_go'),
+    })
 }
 
 
@@ -217,6 +218,10 @@ export const saveInventory = async (
         saveFlag?: string;
     }) => {
     try {
+        if (items.length < 1) {
+            showError('No item found!')
+            return
+        }
         const fileName = generateFileName(prefix, saveFlag)
         const content = generateInventoryTypeContent(items)
         saveFileModified({
@@ -234,6 +239,10 @@ export const saveOrder = async (
         saveFlag?: string;
     }) => {
     try {
+        if (items.length < 1) {
+            showError('No item found!')
+            return
+        }
         const fileName = generateFileName(prefix, saveFlag)
         const content = generateOrderTypeContent(items)
         saveFileModified({

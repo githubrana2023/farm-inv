@@ -172,13 +172,30 @@ export const GrabAndGoForm = () => {
                 }
                 {
                     (itemDetails?.data && itemDetails?.data) && (
-                        <GrabAndGoItemCard item={{
-                            id: itemDetails.data.barcode,
-                            barcode: itemDetails?.data?.barcode,
-                            quantity: "0"
-                        }}
-                            onPress={() => { }}
-                        />
+                        <View className="gap-1 p-1 border border-dotted rounded-md"
+                            style={{
+                                boxShadow: '0px 6px 20px rgba(0,0,0,0.2)'
+                            }}
+                        >
+                            <DetailsRow
+                                library="Lucide"
+                                iconName="barcode"
+                                label="Barcode"
+                                value={itemDetails.data.barcode}
+                            />
+                            <DetailsRow
+                                library="Lucide"
+                                iconName="hash"
+                                label="ItemCode"
+                                value={itemDetails.data.item_number}
+                            />
+                            <DetailsRow
+                                library="Lucide"
+                                iconName="file-text"
+                                label="description"
+                                value={itemDetails.data.description}
+                            />
+                        </View>
                     )
                 }
             </View>

@@ -43,6 +43,13 @@
       "when": 1785187480851,
       "tag": "0005_charming_nightmare",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1785268204032,
+      "tag": "0006_boring_the_hood",
+      "breakpoints": true
     }
   ]
 }
