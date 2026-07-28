@@ -24,15 +24,28 @@ function ReusableTab<const T extends readonly string[],>({ tabLabels, tabContent
 
                 {/* Toggle button */}
                 <View className="flex-row items-center justify-center ">
-                    <View className="flex-row items-center justify-center gap-2 p-2 bg-secondary rounded-full">
+                    <View className="flex-row items-center justify-center gap-2 p-2 bg-secondary rounded-full"
+                        style={
+                            {
+                                boxShadow: '0px 6px 10px rgba(0,0,0,0.15)'
+                            }
+                        }
+                    >
                         {
                             tabLabels.map(tabLabel => {
                                 const activated = tabLabel === activeTab
                                 return (
                                     <Label
+                                        key={tabLabel}
                                         className={cn("px-2 py-0.5 rounded-full", activated && 'bg-white')}
-                                        onPress={() => setActiveTab(tabLabel)}>
-                                        Damage & Discount
+                                        onPress={() => setActiveTab(tabLabel)}
+                                        style={
+                                            activated ? {
+                                                boxShadow: '0px 3px 5px rgba(0,0,0,0.2)'
+                                            } : undefined
+                                        }
+                                    >
+                                        {tabLabel}
                                     </Label>
                                 )
                             })
