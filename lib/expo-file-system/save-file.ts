@@ -11,27 +11,6 @@ import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { grabAndGoTable } from "@/drizzle/schema/inventory";
 
 
-function generateFileName(prefix: string) {
-    const now = new Date();
-
-    return `${prefix}_${dateFns.format(now, 'ddMMyyyy_hhmmss aaa')}.txt`;
-}
-
-
-
-function createTextFile(
-    directory: Directory,
-    fileName: string,
-    content: string
-) {
-    const file = directory.createFile(fileName, "text/plain");
-
-    file.write(content, {
-        append: true,
-    });
-}
-
-
 type InventoryOrderContentGeneratorReturnType = {
     type: Exclude<ScanFlag, 'Tags'>,
     content: string,
@@ -50,10 +29,33 @@ type TagsContentGeneratorReturnType = {
 type GeneratorReturnType = InventoryOrderContentGeneratorReturnType | TagsContentGeneratorReturnType
 type Item = NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'][number]
 
+export type SaveInventoryFn = typeof saveInventory
+export type SaveOrderFn = typeof saveOrder
+
+//! GENERATE FILE NAME
+function generateFileName(prefix: string, saveFlag?: string) {
+    const now = new Date();
+
+    const fileName = saveFlag ? `${prefix}_${saveFlag}` : prefix
+
+    return `${fileName}_${dateFns.format(now, 'ddMMyyyy_hhmmss aaa')}.txt`;
+}
 
 
+//! CREATE TXT FILE
+function createTextFile(
+    directory: Directory,
+    fileName: string,
+    content: string
+) {
+    const file = directory.createFile(fileName, "text/plain");
 
+    file.write(content, {
+        append: true,
+    });
+}
 
+//! SAVE FILE
 export async function saveFile(prefix: ScanFlag, saveFlag?: string) {
     try {
         const res = await getSavedItems()
@@ -97,8 +99,7 @@ export async function saveFile(prefix: ScanFlag, saveFlag?: string) {
 }
 
 
-// GENERATING ORDER
-
+// GENERATING ORDER CONTENT
 export const generateOrderContent = (items: Item[], maxLength: number): GeneratorReturnType => {
 
     const content = items.map(item => {
@@ -129,7 +130,6 @@ const generateInventoryContent = (items: NonNullable<Awaited<ReturnType<typeof g
         hasItem: items.length > 0
     }
 }
-
 
 
 // GENERATING TAGS
@@ -170,7 +170,9 @@ const generator: Record<ScanFlag, (items: Item[], maxLength: number) => Generato
 
 
 
-export async function saveFileModified({ content, prefix, saveFlag }: { content: string, prefix: string, saveFlag?: string }) {
+export async function saveFileModified(
+    { content, fileName }: { content: string, fileName: string }
+) {
     try {
 
         const directory = await getDirectory();
@@ -178,8 +180,6 @@ export async function saveFileModified({ content, prefix, saveFlag }: { content:
         if (!directory) {
             return;
         }
-
-        const fileName = generateFileName(saveFlag ? `${prefix}_${saveFlag}` : `${prefix}`);
 
         createTextFile(directory, fileName, content);
 
@@ -191,11 +191,56 @@ export async function saveFileModified({ content, prefix, saveFlag }: { content:
 }
 
 export const saveGrabAndGoFiftyPercent = async () => {
-    const items = await inventoryDb.select().from(grabAndGoTable)
-    if (items.length < 1) return showError('No items found to generate!')
-    const content = items.map(item => (`${item.barcode.padEnd(25, " ")}|${item.quantity}`)).join('\n')
-    saveFileModified({
-        content,
-        prefix: 'grab_and_go'
-    })
+    // const items = await inventoryDb.select().from(grabAndGoTable)
+    // if (items.length < 1) return showError('No items found to generate!')
+    // const content = items.map(item => (`${item.barcode.padEnd(25, " ")}|${item.quantity}`)).join('\n')
+    // saveFileModified({
+    //     content,
+    //     prefix: 'grab_and_go'
+    // })
+}
+
+
+const generateInventoryTypeContent = (items: { barcode: string, quantity: string }[]) => {
+    return items.map(item => (`${item.barcode.padEnd(25, ' ')}|${item.quantity}`)).join('\n')
+}
+
+const generateOrderTypeContent = (items: { barcode: string, quantity: string, packing: string, uom: string }[]) => {
+    return items.map(item => (`${item.barcode.padEnd(25, ' ')}|${item.uom}|${item.packing}|${item.quantity}|`)).join('\n')
+}
+
+
+export const saveInventory = async (
+    { items, prefix, saveFlag }: {
+        items: { barcode: string, quantity: string }[];
+        prefix: string;
+        saveFlag?: string;
+    }) => {
+    try {
+        const fileName = generateFileName(prefix, saveFlag)
+        const content = generateInventoryTypeContent(items)
+        saveFileModified({
+            content, fileName
+        })
+    } catch (error) {
+        console.log(`failed to save ${prefix}`)
+    }
+
+}
+export const saveOrder = async (
+    { items, prefix, saveFlag }: {
+        items: { barcode: string, quantity: string, packing: string, uom: string }[];
+        prefix: string;
+        saveFlag?: string;
+    }) => {
+    try {
+        const fileName = generateFileName(prefix, saveFlag)
+        const content = generateOrderTypeContent(items)
+        saveFileModified({
+            content, fileName
+        })
+    } catch (error) {
+        console.log('failed to save order')
+    }
+
 }

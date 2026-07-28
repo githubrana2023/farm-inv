@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm"
 import 'react-native-get-random-values';
 import bcrypt from 'bcryptjs'
 import { showError } from "@/lib/toast/error"
-import { saveFile } from "@/lib/expo-file-system/save-file"
+import { saveFile, saveInventory } from "@/lib/expo-file-system/save-file"
 import { employeeLogin } from "@/dal/employee/login"
 
 export const useEmployeeCreateMutation = () => {
@@ -76,7 +76,7 @@ export const useEmployeesGetQuery = () => {
         queryFn: async () => {
             try {
                 const employees = await inventoryDb.select().from(employeeTable)
-                return employees.map(({ password, ...emp }) => ({ emp, onPress: saveFile }))
+                return employees.map(({ password, ...emp }) => ({ emp, onPress: saveInventory }))
             } catch (error) {
                 console.log('Failed to get employees', error)
                 showError('Failed to get employees')

@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useColorScheme } from 'nativewind'
 import { ALERT_MODAL_TYPE, MODAL_TYPE, SCAN_FLAG_TYPE, SCAN_TYPE_KEY, ScanFlag, } from '@/constants'
-import { saveOrder } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
-import { saveFile } from '@/lib/expo-file-system/save-file'
+import { saveFile, saveInventory, SaveInventoryFn, saveOrder, SaveOrderFn } from '@/lib/expo-file-system/save-file'
 import { useEmployeesGetQuery } from '@/hooks/tanstack/mutation/employee'
 import { useModalAction } from '@/hooks/redux/use-modal'
 import { useLabelingGetQuery } from '@/hooks/tanstack/mutation/labeling'
@@ -199,14 +198,37 @@ const ItemsList = () => {
                 {/* below buttons */}
                 <View className='bg-background flex-row justify-between items-center  rounded-md p-1 shadow-sm shadow-black/5'>
                     {/* INVENTORY */}
-                    <Inventory invLabels={label?.invLabels ?? []} fileName={inputValue.title} />
+                    <Inventory
+                        invLabels={label?.invLabels ?? []}
+                        items={data.filter(d => d.scanFlag === 'Inventory').map(({ barcode, quantity }) => ({ barcode, quantity }))}
+                        fileName={inputValue.title}
+                    />
                     {/* TAGS */}
-                    <Tag employees={employees ?? []} fileName={inputValue.title} />
+                    <Tag
+                        employees={employees ?? []}
+                        fileName={inputValue.title}
+                        items={{
+                            regularItems: data
+                                .filter(d => (d.scanFlag === 'Tags' && d.pflag !== 'P'))
+                                .map(({ barcode, quantity }) => ({ barcode, quantity })),
+                            promoItems: data
+                                .filter(d => (d.scanFlag === 'Tags' && d.pflag === 'P'))
+                                .map(({ barcode, quantity }) => ({ barcode, quantity }))
+                        }}
+                    />
                     {/* ORDER */}
-                    <Order orderLabels={label?.orderLabels ?? []} fileName={inputValue.title} />
+                    <Order
+                        orderLabels={label?.orderLabels ?? []}
+                        items={data.filter(
+                            d => d.scanFlag === 'Order'
+                        ).map(
+                            ({ barcode, quantity, packing, uom }) => ({ barcode, quantity, packing, uom })
+                        )}
+                        fileName={inputValue.title}
+                    />
 
                     <Button
-                        onPress={() => saveOrder()}
+                        onPress={() => { }}
                         size={'sm'}
                         className='h-8'
                     >
@@ -222,15 +244,14 @@ const ItemsList = () => {
 export default ItemsList
 
 
-const Inventory = ({ invLabels, fileName }: {
+const Inventory = ({ invLabels, fileName, items }: {
     invLabels: {
         id: string;
         label: string;
         saveFlag: "Inventory" | "Order";
-        createdAt: Date;
-        updatedAt: Date;
-        onPress: (prefix: ScanFlag, saveFlag?: string) => Promise<void>;
+        onPress: SaveInventoryFn
     }[],
+    items: Parameters<SaveInventoryFn>[number]['items']
     fileName?: string
 }) => {
 
@@ -240,7 +261,9 @@ const Inventory = ({ invLabels, fileName }: {
     return (
         <View className="flex-row">
             <Button
-                onPress={() => saveFile(SCAN_FLAG_TYPE.Inventory, fileName)}
+                onPress={async () => {
+                    await saveInventory({ items, prefix: 'inv', saveFlag: fileName })
+                }}
                 className='rounded-r-none h-8 pr-1.5'
                 size={'sm'}
             >
@@ -272,7 +295,7 @@ const Inventory = ({ invLabels, fileName }: {
                     {
                         invLabels.map(({ id, label: menuItem, onPress }, i) => (
                             <View key={id}>
-                                <DropdownMenuItem onPress={() => onPress(SCAN_FLAG_TYPE.Inventory, menuItem)}>
+                                <DropdownMenuItem onPress={async () => await onPress({ items, prefix: 'inv', saveFlag: menuItem })}>
                                     <Text className='font-semibold'>{menuItem}</Text>
                                 </DropdownMenuItem>
                                 {invLabels.length !== i + 1 && <Separator />}
@@ -285,17 +308,15 @@ const Inventory = ({ invLabels, fileName }: {
     )
 }
 
-const Order = ({ orderLabels, fileName }: {
+const Order = ({ orderLabels, fileName, items }: {
     orderLabels: {
         id: string;
         label: string;
         saveFlag: "Inventory" | "Order";
-        createdAt: Date;
-        updatedAt: Date;
-        onPress: (prefix: ScanFlag, saveFlag?: string) => Promise<void>;
+        onPress: SaveOrderFn
     }[],
     fileName?: string
-
+    items: Parameters<SaveOrderFn>[number]['items']
 }) => {
 
     const { colorScheme } = useColorScheme();
@@ -304,7 +325,13 @@ const Order = ({ orderLabels, fileName }: {
     return (
         <View className="flex-row">
             <Button
-                onPress={() => saveFile(SCAN_FLAG_TYPE.Order, fileName)}
+                onPress={async () => {
+                    await saveOrder({
+                        items,
+                        prefix: 'order',
+                        saveFlag: fileName
+                    })
+                }}
                 className='rounded-r-none h-8 pr-1.5'
                 size={'sm'}
             >
@@ -334,7 +361,13 @@ const Order = ({ orderLabels, fileName }: {
                         orderLabels.map(({ id, label: menuItem, onPress }, i) => (
                             <View key={id}>
                                 <DropdownMenuItem
-                                    onPress={() => onPress(SCAN_FLAG_TYPE.Order, menuItem)}>
+                                    onPress={async () => onPress(
+                                        {
+                                            items,
+                                            prefix: 'order',
+                                            saveFlag: menuItem
+                                        }
+                                    )}>
                                     <Text className='font-semibold'>{menuItem}</Text>
                                 </DropdownMenuItem>
                                 {orderLabels.length !== i + 1 && <Separator />}
@@ -347,18 +380,20 @@ const Order = ({ orderLabels, fileName }: {
     )
 }
 
-const Tag = ({ employees, fileName }: {
+const Tag = ({ employees, fileName, items }: {
     employees: {
         emp: {
             employeeId: string;
             name: string;
             employeeTitle: string;
-            createdAt: Date;
-            updatedAt: Date;
         };
-        onPress: (prefix: ScanFlag, saveFlag?: string) => Promise<void>;
+        onPress: SaveInventoryFn
     }[],
     fileName?: string
+    items: {
+        regularItems: Parameters<SaveInventoryFn>[number]['items']
+        promoItems: Parameters<SaveInventoryFn>[number]['items']
+    }
 
 }) => {
     const { colorScheme } = useColorScheme();
@@ -369,7 +404,18 @@ const Tag = ({ employees, fileName }: {
     return (
         <View className="flex-row">
             <Button
-                onPress={() => saveFile(SCAN_FLAG_TYPE.Tags, fileName)}
+                onPress={async () => {
+                    await saveInventory({
+                        items: items.regularItems,
+                        prefix: 'tags',
+                        saveFlag: fileName
+                    })
+                    await saveInventory({
+                        items: items.promoItems,
+                        prefix: 'tags',
+                        saveFlag: fileName
+                    })
+                }}
                 className='rounded-r-none h-8 pr-1.5'
                 size={'sm'}
             >
@@ -400,7 +446,18 @@ const Tag = ({ employees, fileName }: {
                         employees?.map(({ emp, onPress }, i) => (
                             <View key={emp.employeeId}>
                                 <DropdownMenuItem
-                                    onPress={() => onPress(SCAN_FLAG_TYPE.Tags, `${emp.name}`)}
+                                    onPress={async () => {
+                                        await onPress({
+                                            items: items.regularItems,
+                                            prefix: 'r-tags',
+                                            saveFlag: fileName
+                                        })
+                                        await onPress({
+                                            items: items.promoItems,
+                                            prefix: 'p-tags',
+                                            saveFlag: fileName
+                                        })
+                                    }}
                                     onLongPress={(c) => router.push(`/employee/${emp.employeeId}`)}
                                 >
                                     <Text className='font-semibold'>{emp.name}</Text>
