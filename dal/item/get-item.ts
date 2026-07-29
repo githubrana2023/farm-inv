@@ -8,6 +8,7 @@ import { failureResponse, successResponse } from "@/lib/response"
 import { AddItemFormValue } from "@/lib/zod/add-item-form-schema"
 import { and, asc, desc, eq, like, or, sql } from "drizzle-orm"
 import { needPendingState } from "@/lib/utils"
+import { itemCodeRegex } from "@/constants"
 
 export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pick<AddItemFormValue, 'scanType' | 'isAdvanceMode' | 'barcode'>) => {
     try {
@@ -16,11 +17,41 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
 
         if (!barcode) return failureResponse('Barcode is missing!')
 
-        const [item] = await farmDb.select().from(itemMasterTable).where(
-            eq(itemMasterTable.barcode, barcode)
-        )
+        const isItemCode = itemCodeRegex.test(barcode)
 
-        if (!item) return failureResponse('Item not found!')
+        let existItem: {
+            barcode: string;
+            item_number: string;
+            description: string;
+            uom: string;
+            packing: number;
+            sales_price: number;
+            vendor: string;
+            vendor_code: string;
+            promo: "P" | "R" | null;
+            cat3: string;
+            cat4: string;
+        } | undefined = undefined
+
+        if (isItemCode && isScanTypeOrder) {
+
+            const items = await farmDb.select().from(itemMasterTable).where(
+                eq(itemMasterTable.item_number, barcode)
+            )
+            existItem = items[0]
+        } else {
+
+            const items = await farmDb.select().from(itemMasterTable).where(
+                eq(itemMasterTable.barcode, barcode)
+            )
+
+            existItem = items[0]
+
+        }
+
+
+
+        if (!existItem) return failureResponse('Item not found!')
 
 
         const itemUoms = await farmDb.select({
@@ -28,7 +59,7 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
             barcode: itemMasterTable.barcode,
             packing: itemMasterTable.packing
         }).from(itemMasterTable).where(
-            eq(itemMasterTable.item_number, item.item_number)
+            eq(itemMasterTable.item_number, existItem.item_number)
         )
 
         const uniqueUoms = [...new Map(itemUoms.map(item => ([item.packing, item]))).values()]
@@ -37,7 +68,7 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
             const scannedItems = await inventoryDb.select().from(inventoryTable).where(
                 and(
                     eq(inventoryTable.scanFlag, 'Order'),
-                    eq(inventoryTable.item_number, item.item_number),
+                    eq(inventoryTable.item_number, existItem.item_number),
                 )
             )
             const itemAlreadyScanned = scannedItems.length >= 1
@@ -62,7 +93,7 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
             isDuplicated: false,
             orderItem: null,
             item: {
-                ...item,
+                ...existItem,
                 itemUoms: uniqueUoms,
                 isDuplicated: false
             }

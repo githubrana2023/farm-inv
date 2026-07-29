@@ -33,7 +33,7 @@ export const ThrowableForm = () => {
         shouldFocusError: false
     })
 
-    const isOverStock = form.watch('type')
+    const isOverStock = form.watch('type') === 'OVERSTOCK'
 
     usePersistThrowingDiscountType(form)
     const onSubmit = form.handleSubmit(values => {

@@ -5,55 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1784663067853,
-      "tag": "0000_sad_silverclaw",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1784821119996,
-      "tag": "0001_cold_tyrannus",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1784970000002,
-      "tag": "0002_dark_leech",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1784970205068,
-      "tag": "0003_rare_dormammu",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1784998319608,
-      "tag": "0004_mysterious_ozymandias",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1785187480851,
-      "tag": "0005_charming_nightmare",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-<<<<<<< HEAD
-      "when": 1785268204032,
-      "tag": "0006_boring_the_hood",
-=======
-      "when": 1785314477200,
-      "tag": "0006_colorful_giant_man",
->>>>>>> 59ef577 (throwable insert)
+      "when": 1785338832184,
+      "tag": "0000_curious_sentinel",
       "breakpoints": true
     }
   ]

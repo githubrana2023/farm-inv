@@ -1,4 +1,5 @@
 
+import { itemCodeRegex } from "@/constants";
 import { farmDb } from "@/drizzle/db/farm-db";
 import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { itemMasterTable } from "@/drizzle/schema/farm-schema";
@@ -15,12 +16,36 @@ export const insertScannedItem = async (formValue: AddItemFormValue) => {
         const { data } = validation
         const [uom, packing] = splitWord(data.uom, '|')
         const isOrder = data.scanType === 'Order'
+        const isItemCode = itemCodeRegex.test(data.barcode)
 
         if (Number(data.quantity) <= 0) return failureResponse('Quantity must grater than 0')
 
-        const [existItem] = await farmDb.select().from(itemMasterTable).where(
-            eq(itemMasterTable.barcode, data.barcode)
-        )
+        let existItem: {
+            barcode: string;
+            item_number: string;
+            description: string;
+            uom: string;
+            packing: number;
+            sales_price: number;
+            vendor: string;
+            vendor_code: string;
+            promo: "P" | "R" | null;
+            cat3: string;
+            cat4: string;
+        } | undefined = undefined
+        if (isOrder && isItemCode) {
+
+            const items = await farmDb.select().from(itemMasterTable).where(
+                eq(itemMasterTable.item_number, data.barcode)
+            )
+            existItem = items[0]
+        } else {
+            const items = await farmDb.select().from(itemMasterTable).where(
+                eq(itemMasterTable.barcode, data.barcode)
+            )
+            existItem = items[0]
+        }
+
 
         if (!existItem) return failureResponse('Item not found!')
 

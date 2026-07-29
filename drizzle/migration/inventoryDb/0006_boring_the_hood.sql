@@ -1,1 +1,0 @@
-ALTER TABLE `grab_and_go` ADD `description` text NOT NULL;
