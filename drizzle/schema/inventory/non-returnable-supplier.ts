@@ -1,3 +1,4 @@
+import { createdAt, updatedAt } from "@/drizzle/schema-helper";
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { v4 as uuid } from "uuid";
 
@@ -10,5 +11,7 @@ export const nonReturnAbleSupplierTable = sqliteTable('no_return_able_supplier',
     nonReturnAble: integer('non_return_able', { mode: 'boolean' }).notNull(),
     branchThrowing: integer('branch_throwing', { mode: 'boolean' }).notNull(),
     nearExpiryDiscount: integer('near_expiry_discount', { mode: 'boolean' }).notNull(),
-    returnException: text('return_exception')
+    returnException: text('return_exception'),
+    createdAt: createdAt(),
+    updatedAt: updatedAt()
 })

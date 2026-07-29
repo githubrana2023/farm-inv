@@ -2,9 +2,9 @@ import { DOT_SEPARATOR } from "@/constants"
 import { farmDb } from "@/drizzle/db/farm-db"
 import { inventoryDb } from "@/drizzle/db/inventory-db"
 import { itemMasterTable } from "@/drizzle/schema/farm-schema"
-import { nonReturnAbleSupplierTable, throwableTable } from "@/drizzle/schema/inventory"
+import { nonReturnAbleSupplierTable, throwableAllowedSupplierTable, throwableTable } from "@/drizzle/schema/inventory"
 import { failureResponse, successResponse } from "@/lib/response"
-import { splitWord } from "@/lib/utils"
+import { isStartWith, splitWord } from "@/lib/utils"
 import { throwableCreateFormSchema, TThrowableCreateFormValue } from "@/lib/zod/throwable-form-schema"
 import { eq } from "drizzle-orm"
 
@@ -25,34 +25,51 @@ export const insertThrowable = async (value: TThrowableCreateFormValue) => {
 
         if (!existItem) return failureResponse('Item not found!')
 
+        const [existAllowedSupplier] = await inventoryDb.select().from(throwableAllowedSupplierTable).where(eq(
+            throwableAllowedSupplierTable.vendorCode, existItem.vendor_code
+        ))
 
-        let existNonReturnableSupplier: {
-            id: string;
-            vendorCode: string;
-            shortVendorName: string;
-            vendorName: string;
-            returnAble: boolean;
-            nonReturnAble: boolean;
-            branchThrowing: boolean;
-            nearExpiryDiscount: boolean;
-            returnException: string | null;
-        } | null = null
+        const [existNonReturnAbleSupplier] = await inventoryDb.select().from(nonReturnAbleSupplierTable).where(eq(
+            nonReturnAbleSupplierTable.vendorCode, existItem.vendor_code
+        ))
 
-        let vendorCode: string = ""
-        let vendorName: string = ""
-        const isAllow = !existNonReturnableSupplier || !hasImportedLabel
+        const isGiOrHiVendorCode = isStartWith(existItem.vendor_code, 'gi') || isStartWith(existItem.vendor_code, 'hi')
 
-        if (type !== 'OVERSTOCK') {
-            const [existNonReturnableSupplier] = await inventoryDb.select().from(nonReturnAbleSupplierTable).where(
-                eq(nonReturnAbleSupplierTable.vendorCode, existItem.vendor)
+        if (data.type !== 'OVERSTOCK') {
+            if (
+                !data.hasImportedLabel &&
+                !isGiOrHiVendorCode &&
+                !existAllowedSupplier &&
+                !existNonReturnAbleSupplier
+            ) return failureResponse(`Item are not allow for ${data.type}`)
+
+            if (existAllowedSupplier && !existAllowedSupplier.isCurrentlyAllow) return failureResponse(
+                `Currently not allow for ${data.type}`
             )
 
-            if (!existNonReturnableSupplier && !hasImportedLabel) return failureResponse('Check for imported label!')
+            if (
+                data.type === 'ONE_PLUS_ONE' &&
+                existNonReturnAbleSupplier &&
+                !existNonReturnAbleSupplier.nearExpiryDiscount
+            ) return failureResponse(
+                `Not allowed for one plus one as per non returnable supplier sheet!`
+            );
 
-            vendorCode = existNonReturnableSupplier ? existNonReturnableSupplier.vendorCode : existItem.vendor_code
-            vendorName = existNonReturnableSupplier ? existNonReturnableSupplier.vendorName : existItem.vendor
+            if (
+                data.type === 'THROWING' &&
+                existNonReturnAbleSupplier &&
+                !existNonReturnAbleSupplier.branchThrowing
+            ) return failureResponse(
+                `Not allowed for throwing as per non returnable supplier sheet!`
+            );
         }
 
+
+        const isAllow = data.hasImportedLabel ||
+            isGiOrHiVendorCode ||
+            (existAllowedSupplier && existAllowedSupplier.isCurrentlyAllow) ||
+            (existNonReturnAbleSupplier && existNonReturnAbleSupplier.nearExpiryDiscount) ||
+            (existNonReturnAbleSupplier && existNonReturnAbleSupplier.branchThrowing)
 
         const newThrowable = await inventoryDb.insert(throwableTable).values({
             barcode: existItem.barcode,
@@ -60,8 +77,8 @@ export const insertThrowable = async (value: TThrowableCreateFormValue) => {
             isAllow,
             quantity,
             type,
-            vendorCode,
-            vendorName,
+            vendorCode: existItem.vendor_code,
+            vendorName: existItem.vendor,
             hasImportedLabel,
             description: existItem.description,
             uom: existItem.uom,

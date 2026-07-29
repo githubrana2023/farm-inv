@@ -44,3 +44,7 @@ export const copy = async (text: string) => {
 export const needPendingState = async () => {
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 }
+
+export const isStartWith = (word: string, startsWith: string) => {
+  return word.toLowerCase().startsWith(startsWith.toLowerCase())
+}
