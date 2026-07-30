@@ -74,33 +74,22 @@ export const ExpiryScanForm = () => {
     const { data: shelfs, isPending: shelfIsPending } = useGetShelfNoMutation(stringEmpId)
     const { data: remindBeforeDays, isPending: remindBeforeDaysIsPending } = useGetRemindBeforeMutation(stringEmpId)
 
-    usePersistShelfAndRemindBefore(form)
+    usePersistShelfAndRemindBefore(form, stringEmpId)
 
     const onSubmit = form.handleSubmit((values) => {
-        const [date, month, year] = splitWord(values.expireIn, DOT_SEPARATOR).map(v => Number(v))
-        const current = new Date()
-        const expectedExpiryDate = new Date(year, (month - 1), 1)
-        const endOfMonthDate = endOfMonth(expectedExpiryDate).getDate()
-
-        const difference = differenceInDays(new Date(year, month - 1, date), current)
-
-        console.log({ difference })
-
-        // const endOfMonthDate = endOfMonth()
-
-        // insertExpiry(
-        //     { ...values, empId: stringEmpId },
-        //     {
-        //         async onSuccess({ data, success, message }) {
-        //             if (success) {
-        //                 form.reset()
-        //                 resetGetItemMutation()
-        //                 await invalidQueries([MUTATION_KEY.EXPIRY_MONITOR.READ])
-        //                 barcodeRef.current?.focus()
-        //             }
-        //         }
-        //     }
-        // )
+        insertExpiry(
+            { ...values, empId: stringEmpId },
+            {
+                async onSuccess({ data, success, message }) {
+                    if (success) {
+                        form.reset()
+                        resetGetItemMutation()
+                        await invalidQueries([MUTATION_KEY.EXPIRY_MONITOR.READ])
+                        barcodeRef.current?.focus()
+                    }
+                }
+            }
+        )
     })
 
 

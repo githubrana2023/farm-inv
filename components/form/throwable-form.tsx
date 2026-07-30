@@ -13,12 +13,17 @@ import { useRef } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { usePersistThrowingDiscountType } from "@/hooks/use-persist-throwing-discount-type"
 import { dateRegex, DOT_SEPARATOR } from "@/constants"
+import { useGetItemDetailsByBarcode } from "@/hooks/tanstack/mutation/item/get-item"
+import { showError } from "@/lib/toast/error"
 
 
 export const ThrowableForm = () => {
+
+    // HOOKS
     const barcodeRef = useRef<any>(null)
     const quantityRef = useRef<any>(null)
     const expireInRef = useRef<any>(null)
+
     const form = useForm<TThrowableCreateFormValue>({
         defaultValues: {
             barcode: "",
@@ -32,15 +37,30 @@ export const ThrowableForm = () => {
         reValidateMode: 'onSubmit',
         shouldFocusError: false
     })
-
-    const isOverStock = form.watch('type') === 'OVERSTOCK'
-
     usePersistThrowingDiscountType(form)
+
+    const { mutate: getItemDetailsByBarcode } = useGetItemDetailsByBarcode()
+
     const onSubmit = form.handleSubmit(values => {
         quantityRef?.current?.focus()
         form.reset()
     })
 
+
+    const onSubmitEditing = () => {
+        const barcode = form.getValues('barcode')
+        getItemDetailsByBarcode(barcode, {
+            async onSuccess({ success, message }) {
+                if (!success) {
+                    showError(message)
+                    return
+                }
+                quantityRef.current?.focus()
+            },
+        })
+    }
+
+    const isOverStock = form.watch('type') === 'OVERSTOCK'
 
     return (
         <View className="flex-1">
