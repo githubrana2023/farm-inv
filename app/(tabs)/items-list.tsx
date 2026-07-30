@@ -201,7 +201,7 @@ const ItemsList = () => {
                     {/* INVENTORY */}
                     <Inventory
                         invLabels={label?.invLabels ?? []}
-                        items={data.filter(d => d.scanFlag === 'Inventory').map(({ barcode, quantity }) => ({ barcode, quantity }))}
+                        items={data.filter(d => (d.scanFlag === 'Inventory' || d.scanFlag === null)).map(({ barcode, quantity }) => ({ barcode, quantity }))}
                         fileName={inputValue.title}
                     />
                     {/* TAGS */}
@@ -210,10 +210,10 @@ const ItemsList = () => {
                         fileName={inputValue.title}
                         items={{
                             regularItems: data
-                                .filter(d => (d.scanFlag === 'Tags' && d.pflag !== 'P'))
+                                .filter(d => ((d.scanFlag === 'Tags' || d.scanFlag === null) && d.pflag !== 'P'))
                                 .map(({ barcode, quantity }) => ({ barcode, quantity })),
                             promoItems: data
-                                .filter(d => (d.scanFlag === 'Tags' && d.pflag === 'P'))
+                                .filter(d => ((d.scanFlag === 'Tags' || d.scanFlag === null) && d.pflag === 'P'))
                                 .map(({ barcode, quantity }) => ({ barcode, quantity }))
                         }}
                     />
@@ -221,7 +221,7 @@ const ItemsList = () => {
                     <Order
                         orderLabels={label?.orderLabels ?? []}
                         items={data.filter(
-                            d => d.scanFlag === 'Order'
+                            d => (d.scanFlag === 'Order' || d.scanFlag === null)
                         ).map(
                             ({ barcode, quantity, packing, uom }) => ({ barcode, quantity, packing, uom })
                         )}
