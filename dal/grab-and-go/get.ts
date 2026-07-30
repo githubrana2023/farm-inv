@@ -1,16 +1,19 @@
+import { EAN13Regex } from "@/constants";
 import { farmDb } from "@/drizzle/db/farm-db";
 import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { itemMasterTable } from "@/drizzle/schema/farm-schema";
 import { grabAndGoTable } from "@/drizzle/schema/inventory";
 import { failureResponse, successResponse } from "@/lib/response";
+import { isValidEAN13, parseEAN13 } from "@/lib/utils";
 import { and, desc, eq, like } from "drizzle-orm";
-
-
 export const getGrabAndGoFiftyPercentBarcode = async (barcode: string) => {
     try {
         try {
+
+            const parsedBarcode = isValidEAN13(barcode) ? parseEAN13(barcode) : barcode
+
             const [existItem] = await farmDb.select().from(itemMasterTable).where(eq(
-                itemMasterTable.barcode, barcode
+                itemMasterTable.barcode, parsedBarcode
             ))
 
             if (!existItem) return failureResponse('Item not found');

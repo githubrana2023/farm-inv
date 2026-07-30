@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import * as Clipboard from 'expo-clipboard'
 import { showError } from './toast/error';
 import { showSuccess } from './toast/success';
+import { EAN13Regex } from '@/constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -47,4 +48,24 @@ export const needPendingState = async () => {
 
 export const isStartWith = (word: string, startsWith: string) => {
   return word.toLowerCase().startsWith(startsWith.toLowerCase())
+}
+
+
+
+
+export const isValidEAN13 = (barcode: string) => {
+  if (!EAN13Regex.test(barcode)) return false
+
+  let sum: number = 0
+  for (let i = 0; i < 12; i++) {
+    sum += i % 2 === 0 ? Number(barcode[i]) : Number(barcode[i]) * 3
+  }
+
+  const checkSum = (10 - (sum % 10)) % 10
+
+  return checkSum === Number(barcode[12])
+}
+
+export const parseEAN13 = (barcode: string) => {
+  return `${barcode.slice(2, 7)}`.replace("0", "9")
 }

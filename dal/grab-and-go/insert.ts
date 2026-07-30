@@ -1,9 +1,10 @@
+import { barcodeRegex, EAN13Regex } from "@/constants";
 import { farmDb } from "@/drizzle/db/farm-db";
 import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { itemMasterTable } from "@/drizzle/schema/farm-schema";
 import { grabAndGoTable } from "@/drizzle/schema/inventory";
 import { failureResponse, successResponse } from "@/lib/response";
-import { needPendingState } from "@/lib/utils";
+import { isValidEAN13, needPendingState, parseEAN13 } from "@/lib/utils";
 import { grabAndGoCreateFormSchema, TGrabAndGoCreateFormValue } from "@/lib/zod/grab-and-go-form-schema";
 import { and, eq, like } from "drizzle-orm";
 
@@ -12,8 +13,11 @@ export const insertGrabAndGo = async (values: TGrabAndGoCreateFormValue) => {
         await needPendingState()
         const validation = grabAndGoCreateFormSchema.safeParse(values)
         if (!validation.success) return failureResponse('Invalid fields');
+
+        const barcode = isValidEAN13(values.barcode) ? parseEAN13(values.barcode) : values.barcode
+
         const [existItem] = await farmDb.select().from(itemMasterTable).where(eq(
-            itemMasterTable.barcode, values.barcode
+            itemMasterTable.barcode, barcode
         ))
         if (!existItem) return failureResponse('Item not found');
 
@@ -26,7 +30,6 @@ export const insertGrabAndGo = async (values: TGrabAndGoCreateFormValue) => {
 
         if (!fiftyPercentBarcode) return failureResponse('Fifty percent item barcode not found!')
 
-        console.log({ description: existItem.description })
 
         const [newFiftyPercentBarcode] = await inventoryDb.insert(grabAndGoTable).values({
             barcode: fiftyPercentBarcode.barcode,
