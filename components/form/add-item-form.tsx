@@ -42,6 +42,8 @@ import { useUpdateOrderItem } from "@/hooks/tanstack/mutation/item/update-item";
 import { useDeleteOrderItem } from "@/hooks/tanstack/mutation/item/delete-item ";
 import { OrderItemDetails } from "../shared/order-item-details";
 import { useAlertModalAction } from "@/hooks/redux/use-alert-modal";
+import { showError } from "@/lib/toast/error";
+import { invalidQueries } from "@/lib/tanstack-query/invalid-query";
 
 
 
@@ -100,21 +102,21 @@ export default function AddItemForm() {
 
   //! handle submit function
   const onSubmit = handleSubmit((value) => {
-
     insertScannedItem(value, {
+
       async onSuccess({ data, success, message }) {
+
         showDynamicToast(success, message)
         if (success) {
           handleResetForm();
           resetGetItem()
           // OK
           barcodeInputRef.current?.focus();
-          console.log('barcode focused from onSubmit')
-          await queryClient.invalidateQueries({
-            queryKey: [MUTATION_KEY.SCANNED_ITEM.READ]
-          })
+          invalidQueries([MUTATION_KEY.SCANNED_ITEM.READ])
         }
+
       }
+
     })
   });
 
@@ -127,17 +129,16 @@ export default function AddItemForm() {
         {
           onSuccess({ success, message, data }) {
 
-            showDynamicToast(
-              success,
-              data?.isDuplicated ? 'Duplicate item ordering!' : message,
-              data?.isDuplicated ? message : undefined
-            )
+
+
 
             if (success) {
               // Ok
+              if (data?.isDuplicated) {
+                showError('Duplicate item ordering!')
+              }
               quantityInputRef.current?.focus()
-              console.log('Quantity focused from onSubmit')
-
+              return
             }
 
           }
@@ -191,7 +192,7 @@ export default function AddItemForm() {
                   />
 
                   {/* Clear Button */}
-                  {field.value.length > 0 ? (
+                  {field?.value?.length > 0 ? (
                     <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
                       <TouchableOpacity
                         onPress={async () => {
@@ -314,13 +315,7 @@ export default function AddItemForm() {
                     </View>
 
                     <Switch
-                      onCheckedChange={(isEnable) => {
-                        field.onChange(isEnable);
-                        setFormValue(
-                          "scanType",
-                          "Inventory"
-                        );
-                      }}
+                      onCheckedChange={field.onChange}
                       checked={field.value}
                     />
                   </View>
@@ -332,58 +327,62 @@ export default function AddItemForm() {
 
           {/* Multitask Scan*/}
           <View className="mb-2">
-            {isAdvanceMode && (
-              <FormField
-                control={control}
-                name="scanType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <RadioGroup
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        className="flex-row gap-2"
-                      >
-                        {SCAN_FLAG.map((variant) => {
-                          const isActive = field.value === variant;
+            {
+              // isAdvanceMode && 
+              (
+                <FormField
+                  control={control}
+                  name="scanType"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <RadioGroup
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            className="flex-row gap-2"
+                          >
+                            {SCAN_FLAG.map((variant) => {
+                              const isActive = field.value === variant;
 
-                          return (
-                            <Pressable
-                              onPress={() => field.onChange(variant)}
-                              key={variant}
-                              className={cn(
-                                "flex-1 rounded",
-                                isActive ? "dark:bg-white bg-black" : "border border-gray-100",
-                              )}
-                            >
-                              <View className="flex-row items-center justify-center gap-1">
-                                <Text
+                              return (
+                                <Pressable
+                                  onPress={() => field.onChange(variant)}
+                                  key={variant}
                                   className={cn(
-                                    "py-1 px-0 text-center font-semibold text-sm",
-                                    isActive && "dark:text-black text-white",
+                                    "flex-1 rounded",
+                                    isActive ? "dark:bg-white bg-black" : "border border-gray-100",
                                   )}
                                 >
-                                  {variant}
-                                </Text>
-                              </View>
-                            </Pressable>
-                          );
-                        })}
-                      </RadioGroup>
-                    </FormControl>
-                    {!isTimerFinish && (
-                      <FormDescription>
-                        By using this feature merchandiser can scan multi type
-                        inventory at the same time. Like{" "}
-                        <Text className="font-semibold text-sm">
-                          Inventory, Shelf tags, Order
-                        </Text>
-                      </FormDescription>
-                    )}
-                  </FormItem>
-                )}
-              />
-            )}
+                                  <View className="flex-row items-center justify-center gap-1">
+                                    <Text
+                                      className={cn(
+                                        "py-1 px-0 text-center font-semibold text-sm",
+                                        isActive && "dark:text-black text-white",
+                                      )}
+                                    >
+                                      {variant}
+                                    </Text>
+                                  </View>
+                                </Pressable>
+                              );
+                            })}
+                          </RadioGroup>
+                        </FormControl>
+                        {!isTimerFinish && (
+                          <FormDescription>
+                            By using this feature merchandiser can scan multi type
+                            inventory at the same time. Like{" "}
+                            <Text className="font-semibold text-sm">
+                              Inventory, Shelf tags, Order
+                            </Text>
+                          </FormDescription>
+                        )}
+                      </FormItem>
+                    )
+                  }}
+                />
+              )}
           </View>
         </View>
       </Form>

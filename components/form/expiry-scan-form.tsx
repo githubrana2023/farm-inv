@@ -8,10 +8,9 @@ import InputField from '../shared/input-field'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '../ui/select'
 import { useLocalSearchParams } from 'expo-router'
 import { ItemDetails } from '../shared/item-details'
-import { useGetItemByBarcode, useGetItemDetailsByBarcode } from '@/hooks/tanstack/mutation/item/get-item'
-import { useAlertModal, useAlertModalAction } from '@/hooks/redux/use-alert-modal'
+import { useGetItemDetailsByBarcode } from '@/hooks/tanstack/mutation/item/get-item'
 import { useModal, useModalAction } from '@/hooks/redux/use-modal'
-import { DOT_SEPARATOR, MODAL_TYPE } from '@/constants'
+import { MODAL_TYPE } from '@/constants'
 import Modal from '../shared/modal'
 import { Text } from '../ui/text'
 import { Button } from '../ui/button'
@@ -19,7 +18,6 @@ import { Separator } from '../ui/separator'
 import { ExpireScanFormValue, expiryScanFormSchema } from '@/lib/zod/expiry-monitor-form-schema'
 import { useExpiryMonitorInsert } from '@/hooks/tanstack/mutation/expiry-monitor/insert'
 import { useGetShelfNoMutation } from '@/hooks/tanstack/mutation/shelf-no/get-mutation'
-import { getRemindBeforeDays } from '@/dal/remind-before/get-remind-before'
 import { useGetRemindBeforeMutation } from '@/hooks/tanstack/mutation/remind-before/get-mutation'
 import { useInsertShelfNoMutation } from '@/hooks/tanstack/mutation/shelf-no/insert-mutation'
 import { showDynamicToast } from '@/lib/toast/dynamic'
@@ -28,8 +26,6 @@ import { queryClient } from '../provider/tanstack-query-client'
 import { MUTATION_KEY } from '@/constants/tanstack-query'
 import { usePersistShelfAndRemindBefore } from '@/hooks/use-persist-shelf-remind-before'
 import { invalidQueries } from '@/lib/tanstack-query/invalid-query'
-import { splitWord } from '@/lib/utils'
-import { differenceInDays, endOfMonth } from 'date-fns'
 
 
 export const ExpiryScanForm = () => {
@@ -77,6 +73,8 @@ export const ExpiryScanForm = () => {
     usePersistShelfAndRemindBefore(form, stringEmpId)
 
     const onSubmit = form.handleSubmit((values) => {
+
+
         insertExpiry(
             { ...values, empId: stringEmpId },
             {
@@ -87,6 +85,7 @@ export const ExpiryScanForm = () => {
                         await invalidQueries([MUTATION_KEY.EXPIRY_MONITOR.READ])
                         barcodeRef.current?.focus()
                     }
+                    // showError(message)
                 }
             }
         )

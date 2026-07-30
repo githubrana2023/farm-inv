@@ -6,7 +6,7 @@ export const addItemFormSchema = z.object({
     uom: z.string().trim().nonempty({ error: 'Uom is required!' }),
     isAdvanceMode: z.coerce.boolean<boolean>(),
     quantity: z.string().trim().nonempty({ error: 'Quantity is required!' }),
-    scanType: z.enum(SCAN_FLAG).default('Inventory').optional(),
+    scanType: z.enum(SCAN_FLAG).optional(),
 })
 
 export type AddItemFormValue = z.infer<typeof addItemFormSchema>

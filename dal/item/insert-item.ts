@@ -33,6 +33,7 @@ export const insertScannedItem = async (formValue: AddItemFormValue) => {
             cat3: string;
             cat4: string;
         } | undefined = undefined
+
         if (isOrder && isItemCode) {
 
             const items = await farmDb.select().from(itemMasterTable).where(

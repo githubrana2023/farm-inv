@@ -1,5 +1,4 @@
 import AddItemForm from '@/components/form/add-item-form';
-import PickDocument, { getStoredData } from '@/components/pick-document';
 import Container from '@/components/shared/container';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';

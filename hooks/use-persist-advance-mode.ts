@@ -27,8 +27,8 @@ export const usePersistAdvanceMode = (
             const storedScanType = await getStringStoredData(SCAN_TYPE_KEY);
 
             reset({
-                ...getValues(),
                 barcode: "",
+                quantity: "",
                 uom: "",
                 isAdvanceMode: storedIsAdvanceModeEnable ?? undefined,
                 scanType: storedIsAdvanceModeEnable
