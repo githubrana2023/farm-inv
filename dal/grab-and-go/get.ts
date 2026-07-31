@@ -8,34 +8,29 @@ import { isValidEAN13, parseEAN13 } from "@/lib/utils";
 import { and, desc, eq, like } from "drizzle-orm";
 export const getGrabAndGoFiftyPercentBarcode = async (barcode: string) => {
     try {
-        try {
 
-            const parsedBarcode = isValidEAN13(barcode) ? parseEAN13(barcode) : barcode
+        const parsedBarcode = isValidEAN13(barcode) ? parseEAN13(barcode) : barcode
 
-            const [existItem] = await farmDb.select().from(itemMasterTable).where(eq(
-                itemMasterTable.barcode, parsedBarcode
-            ))
+        const [existItem] = await farmDb.select().from(itemMasterTable).where(eq(
+            itemMasterTable.barcode, parsedBarcode
+        ))
 
-            if (!existItem) return failureResponse('Item not found');
+        if (!existItem) return failureResponse('Item not found');
 
-            const [fiftyPercentBarcode] = await farmDb.select().from(itemMasterTable).where(
-                and(
-                    eq(itemMasterTable.item_number, existItem.item_number),
-                    like(itemMasterTable.barcode, '6699%%')
-                )
+        const [fiftyPercentBarcode] = await farmDb.select().from(itemMasterTable).where(
+            and(
+                eq(itemMasterTable.item_number, existItem.item_number),
+                like(itemMasterTable.barcode, '6699%%')
             )
+        )
 
-            if (!fiftyPercentBarcode) return failureResponse('Fifty percent item barcode not found!')
+        if (!fiftyPercentBarcode) return failureResponse('Fifty percent item barcode not found!')
 
-            return successResponse(fiftyPercentBarcode)
+        return successResponse(fiftyPercentBarcode)
 
-        } catch (error) {
-            console.log('Failed to insert fifty percent barcode', error)
-            return failureResponse('Failed to insert fifty percent barcode')
-        }
     } catch (error) {
-        console.log('Failed to get grab and go fifty percent barcode!', error)
-        return failureResponse('Failed to get grab and go fifty percent barcode!')
+        console.log('Failed to insert fifty percent barcode', error)
+        return failureResponse('Failed to insert fifty percent barcode')
     }
 }
 

@@ -1,13 +1,17 @@
 import { inventoryDb } from "@/drizzle/db/inventory-db"
 import { inventoryTable } from "@/drizzle/schema/inventory"
 import { failureResponse, successResponse } from "@/lib/response"
+import { isValidEAN13, parseEAN13 } from "@/lib/utils"
 import { and, eq } from "drizzle-orm"
 
 export const updateOrderItemByBarcode = async (barcode: string, quantity: string) => {
     try {
+
+        const parsedBarcode = isValidEAN13(barcode) ? parseEAN13(barcode) : barcode
+
         const [existOrderItem] = await inventoryDb.select().from(inventoryTable).where(
             and(
-                eq(inventoryTable.barcode, barcode),
+                eq(inventoryTable.barcode, parsedBarcode),
                 eq(inventoryTable.scanFlag, 'Order')
             )
         )
@@ -18,7 +22,7 @@ export const updateOrderItemByBarcode = async (barcode: string, quantity: string
             quantity
         }).where(
             and(
-                eq(inventoryTable.barcode, barcode),
+                eq(inventoryTable.barcode, parsedBarcode),
                 eq(inventoryTable.scanFlag, 'Order')
             )
         ).returning()

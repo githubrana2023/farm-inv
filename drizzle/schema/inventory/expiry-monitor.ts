@@ -15,6 +15,10 @@ export const expiryMonitorTable = sqliteTable('expiry_monitor', {
     expireIn: integer('quantity', { mode: 'timestamp' }).notNull(),
     shelfNo: text('shelfNo').notNull(),
     remindBefore: integer('remind_before', { mode: 'timestamp' }).notNull(),
+    isOnePlusOne: integer('is_one_plus_one', { mode: 'boolean' }).notNull(),
+    isThrowing: integer('is_throwing', { mode: 'boolean' }).notNull(),
+    vendorCode: text('vendor_code').notNull(),
+    vendor: text('vendor').notNull(),
     createdAt: createdAt('createdAt'),
     updatedAt: updatedAt('updatedAt'),
 })

@@ -5,7 +5,7 @@ import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { itemMasterTable } from "@/drizzle/schema/farm-schema";
 import { inventoryTable } from "@/drizzle/schema/inventory";
 import { failureResponse, successResponse } from "@/lib/response";
-import { splitWord } from "@/lib/utils";
+import { isValidEAN13, parseEAN13, splitWord } from "@/lib/utils";
 import { addItemFormSchema, AddItemFormValue } from "@/lib/zod/add-item-form-schema";
 import { and, eq } from "drizzle-orm";
 
@@ -34,15 +34,19 @@ export const insertScannedItem = async (formValue: AddItemFormValue) => {
             cat4: string;
         } | undefined = undefined
 
+        const parsedBarcode = isValidEAN13(data.barcode) ? parseEAN13(data.barcode) : data.barcode
+
+
+
         if (isOrder && isItemCode) {
 
             const items = await farmDb.select().from(itemMasterTable).where(
-                eq(itemMasterTable.item_number, data.barcode)
+                eq(itemMasterTable.item_number, parsedBarcode)
             )
             existItem = items[0]
         } else {
             const items = await farmDb.select().from(itemMasterTable).where(
-                eq(itemMasterTable.barcode, data.barcode)
+                eq(itemMasterTable.barcode, parsedBarcode)
             )
             existItem = items[0]
         }

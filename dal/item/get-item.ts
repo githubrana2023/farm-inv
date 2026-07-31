@@ -7,8 +7,21 @@ import { storeData } from "@/lib/async-storage"
 import { failureResponse, successResponse } from "@/lib/response"
 import { AddItemFormValue } from "@/lib/zod/add-item-form-schema"
 import { and, asc, desc, eq, like, or, sql } from "drizzle-orm"
-import { needPendingState } from "@/lib/utils"
+import { isValidEAN13, needPendingState, parseEAN13 } from "@/lib/utils"
 import { itemCodeRegex } from "@/constants"
+
+
+export const getItemFromItemByBarcode = async (barcode: string) => {
+    const [existItem] = await farmDb.select().from(itemMasterTable).where(eq(itemMasterTable.barcode, barcode))
+    return existItem
+}
+
+export const getItemFromItemByItemCode = async (itemCode: string) => {
+    const [existItem] = await farmDb.select().from(itemMasterTable).where(eq(itemMasterTable.item_number, itemCode))
+    return existItem
+}
+
+
 
 export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pick<AddItemFormValue, 'scanType' | 'isAdvanceMode' | 'barcode'>) => {
     try {
@@ -16,8 +29,9 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
         const isScanTypeOrder = scanType === 'Order'
 
         if (!barcode) return failureResponse('Barcode is missing!')
+        const parsedBarcode = isValidEAN13(barcode) ? parseEAN13(barcode) : barcode
 
-        const isItemCode = itemCodeRegex.test(barcode)
+        const isItemCode = itemCodeRegex.test(parsedBarcode)
 
         let existItem: {
             barcode: string;
@@ -36,13 +50,13 @@ export const getItemByBarcode = async ({ barcode, scanType, isAdvanceMode }: Pic
         if (isItemCode && isScanTypeOrder) {
 
             const items = await farmDb.select().from(itemMasterTable).where(
-                eq(itemMasterTable.item_number, barcode)
+                eq(itemMasterTable.item_number, parsedBarcode)
             )
             existItem = items[0]
         } else {
 
             const items = await farmDb.select().from(itemMasterTable).where(
-                eq(itemMasterTable.barcode, barcode)
+                eq(itemMasterTable.barcode, parsedBarcode)
             )
 
             existItem = items[0]
@@ -110,8 +124,10 @@ export const getItemDetailsByBarcode = async (barcode: string) => {
         await needPendingState()
         if (!barcode) return failureResponse('Barcode is missing!')
 
+        const parsedBarcode = isValidEAN13(barcode) ? parseEAN13(barcode) : barcode
+
         const [item] = await farmDb.select().from(itemMasterTable).where(
-            eq(itemMasterTable.barcode, barcode)
+            eq(itemMasterTable.barcode, parsedBarcode)
         )
 
         if (!item) return failureResponse('Item not found!')
@@ -151,14 +167,13 @@ export const getItemPriceCheckByBarcode = async (barcode: string) => {
     try {
 
         const trimmedBarcode = barcode.trim()
+        const parsedBarcode = isValidEAN13(trimmedBarcode) ? parseEAN13(trimmedBarcode) : trimmedBarcode
 
         const [existItem] = await farmDb.select().from(itemMasterTable).where(
-            eq(itemMasterTable.barcode, trimmedBarcode)
+            eq(itemMasterTable.barcode, parsedBarcode)
         )
 
         if (!existItem) return failureResponse('Item not found!')
-
-        // console.log(existItem)
 
         return successResponse(existItem, 'Item retrieved!')
 
@@ -202,10 +217,6 @@ export const getSearchItems = async (query?: string) => {
 
 export const getGlobalSearchItems = async ({ limit, offset, query }: { query: string; limit: number; offset: number }) => {
     try {
-        // const words = query.trim().toLowerCase().split(/\s+/);
-
-
-
         const searchItems = await farmDb
             .select()
             .from(itemMasterTable)
@@ -213,7 +224,6 @@ export const getGlobalSearchItems = async ({ limit, offset, query }: { query: st
                 or(
                     like(itemMasterTable.barcode, `%${query}%`),
                     like(itemMasterTable.item_number, `%${query}%`),
-                    // ...words.map((word) => like(itemMasterTable.description, `%${word}%`)),
                     like(itemMasterTable.description, `%${query.trim()}%`),
                 ),
             )

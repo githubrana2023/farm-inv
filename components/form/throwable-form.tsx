@@ -15,6 +15,8 @@ import { usePersistThrowingDiscountType } from "@/hooks/use-persist-throwing-dis
 import { dateRegex, DOT_SEPARATOR } from "@/constants"
 import { useGetItemDetailsByBarcode } from "@/hooks/tanstack/mutation/item/get-item"
 import { showError } from "@/lib/toast/error"
+import { useGetThrowableItemDetailsMutation } from "@/hooks/tanstack/mutation/throwable/use-get-throwable-item-details"
+import { ThrowableDetailsCard } from "../shared/throwable-details-card"
 
 
 export const ThrowableForm = () => {
@@ -40,24 +42,32 @@ export const ThrowableForm = () => {
     usePersistThrowingDiscountType(form)
 
     const { mutate: getItemDetailsByBarcode } = useGetItemDetailsByBarcode()
+    const { mutate: getThrowableItemDetails, data: throwableData } = useGetThrowableItemDetailsMutation()
 
     const onSubmit = form.handleSubmit(values => {
-        quantityRef?.current?.focus()
+        barcodeRef?.current?.focus()
         form.reset()
     })
 
 
     const onSubmitEditing = () => {
         const barcode = form.getValues('barcode')
-        getItemDetailsByBarcode(barcode, {
-            async onSuccess({ success, message }) {
-                if (!success) {
-                    showError(message)
-                    return
-                }
-                quantityRef.current?.focus()
+        const hasImportedLabel = form.getValues('hasImportedLabel')
+        getThrowableItemDetails(
+            {
+                barcode,
+                hasImportedLabel
             },
-        })
+            {
+                async onSuccess({ success, message }) {
+                    if (!success) {
+                        showError(message)
+                        return
+                    }
+                    quantityRef.current?.focus()
+                },
+            }
+        )
     }
 
     const isOverStock = form.watch('type') === 'OVERSTOCK'
@@ -80,7 +90,7 @@ export const ThrowableForm = () => {
                                     keyboardType="number-pad"
                                     value={field.value}
                                     onChangeText={field.onChange}
-                                    onSubmitEditing={() => { quantityRef?.current?.focus() }}
+                                    onSubmitEditing={onSubmitEditing}
                                 />
                             )
                         }}
@@ -144,7 +154,12 @@ export const ThrowableForm = () => {
                                     <FormControl>
                                         <RadioGroup
                                             value={field.value}
-                                            onValueChange={field.onChange}
+                                            onValueChange={(value) => {
+                                                field.onChange(value)
+                                                if (value === "OVERSTOCK") {
+                                                    form.setValue('hasImportedLabel', false)
+                                                }
+                                            }}
                                             className="flex-row gap-2"
                                         >
                                             {THROW_ABLE_SCAN_TYPE.map((type) => {
@@ -152,7 +167,12 @@ export const ThrowableForm = () => {
 
                                                 return (
                                                     <Pressable
-                                                        onPress={() => field.onChange(type)}
+                                                        onPress={() => {
+                                                            field.onChange(type)
+                                                            if (type === "OVERSTOCK") {
+                                                                form.setValue('hasImportedLabel', false)
+                                                            }
+                                                        }}
                                                         key={type}
                                                         className={cn(
                                                             "flex-1 rounded",
@@ -229,9 +249,13 @@ export const ThrowableForm = () => {
                     {/* HAS IMPORTED LABEL FIELD END*/}
                 </View>
             </Form>
-            <View className="flex-1">
-                <Text>Show Details and List conditionally</Text>
-            </View>
+            {
+                (throwableData && throwableData.data) && (
+                    <View className="flex-1">
+                        <ThrowableDetailsCard item={throwableData.data} />
+                    </View>
+                )
+            }
         </View>
     )
 }

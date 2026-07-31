@@ -54,7 +54,7 @@ export const isStartWith = (word: string, startsWith: string) => {
 
 
 export const isValidEAN13 = (barcode: string) => {
-  if (!EAN13Regex.test(barcode)) return false
+  if (!barcode.startsWith('25') || !EAN13Regex.test(barcode)) return false
 
   let sum: number = 0
   for (let i = 0; i < 12; i++) {
