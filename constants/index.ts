@@ -30,7 +30,7 @@ export const PAGE_SIZE = 50
 
 export const shelfNoRegex = /^[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*$/
 export const remindBeforeRegex = /^\d+(?:\.\d+)*$/
-export const dateRegex = /^[1-9]\d?\.[1-9]\d?\.\d{4}$/
+export const dateRegex = /^(0?[1-9]|[1-9]\d)\.(0?[1-9]|[1-9]\d)\.\d{4}$/;
 export const barcodeRegex = /^[0-9]+$/
 export const EAN13Regex = /^\d{13}$/
 export const itemCodeRegex = /^0\d{7}-\d{4}$/

@@ -32,7 +32,6 @@ export const ThrowableForm = () => {
             expireIn: "",
             quantity: "",
             hasImportedLabel: false,
-            type: 'ONE_PLUS_ONE',
         },
         resolver: zodResolver(throwableCreateFormSchema),
         mode: 'onSubmit',
