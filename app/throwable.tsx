@@ -33,39 +33,7 @@ const Throwable = () => {
 
     return (
         <Container>
-            <View className="flex-1">
-                <View className='flex-1 justify-between'>
-                    <TabComponent />
-                </View>
-                <View>
-                    <Button size={'sm'} onPress={async () => {
-                        if (tab === 'grab&go') {
-                            await saveGrabAndGoFiftyPercent()
-                            return
-                        }
-                    }}>
-                        <Text>Generate</Text>
-                    </Button>
-                </View>
-
-
-
-                {/* Toggle button */}
-                <View className="flex-row items-center justify-center py-1">
-                    <View className="flex-row items-center justify-center gap-2 p-2 bg-white rounded-full"
-                        style={{
-                            boxShadow: "0px 6px 20px rgba(0,0,0,0.2)",
-                        }}
-                    >
-                        <Label className={cn("px-2 py-0.5 rounded-full", tab === 'throwable' && 'bg-muted')} onPress={() => setTab('throwable')}>
-                            Damage & Discount
-                        </Label>
-                        <Label className={cn("px-2 py-0.5 rounded-full", tab === 'grab&go' && 'bg-muted')} onPress={() => setTab('grab&go')}>
-                            Grab & Go
-                        </Label>
-                    </View>
-                </View>
-            </View>
+            <ThrowableForm />
         </Container>
     )
 }

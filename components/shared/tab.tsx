@@ -15,16 +15,13 @@ type TabProps<T extends readonly TabLabel[]> = {
 }
 
 function ReusableTab<const T extends readonly TabLabel[],>({ tabLabels, tabContent }: TabProps<T>) {
-    const [activeTab, setActiveTab] = useState<typeof tabLabels[number]['label']>(tabLabels[0]['label'])
-
-    const TabContent = tabContent[activeTab]
-
+    const [activeTab, setActiveTab] = useState<typeof tabLabels[number]['label']>(() => tabLabels[0]['label'])
 
     return (
         <Container>
             <View className="flex-1">
                 <View className='flex-1'>
-                    {TabContent}
+                    {tabContent[activeTab]}
                 </View>
 
                 {/* Toggle button */}

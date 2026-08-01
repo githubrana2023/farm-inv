@@ -8,12 +8,10 @@ import { cn } from "@/lib/utils"
 import { Label } from "../ui/label"
 import { Checkbox } from "../ui/checkbox"
 import { THROW_ABLE_SCAN_TYPE } from "@/constants/throwable"
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
-import { useRef } from "react"
+import { RadioGroup } from "../ui/radio-group"
+import { ReactNode, useRef } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { usePersistThrowingDiscountType } from "@/hooks/use-persist-throwing-discount-type"
-import { dateRegex, DOT_SEPARATOR } from "@/constants"
-import { useGetItemDetailsByBarcode } from "@/hooks/tanstack/mutation/item/get-item"
 import { showError } from "@/lib/toast/error"
 import { useGetThrowableItemDetailsMutation } from "@/hooks/tanstack/mutation/throwable/use-get-throwable-item-details"
 import { ThrowableDetailsCard } from "../shared/throwable-details-card"
@@ -23,7 +21,11 @@ import { invalidQueries } from "@/lib/tanstack-query/invalid-query"
 import { QUERY_KEY } from "@/constants/tanstack/query"
 import { useGetThrowables } from "@/hooks/tanstack/query/throwable/use-get-throwables"
 import ReusableTab from "../shared/tab"
-import { TGroupedThrowableItem } from "@/constants/throwable/type"
+import { TGroupedThrowableItem, TThrowableScanType } from "@/constants/throwable/type"
+import { Icon } from "../ui/icon"
+import { Trash } from "lucide-react-native"
+import { Button } from "../ui/button"
+import { deleteThrowableByIdAndType } from "@/dal/throwable/delete"
 
 
 export const ThrowableForm = () => {
@@ -57,10 +59,10 @@ export const ThrowableForm = () => {
             async onSuccess({ success, message }) {
                 showDynamicToast(success, message)
                 if (success) {
-                    barcodeRef?.current?.focus()
-                    // form.reset() 
-                    resetThrowableGetMutation()
                     await invalidQueries([QUERY_KEY.THROWABLE.READ])
+                    barcodeRef?.current?.focus()
+                    form.reset()
+                    resetThrowableGetMutation()
                 }
             },
         })
@@ -274,28 +276,21 @@ export const ThrowableForm = () => {
                 }
                 {
                     (barcodeInputValue.length < 1 && throwableData && throwableData.data) && (
+                        // <></>
                         <ReusableTab
-                            tabLabels={
-                                [
-                                    {
-                                        label: throwableData.data.ONE_PLUS_ONE.type,
-                                        hidden: throwableData.data.ONE_PLUS_ONE.items.length < 1
-                                    },
-                                    {
-                                        label: throwableData.data.THROWING.type,
-                                        hidden: throwableData.data.THROWING.items.length < 1
-                                    },
-                                    {
-                                        label: throwableData.data.OVERSTOCK.type,
-                                        hidden: throwableData.data.OVERSTOCK.items.length < 1
-                                    },
-                                ]
-                            }
-                            tabContent={{
-                                ONE_PLUS_ONE: <OnePlusOneItems item={throwableData.data.ONE_PLUS_ONE} />,
-                                OVERSTOCK: <OverstockItems item={throwableData.data.OVERSTOCK} />,
-                                THROWING: <ThrowingItems item={throwableData.data.THROWING} />
-                            }}
+                            tabContent={Object.values(throwableData.data).reduce((acc, item) => {
+
+                                acc[item.type] = <ThrowingItems key={item.type} item={item} />
+
+                                return acc
+                            }, {} as Record<string, ReactNode>)}
+                            tabLabels={Object.values(throwableData.data).map(item => (
+                                {
+                                    label: item.type,
+                                    hidden: item.items.length < 1
+                                }
+                            ))}
+
                         />
                     )
                 }
@@ -305,48 +300,6 @@ export const ThrowableForm = () => {
 }
 
 
-
-const OnePlusOneItems = ({ item }: {
-    item: {
-        type: string;
-        items: TGroupedThrowableItem[];
-    }
-}) => {
-
-    return (
-        <FlatList
-            data={item.items ?? []}
-            renderItem={({ item }) => {
-                return (
-                    <View>
-                        <Text>
-                            {item.vendorCode}
-                        </Text>
-                        <Text>
-                            {item.barcode}
-                        </Text>
-                        <Text>
-                            {item.description}
-                        </Text>
-                        <Text>
-                            {item.expireIn}
-                        </Text>
-                        <Text>
-                            {item.itemCode}
-                        </Text>
-                        <Text>
-                            {JSON.stringify(item.isAllow)}
-                        </Text>
-                        <Text>
-                            {String(item.type)}
-                        </Text>
-                    </View>
-                )
-            }}
-        />
-    )
-}
-
 const ThrowingItems = ({ item }: {
     item: {
         type: string;
@@ -354,45 +307,41 @@ const ThrowingItems = ({ item }: {
     }
 }) => {
 
-    return (
-        <FlatList
-            data={item.items ?? []}
-            renderItem={(item) => {
-                return (
-                    <View>
-                        <Text>
-                            {item.item.barcode}
-                        </Text>
-                    </View>
-                )
-            }}
-        />
-    )
-}
-
-const OverstockItems = ({ item }: {
-    item: {
-        type: string;
-        items: TGroupedThrowableItem[];
-    }
-}) => {
 
     return (
-        <FlatList
-            data={item.items ?? []}
-            renderItem={(item) => {
-                return (
-                    <View>
-                        <Text>
-                            {item.item.barcode}
-                        </Text>
-                    </View>
-                )
-            }}
-        />
+        <View className="flex-1 justify-between">
+
+            <FlatList
+                data={item.items ?? []}
+                renderItem={(item) => {
+                    return (
+                        <View className="flex-row items-center justify-between mb-2 border border-dotted">
+                            <Text>
+                                {item.item.barcode}
+                            </Text>
+                            <Button
+                                variant={'destructive'}
+                                size={'sm'}
+                                onPress={async () => {
+                                    console.log(item.item.id, item.item.type)
+                                    await deleteThrowableByIdAndType(item.item.id, (item.item.type as TThrowableScanType))
+                                    await invalidQueries([QUERY_KEY.THROWABLE.READ])
+                                }}
+                            >
+                                <Icon
+                                    as={Trash}
+                                />
+                            </Button>
+                        </View>
+                    )
+                }}
+            />
+
+            <Button>
+                <Text>
+                    Generate {item.type}
+                </Text>
+            </Button>
+        </View>
     )
 }
-
-
-
-

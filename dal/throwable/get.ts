@@ -16,26 +16,28 @@ export const getThrowables = async () => {
 
         // TODO : Separate 50% oneplusone
 
-        const values = throwables.reduce((acc, throwable, currentIndex) => {
-            const { updatedAt, createdAt, ...rest } = throwable
+        const values = throwables.length > 0 ?
+            throwables.reduce((acc, throwable, currentIndex) => {
+                const { updatedAt, createdAt, ...rest } = throwable
 
-            if (!acc[throwable.type]) {
-                acc[throwable.type] = {
-                    type: throwable.type,
-                    items: []
+                if (!acc[throwable.type]) {
+                    acc[throwable.type] = {
+                        type: throwable.type,
+                        items: []
+                    }
                 }
-            }
-            // const current = new Date()
-            // const remainingDay = differenceInDays(rest.expireIn, current)
-            acc[throwable.type].items.push({
-                ...rest,
-                expireIn: format(rest.expireIn, 'MMMM dd, yyyy'),
-                serial: currentIndex + 1
-                // remark: ""
-            })
+                // const current = new Date()
+                // const remainingDay = differenceInDays(rest.expireIn, current)
+                acc[throwable.type].items.push({
+                    ...rest,
+                    expireIn: format(rest.expireIn, 'MMMM dd, yyyy'),
+                    serial: currentIndex + 1
+                    // remark: ""
+                })
 
-            return acc
-        }, {} as TThrowable)
+                return acc
+            }, {} as TThrowable) :
+            null
 
         return successResponse(values)
 
