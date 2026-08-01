@@ -44,7 +44,7 @@ export const usePersistAdvanceMode = (
         if (!isHydrated) return;
         const sync = async () => {
             await storeData({ key: ADVANCE_MODE_KEY, isStringValue: false, value: isAdvanceModeEnable });
-            await storeData({ key: SCAN_TYPE_KEY, isStringValue: true, value: scanType });
+            await storeData({ key: SCAN_TYPE_KEY, isStringValue: true, value: isAdvanceModeEnable ? scanType : undefined });
         };
         sync();
     }, [isHydrated, isAdvanceModeEnable, scanType]);

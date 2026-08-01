@@ -34,9 +34,9 @@ export const dateRegex = /^(0?[1-9]|[1-9]\d)\.(0?[1-9]|[1-9]\d)\.\d{4}$/;
 export const barcodeRegex = /^[0-9]+$/
 export const EAN13Regex = /^\d{13}$/
 export const itemCodeRegex = /^0\d{7}-\d{4}$/
+export const ITEM_CODE_REGEX = /^0\d{7}-\d{4}$/;
 export const DOT_SEPARATOR = '.'
 export const DiVIDER_SEPARATOR = "|"
-export const ITEM_CODE_REGEX = /^0\d{7}-\d{4}$/;
 
 
 type Modal = 'EMPLOYEE' | 'LABELING' | 'CHANGE_PASSWORD' | 'SHELF_NO' | 'REMIND_BEFORE'

@@ -9,12 +9,15 @@ const Labeling = () => {
         <Container>
             <View className='flex-1 py-3'>
                 <ReusableTab
-                    tabLabels={['Inventory', 'Order', 'Todo', 'Tab2']}
+                    tabLabels={[{
+                        label: 'Inventory',
+                        hidden: false,
+                    }, {
+                        label: 'Order'
+                    }]}
                     tabContent={{
-                        Inventory: InventoryLabeling,
-                        Order: OrderLabeling,
-                        Tab2,
-                        Todo
+                        Inventory: <InventoryLabeling />,
+                        Order: <OrderLabeling />,
                     }}
                 />
             </View>

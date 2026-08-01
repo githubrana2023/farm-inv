@@ -41,9 +41,6 @@ const ItemsList = () => {
 
     const data = allItems ?? []
 
-    console.log({ data }, { depth: null })
-
-
     const isUpdateAlert = isAlertOpenWithPayload &&
         payload &&
         payload.type ===

@@ -11,6 +11,7 @@ import { eq } from "drizzle-orm"
 
 export const insertThrowable = async (value: TThrowableCreateFormValue) => {
     try {
+
         await new Promise((resolve) => requestAnimationFrame(resolve))
 
         //! schema validation
@@ -75,6 +76,7 @@ export const insertThrowable = async (value: TThrowableCreateFormValue) => {
             (existAllowedSupplier && existAllowedSupplier.isCurrentlyAllow) ||
             (existNonReturnAbleSupplier && existNonReturnAbleSupplier.nearExpiryDiscount) ||
             (existNonReturnAbleSupplier && existNonReturnAbleSupplier.branchThrowing)
+
 
         const newThrowable = await inventoryDb.insert(throwableTable).values({
             barcode: existItem.barcode,

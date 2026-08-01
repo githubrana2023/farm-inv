@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem } from "../ui/form"
 import { throwableCreateFormSchema, TThrowableCreateFormValue } from "@/lib/zod/throwable-form-schema"
-import { Pressable, View } from "react-native"
+import { FlatList, Pressable, View } from "react-native"
 import { Text } from "../ui/text"
 import InputField from "../shared/input-field"
 import { cn } from "@/lib/utils"
@@ -17,6 +17,13 @@ import { useGetItemDetailsByBarcode } from "@/hooks/tanstack/mutation/item/get-i
 import { showError } from "@/lib/toast/error"
 import { useGetThrowableItemDetailsMutation } from "@/hooks/tanstack/mutation/throwable/use-get-throwable-item-details"
 import { ThrowableDetailsCard } from "../shared/throwable-details-card"
+import { useInsertThrowable } from "@/hooks/tanstack/mutation/throwable/use-insert-throwable"
+import { showDynamicToast } from "@/lib/toast/dynamic"
+import { invalidQueries } from "@/lib/tanstack-query/invalid-query"
+import { QUERY_KEY } from "@/constants/tanstack/query"
+import { useGetThrowables } from "@/hooks/tanstack/query/throwable/use-get-throwables"
+import ReusableTab from "../shared/tab"
+import { TGroupedThrowableItem } from "@/constants/throwable/type"
 
 
 export const ThrowableForm = () => {
@@ -38,14 +45,25 @@ export const ThrowableForm = () => {
         reValidateMode: 'onSubmit',
         shouldFocusError: false
     })
+    const barcodeInputValue = form.watch('barcode')
     usePersistThrowingDiscountType(form)
 
-    const { mutate: getItemDetailsByBarcode } = useGetItemDetailsByBarcode()
-    const { mutate: getThrowableItemDetails, data: throwableData } = useGetThrowableItemDetailsMutation()
+    const { mutate: insertThrowable } = useInsertThrowable()
+    const { data: throwableData } = useGetThrowables()
+    const { mutate: getThrowableItemDetails, data: throwableDetails, reset: resetThrowableGetMutation } = useGetThrowableItemDetailsMutation()
 
     const onSubmit = form.handleSubmit(values => {
-        barcodeRef?.current?.focus()
-        form.reset()
+        insertThrowable(values, {
+            async onSuccess({ success, message }) {
+                showDynamicToast(success, message)
+                if (success) {
+                    barcodeRef?.current?.focus()
+                    // form.reset() 
+                    resetThrowableGetMutation()
+                    await invalidQueries([QUERY_KEY.THROWABLE.READ])
+                }
+            },
+        })
     })
 
 
@@ -248,16 +266,133 @@ export const ThrowableForm = () => {
                     {/* HAS IMPORTED LABEL FIELD END*/}
                 </View>
             </Form>
-            {
-                (throwableData && throwableData.data) && (
-                    <View className="flex-1">
-                        <ThrowableDetailsCard item={throwableData.data} />
-                    </View>
-                )
-            }
+            <View className="flex-1">
+                {
+                    (throwableDetails && throwableDetails.data) && (
+                        <ThrowableDetailsCard item={throwableDetails.data} />
+                    )
+                }
+                {
+                    (barcodeInputValue.length < 1 && throwableData && throwableData.data) && (
+                        <ReusableTab
+                            tabLabels={
+                                [
+                                    {
+                                        label: throwableData.data.ONE_PLUS_ONE.type,
+                                        hidden: throwableData.data.ONE_PLUS_ONE.items.length < 1
+                                    },
+                                    {
+                                        label: throwableData.data.THROWING.type,
+                                        hidden: throwableData.data.THROWING.items.length < 1
+                                    },
+                                    {
+                                        label: throwableData.data.OVERSTOCK.type,
+                                        hidden: throwableData.data.OVERSTOCK.items.length < 1
+                                    },
+                                ]
+                            }
+                            tabContent={{
+                                ONE_PLUS_ONE: <OnePlusOneItems item={throwableData.data.ONE_PLUS_ONE} />,
+                                OVERSTOCK: <OverstockItems item={throwableData.data.OVERSTOCK} />,
+                                THROWING: <ThrowingItems item={throwableData.data.THROWING} />
+                            }}
+                        />
+                    )
+                }
+            </View>
         </View>
     )
 }
+
+
+
+const OnePlusOneItems = ({ item }: {
+    item: {
+        type: string;
+        items: TGroupedThrowableItem[];
+    }
+}) => {
+
+    return (
+        <FlatList
+            data={item.items ?? []}
+            renderItem={({ item }) => {
+                return (
+                    <View>
+                        <Text>
+                            {item.vendorCode}
+                        </Text>
+                        <Text>
+                            {item.barcode}
+                        </Text>
+                        <Text>
+                            {item.description}
+                        </Text>
+                        <Text>
+                            {item.expireIn}
+                        </Text>
+                        <Text>
+                            {item.itemCode}
+                        </Text>
+                        <Text>
+                            {JSON.stringify(item.isAllow)}
+                        </Text>
+                        <Text>
+                            {String(item.type)}
+                        </Text>
+                    </View>
+                )
+            }}
+        />
+    )
+}
+
+const ThrowingItems = ({ item }: {
+    item: {
+        type: string;
+        items: TGroupedThrowableItem[];
+    }
+}) => {
+
+    return (
+        <FlatList
+            data={item.items ?? []}
+            renderItem={(item) => {
+                return (
+                    <View>
+                        <Text>
+                            {item.item.barcode}
+                        </Text>
+                    </View>
+                )
+            }}
+        />
+    )
+}
+
+const OverstockItems = ({ item }: {
+    item: {
+        type: string;
+        items: TGroupedThrowableItem[];
+    }
+}) => {
+
+    return (
+        <FlatList
+            data={item.items ?? []}
+            renderItem={(item) => {
+                return (
+                    <View>
+                        <Text>
+                            {item.item.barcode}
+                        </Text>
+                    </View>
+                )
+            }}
+        />
+    )
+}
+
 
 
 

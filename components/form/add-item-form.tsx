@@ -315,7 +315,14 @@ export default function AddItemForm() {
                     </View>
 
                     <Switch
-                      onCheckedChange={field.onChange}
+                      onCheckedChange={(isEnabled) => {
+                        field.onChange(isEnabled)
+                        if (!isEnabled) {
+                          form.setValue('scanType', undefined)
+                        } else {
+                          form.setValue('scanType', 'Inventory')
+                        }
+                      }}
                       checked={field.value}
                     />
                   </View>
@@ -328,7 +335,7 @@ export default function AddItemForm() {
           {/* Multitask Scan*/}
           <View className="mb-2">
             {
-              // isAdvanceMode && 
+              isAdvanceMode &&
               (
                 <FormField
                   control={control}
