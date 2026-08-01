@@ -30,7 +30,7 @@ export const getThrowables = async () => {
                 // const remainingDay = differenceInDays(rest.expireIn, current)
                 acc[throwable.type].items.push({
                     ...rest,
-                    expireIn: format(rest.expireIn, 'MMMM dd, yyyy'),
+                    expireIn: format(rest.expireIn, 'MMM dd, yyyy'),
                     serial: currentIndex + 1
                     // remark: ""
                 })

@@ -26,6 +26,8 @@ import { Icon } from "../ui/icon"
 import { Trash } from "lucide-react-native"
 import { Button } from "../ui/button"
 import { deleteThrowableByIdAndType } from "@/dal/throwable/delete"
+import { DetailsRow } from "../shared/details-row"
+import { Badge } from "../ui/badge"
 
 
 export const ThrowableForm = () => {
@@ -268,7 +270,7 @@ export const ThrowableForm = () => {
                     {/* HAS IMPORTED LABEL FIELD END*/}
                 </View>
             </Form>
-            <View className="flex-1">
+            <View className="flex-1 w-full">
                 {
                     (throwableDetails && throwableDetails.data) && (
                         <ThrowableDetailsCard item={throwableDetails.data} />
@@ -280,7 +282,7 @@ export const ThrowableForm = () => {
                         <ReusableTab
                             tabContent={Object.values(throwableData.data).reduce((acc, item) => {
 
-                                acc[item.type] = <ThrowingItems key={item.type} item={item} />
+                                acc[item.type] = <ThrowableItems key={item.type} item={item} />
 
                                 return acc
                             }, {} as Record<string, ReactNode>)}
@@ -300,7 +302,7 @@ export const ThrowableForm = () => {
 }
 
 
-const ThrowingItems = ({ item }: {
+const ThrowableItems = ({ item }: {
     item: {
         type: string;
         items: TGroupedThrowableItem[];
@@ -312,26 +314,74 @@ const ThrowingItems = ({ item }: {
         <View className="flex-1 justify-between">
 
             <FlatList
-                data={item.items ?? []}
-                renderItem={(item) => {
+                data={item.items}
+                keyExtractor={(item) => String(item.id)}
+                renderItem={({ item: scannedItem, index }) => {
                     return (
-                        <View className="flex-row items-center justify-between mb-2 border border-dotted">
-                            <Text>
-                                {item.item.barcode}
-                            </Text>
-                            <Button
-                                variant={'destructive'}
-                                size={'sm'}
-                                onPress={async () => {
-                                    console.log(item.item.id, item.item.type)
-                                    await deleteThrowableByIdAndType(item.item.id, (item.item.type as TThrowableScanType))
-                                    await invalidQueries([QUERY_KEY.THROWABLE.READ])
-                                }}
-                            >
-                                <Icon
-                                    as={Trash}
+                        <View
+                            className={cn(
+                                "flex-row items-center justify-between gap-2 mb-2 border border-dashed p-2 rounded-md",
+                                (scannedItem.type !== 'OVERSTOCK' && !scannedItem.isAllow) ? 'border-destructive' : 'border-emerald-800'
+                            )}
+                            key={scannedItem.id}
+                        >
+                            <View className="flex-1">
+                                <View className="flex-row items-center justify-between">
+                                    <View className="flex-1">
+                                        <DetailsRow
+                                            library="Lucide"
+                                            iconName="barcode"
+                                            label="Barcode"
+                                            value={scannedItem.barcode}
+                                        />
+                                    </View>
+                                    <View className="flex-1 flex-row justify-end">
+                                        <Badge>
+                                            <Text>count : {item.items.length - index}</Text>
+                                        </Badge>
+                                    </View>
+                                </View>
+                                <DetailsRow
+                                    library="Lucide"
+                                    iconName="file-text"
+                                    label="Description"
+                                    value={scannedItem.description}
                                 />
-                            </Button>
+                                <View className="flex-row items-center justify-between">
+                                    <View className="flex-1">
+                                        <DetailsRow
+                                            library="Lucide"
+                                            iconName="layers"
+                                            label="Quantity"
+                                            value={`${scannedItem.quantity} ${scannedItem.uom}`}
+                                        />
+                                    </View>
+                                    <View className="flex-1 flex-row justify-end">
+                                        <DetailsRow
+                                            library="Lucide"
+                                            iconName="calendar"
+                                            label="Expire In"
+                                            value={scannedItem.expireIn}
+                                        />
+                                    </View>
+
+                                </View>
+
+                                <Button
+                                    variant={'destructive'}
+                                    size={'sm'}
+                                    onPress={async () => {
+                                        console.log(scannedItem.id, scannedItem.type)
+                                        await deleteThrowableByIdAndType(scannedItem.id, (scannedItem.type as TThrowableScanType))
+                                        await invalidQueries([QUERY_KEY.THROWABLE.READ])
+                                    }}
+                                >
+                                    <Icon
+                                        as={Trash}
+                                    />
+                                </Button>
+                            </View>
+
                         </View>
                     )
                 }}

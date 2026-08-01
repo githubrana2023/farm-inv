@@ -17,7 +17,7 @@ export const throwableTable = sqliteTable('throwable', {
     quantity: text('quantity').notNull(),
     expireIn: integer('expireIn', { mode: 'timestamp' }).notNull(),
     hasImportedLabel: integer('has_imported_label', { mode: 'boolean' }).notNull().default(false),
-    isAllow: integer('has_imported_label', { mode: 'boolean' }).notNull(),
+    isAllow: integer('is_allow', { mode: 'boolean' }).notNull(),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
 })

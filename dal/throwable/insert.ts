@@ -78,6 +78,7 @@ export const insertThrowable = async (value: TThrowableCreateFormValue) => {
             (existNonReturnAbleSupplier && existNonReturnAbleSupplier.branchThrowing)
 
 
+
         const newThrowable = await inventoryDb.insert(throwableTable).values({
             barcode: existItem.barcode,
             expireIn: expireDate,
