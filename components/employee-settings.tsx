@@ -130,6 +130,11 @@ const EmployeeSettings = () => {
                         <Text className='text-xs'>Go to Discount & Throwing</Text>
                     </Button>
                 </Link>
+                <Link asChild href={'/grab-and-go'}>
+                    <Button size={'sm'}>
+                        <Text className='text-xs'>Go to Grab & Go</Text>
+                    </Button>
+                </Link>
 
 
                 <View className="gap-1 flex-1">

@@ -30,7 +30,7 @@ export const GrabAndGoItemList = () => {
 
 
     return (
-        <View className="pb-28 gap-1">
+        <View className="pb-2 gap-1">
             <FlatList
                 data={data?.data ?? []}
                 keyExtractor={item => String(item.id)}

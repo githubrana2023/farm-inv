@@ -280,18 +280,26 @@ export const ThrowableForm = () => {
                     (barcodeInputValue.length < 1 && throwableData && throwableData.data) && (
                         // <></>
                         <ReusableTab
-                            tabContent={Object.values(throwableData.data).reduce((acc, item) => {
+                            tabContent={{
+                                ...Object.values(throwableData.data).reduce((acc, item) => {
 
-                                acc[item.type] = <ThrowableItems key={item.type} item={item} />
+                                    acc[item.type] = <ThrowableItems key={item.type} item={item} />
 
-                                return acc
-                            }, {} as Record<string, ReactNode>)}
-                            tabLabels={Object.values(throwableData.data).map(item => (
+                                    return acc
+                                }, {} as Record<string, ReactNode>),
+                                Settings: <View><Text>Throwables Settings</Text></View>
+                            }}
+                            tabLabels={[
+                                ...Object.values(throwableData.data).map(item => (
+                                    {
+                                        label: item.type,
+                                        hidden: item.items.length < 1
+                                    }
+                                )),
                                 {
-                                    label: item.type,
-                                    hidden: item.items.length < 1
+                                    label: 'Settings'
                                 }
-                            ))}
+                            ]}
 
                         />
                     )
