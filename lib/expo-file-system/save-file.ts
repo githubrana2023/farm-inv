@@ -11,29 +11,9 @@ import { inventoryDb } from "@/drizzle/db/inventory-db";
 import { grabAndGoTable, inventoryTable } from "@/drizzle/schema/inventory";
 
 
-type InventoryOrderContentGeneratorReturnType = {
-    type: Exclude<ScanFlag, 'Tags'>,
-    content: string,
-    hasItem: boolean
-}
-
-type TagsContentGeneratorReturnType = {
-    type: 'Tags',
-    content: {
-        regularContent: string;
-        promoContent: string;
-    },
-    hasItem: boolean
-}
-
-type GeneratorReturnType = InventoryOrderContentGeneratorReturnType | TagsContentGeneratorReturnType
-type Item = NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'][number]
-
-export type SaveInventoryFn = typeof saveInventory
-export type SaveOrderFn = typeof saveOrder
 
 //! GENERATE FILE NAME
-function generateFileName(prefix: string, saveFlag?: string) {
+export function generateFileName(prefix: string, saveFlag?: string) {
     const now = new Date();
 
     const fileName = saveFlag ? `${prefix}_${saveFlag}` : prefix
@@ -56,84 +36,73 @@ function createTextFile(
 }
 
 //! SAVE FILE
-export async function saveFile(prefix: ScanFlag, saveFlag?: string) {
-    try {
-        const res = await getSavedItems()
-        if (!res.data) return showError('Failed to get items to save')
+// export async function saveFile(prefix: ScanFlag, saveFlag?: string) {
+//     try {
+//         const res = await getSavedItems()
+//         if (!res.data) return showError('Failed to get items to save')
 
-        const generated = generator[prefix](res.data.scannedItems.filter(item => item.scanFlag === prefix), 30)
+//         const generated = generator[prefix](res.data.scannedItems.filter(item => item.scanFlag === prefix), 30)
 
-        const directory = await getDirectory();
+//         const directory = await getDirectory();
 
-        if (!directory) {
-            return;
-        }
+//         if (!directory) {
+//             return;
+//         }
 
-        if (!generated.hasItem) return showError(`No item to create ${prefix}`)
-
-
-        let fileName: string
+//         if (!generated.hasItem) return showError(`No item to create ${prefix}`)
 
 
-        fileName = generateFileName(saveFlag ? `${prefix}_${saveFlag}` : `${prefix}`);
-        if (generated.type === SCAN_FLAG_TYPE.Tags) {
-            // generating regular tags file name
-
-            fileName = generateFileName(saveFlag ? `r-${prefix}_${saveFlag}` : `r-${prefix}`);
-            createTextFile(directory, fileName, generated.content.regularContent);
-
-            // generating promo tags file name
-            fileName = generateFileName(saveFlag ? `p-${prefix}_${saveFlag}` : `p-${prefix}`);
-            createTextFile(directory, fileName, generated.content.promoContent);
-        } else {
-
-            createTextFile(directory, fileName, generated.content);
-        }
+//         let fileName: string
 
 
-        showSuccess("File saved!");
-    } catch (error) {
-        console.error(error);
-        showError("Failed to save file.");
-    }
-}
+//         fileName = generateFileName(saveFlag ? `${prefix}_${saveFlag}` : `${prefix}`);
+//         if (generated.type === SCAN_FLAG_TYPE.Tags) {
+//             // generating regular tags file name
+
+//             fileName = generateFileName(saveFlag ? `r-${prefix}_${saveFlag}` : `r-${prefix}`);
+//             createTextFile(directory, fileName, generated.content.regularContent);
+
+//             // generating promo tags file name
+//             fileName = generateFileName(saveFlag ? `p-${prefix}_${saveFlag}` : `p-${prefix}`);
+//             createTextFile(directory, fileName, generated.content.promoContent);
+//         } else {
+
+//             createTextFile(directory, fileName, generated.content);
+//         }
+
+
+//         showSuccess("File saved!");
+//     } catch (error) {
+//         console.error(error);
+//         showError("Failed to save file.");
+//     }
+// }
 
 
 // GENERATING ORDER CONTENT
-export const generateOrderContent = (items: Item[], maxLength: number): GeneratorReturnType => {
+export const generateOrderContent = (items: any[], maxLength: number) => {
 
-    const content = items.map(item => {
+    return items.map(item => {
         const alinedBarcode = item.barcode.padEnd(maxLength, " ")
 
         return `${alinedBarcode}|${item.uom}|${item.packing}|${item.quantity}|`
     }).join('\n')
 
-    return {
-        type: SCAN_FLAG_TYPE.Order,
-        content,
-        hasItem: items.length > 0
-    }
 }
 
 
 // GENERATING INVENTORY
-const generateInventoryContent = (items: NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'], maxLength: number): GeneratorReturnType => {
+export const generateInventoryContent = (items: NonNullable<Awaited<ReturnType<typeof getSavedItems>>['data']>['scannedItems'], maxLength: number) => {
 
-    const content = items.map(item => {
+    return items.map(item => {
         const alinedBarcode = item.barcode.padEnd(maxLength, " ")
         return `${alinedBarcode}|${item.quantity}`
     }).join('\n')
-
-    return {
-        type: SCAN_FLAG_TYPE.Inventory,
-        content,
-        hasItem: items.length > 0
-    }
 }
 
 
 // GENERATING TAGS
-const generateTagsContent = (items: Item[], maxLength: number): GeneratorReturnType => {
+const generateTagsContent = (items: any[], maxLength: number) => {
 
     const promoItems = items.filter(item => item.pflag === 'P')
     const regularItems = items.filter(item => item.pflag === 'R')
@@ -151,21 +120,17 @@ const generateTagsContent = (items: Item[], maxLength: number): GeneratorReturnT
     }).join('\n')
 
     return {
-        type: SCAN_FLAG_TYPE.Tags,
-        content: {
-            regularContent,
-            promoContent
-        },
-        hasItem: items.length > 0
+        regularContent,
+        promoContent
     }
 }
 
 
-const generator: Record<ScanFlag, (items: Item[], maxLength: number) => GeneratorReturnType> = {
-    Inventory: generateInventoryContent,
-    Tags: generateTagsContent,
-    Order: generateOrderContent
-}
+// const generator: Record<ScanFlag, (items: Item[], maxLength: number) => GeneratorReturnType> = {
+//     Inventory: generateInventoryContent,
+//     Tags: generateTagsContent,
+//     Order: generateOrderContent
+// }
 
 
 
