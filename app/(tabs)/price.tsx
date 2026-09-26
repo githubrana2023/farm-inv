@@ -52,7 +52,7 @@ const Price = () => {
 
 
     return (
-        <Container>
+        <>
             <View className="h-16 flex-row justify-center items-center gap-1.5">
                 <View className="flex-1">
                     <Controller
@@ -119,7 +119,7 @@ const Price = () => {
                 }
             </ScrollView>
             {/* </View> */}
-        </Container>
+        </>
     );
 };
 

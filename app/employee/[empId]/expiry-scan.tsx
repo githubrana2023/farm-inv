@@ -70,7 +70,7 @@ const EmployeeScanExpiry = () => {
 
 
     return (
-        <Container>
+        <>
 
             <AlertModal
                 isOpen={isAlertModalOpen}
@@ -108,7 +108,7 @@ const EmployeeScanExpiry = () => {
                     }}
                 />
             </View>
-        </Container>
+        </>
     )
 }
 

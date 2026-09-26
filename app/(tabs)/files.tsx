@@ -100,7 +100,7 @@ const Files = () => {
 
 
     return (
-        <Container>
+        <>
 
             <ScrollView>
                 <View className='gap-2'>
@@ -121,7 +121,7 @@ const Files = () => {
                 {/* <Button onPress={() => deleteFiles(new Date())} >
                 <Text >Delete files</Text> */}
             </Button>
-        </Container>
+        </>
     )
 }
 

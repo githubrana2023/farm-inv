@@ -19,22 +19,20 @@ import { QUERY_KEY } from '@/constants/tanstack/query'
 
 const GrabAndGo = () => {
     return (
-        <Container>
-            <ReusableTab
-                tabLabels={[
-                    {
-                        label: 'Gran & Go'
-                    },
-                    {
-                        label: 'Settings'
-                    },
-                ]}
-                tabContent={{
-                    "Gran & Go": <GrabAndGoForm />,
-                    Settings: <GrabAndGoSettings />
-                }}
-            />
-        </Container>
+        <ReusableTab
+            tabLabels={[
+                {
+                    label: 'Gran & Go'
+                },
+                {
+                    label: 'Settings'
+                },
+            ]}
+            tabContent={{
+                "Gran & Go": <GrabAndGoForm />,
+                Settings: <GrabAndGoSettings />
+            }}
+        />
     )
 }
 

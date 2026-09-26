@@ -12,37 +12,34 @@ import EmployeeSettings from "@/components/employee-settings"
 const Settings = () => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('app-settings')
     return (
-        <Container>
-            {/* <Tabs value={value} onValueChange={setValue} className="w-[400px]"> */}
-            <Tabs
-                value={activeTab}
-                onValueChange={(v) => setActiveTab(v as SettingsTab)}
-                className="flex-1 py-1"
-            >
-                <ScrollView>
+        <Tabs
+            value={activeTab}
+            onValueChange={(v) => setActiveTab(v as SettingsTab)}
+            className="flex-1 py-1"
+        >
+            <ScrollView>
 
-                    <TabsContent value={APP_SETTINGS_TAB}>
-                        <AppSettings />
-                    </TabsContent>
-                    <TabsContent value={USER_SETTINGS_TAB}>
-                        <EmployeeSettings />
-                    </TabsContent>
-                </ScrollView>
+                <TabsContent value={APP_SETTINGS_TAB}>
+                    <AppSettings />
+                </TabsContent>
+                <TabsContent value={USER_SETTINGS_TAB}>
+                    <EmployeeSettings />
+                </TabsContent>
+            </ScrollView>
 
-                <TabsList className="w-full justify-around mt-auto">
-                    {
-                        SETTINGS_TABS.map((tab) => (
-                            <TabsTrigger key={tab} value={tab}>
-                                <Text className={cn(tab === activeTab && "font-semibold")}>
-                                    {capitalizeFirstLetter(splitWord(tab, '-'))}
-                                </Text>
-                            </TabsTrigger>
-                        ))
-                    }
+            <TabsList className="w-full justify-around mt-auto">
+                {
+                    SETTINGS_TABS.map((tab) => (
+                        <TabsTrigger key={tab} value={tab}>
+                            <Text className={cn(tab === activeTab && "font-semibold")}>
+                                {capitalizeFirstLetter(splitWord(tab, '-'))}
+                            </Text>
+                        </TabsTrigger>
+                    ))
+                }
 
-                </TabsList>
-            </Tabs>
-        </Container>
+            </TabsList>
+        </Tabs>
     )
 }
 

@@ -26,6 +26,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
+import Container from '@/components/shared/container';
 
 
 
@@ -78,19 +79,21 @@ export default function RootLayout() {
         <TanstackQueryProvider>
           <ReduxStoreProvider>
             <SafeAreaProvider>
-              <GestureHandlerRootView className='flex-1'>
-              <BottomSheetModalProvider>
-              <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-              <Stack
-                screenOptions={{
-                  headerShown: false
-                }}
-              />
-                <PortalHost />
-                <Toast config={toastConfig} />
-                <ModalProvider />
+              <Container>
+                <GestureHandlerRootView className='flex-1'>
+                  <BottomSheetModalProvider>
+                    <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                    <Stack
+                      screenOptions={{
+                        headerShown: false
+                      }}
+                    />
+                    <PortalHost />
+                    <Toast config={toastConfig} />
+                    <ModalProvider />
                   </BottomSheetModalProvider>
-              </GestureHandlerRootView>
+                </GestureHandlerRootView>
+              </Container>
             </SafeAreaProvider>
           </ReduxStoreProvider>
         </TanstackQueryProvider>

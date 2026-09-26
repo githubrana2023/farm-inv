@@ -14,7 +14,7 @@ const EmployeeDetails = () => {
     const { empId } = useLocalSearchParams<{ empId: string }>();
     const { onOpen } = useModalAction()
     return (
-        <Container>
+        <>
             <ChangePasswordModal
                 employeeId={empId}
             />
@@ -36,7 +36,7 @@ const EmployeeDetails = () => {
                     name: "RANA"
                 }} />
             </CardWrapper>
-        </Container>
+        </>
     )
 }
 

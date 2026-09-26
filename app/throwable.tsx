@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useGetGrabAndGoFiftyPercentBarcodes } from '@/hooks/tanstack/query/grab-and-go/use-get-grab-and-go';
-import { saveFile, saveGrabAndGoFiftyPercent } from '@/lib/expo-file-system/save-file';
+import { saveGrabAndGoFiftyPercent } from '@/lib/expo-file-system/save-file';
 
 type TabComponentName = 'throwable' | 'grab&go'
 type TabComponentMap = Record<TabComponentName, () => React.JSX.Element>
@@ -32,9 +32,7 @@ const Throwable = () => {
 
 
     return (
-        <Container>
-            <ThrowableForm />
-        </Container>
+        <ThrowableForm />
     )
 }
 
