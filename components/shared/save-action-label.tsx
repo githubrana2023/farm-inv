@@ -16,6 +16,7 @@ import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { cn } from '@/lib/utils';
 import { Switch } from '../ui/switch';
+import { useLabelingGetQuery } from '@/hooks/tanstack/mutation/labeling';
 type Route = {
     label: string;
     href: Href
@@ -41,8 +42,11 @@ const routes: Route[] = [
 ]
 
 export const SaveActionLabel = () => {
+
     // ref
     const saveActionLabelSheetRef = useRef<BottomSheetModal>(null);
+
+    const { data } = useLabelingGetQuery()
     const [checked, setChecked] = useState(false)
     const router = useRouter()
 
@@ -89,14 +93,8 @@ export const SaveActionLabel = () => {
                         <Separator className='my-1.5' />
                         <View className='flex-row gap-1 flex-wrap'>
                             {
-                                [
-                                    { label: 'Inventory', onPress: () => { } },
-                                    { label: 'T96', onPress: () => { } },
-                                    { label: 'T77', onPress: () => { } },
-                                    { label: 'T27', onPress: () => { } },
-                                    { label: 'T15', onPress: () => { } },
-                                ].map(({ onPress, label }) => (
-                                    <Button onPress={onPress} key={label}>
+                                (data?.invLabels || []).map(({ onPress, label }) => (
+                                    <Button onPress={async () => await onPress(label)} key={label}>
                                         <Text>{label}</Text>
                                     </Button>
                                 ))
@@ -110,14 +108,8 @@ export const SaveActionLabel = () => {
                         <Separator className='my-1.5' />
                         <View className='flex-row gap-1 flex-wrap'>
                             {
-                                [
-                                    { label: 'Tags', onPress: () => { } },
-                                    { label: 'Jojo', onPress: () => { } },
-                                    { label: 'Jitendra', onPress: () => { } },
-                                    { label: 'Trishudhan', onPress: () => { } },
-                                    { label: 'Ram', onPress: () => { } },
-                                ].map(({ onPress, label }) => (
-                                    <Button onPress={onPress} key={label}>
+                                (data?.tagLabels || []).map(({ onPress, label }) => (
+                                    <Button onPress={async () => await onPress(label)} key={label}>
                                         <Text>{label}</Text>
                                     </Button>
                                 ))
@@ -131,13 +123,8 @@ export const SaveActionLabel = () => {
                         <Separator className='my-1.5' />
                         <View className='flex-row gap-1 flex-wrap'>
                             {
-                                [
-                                    { label: 'Khaldia', onPress: () => { } },
-                                    { label: 'Vegetable', onPress: () => { } },
-                                    { label: 'Luziano', onPress: () => { } },
-                                    { label: 'Direct', onPress: () => { } },
-                                ].map(({ onPress, label }) => (
-                                    <Button onPress={onPress} key={label}>
+                                (data?.orderLabels || []).map(({ onPress, label }) => (
+                                    <Button onPress={async () => await onPress(label)} key={label}>
                                         <Text>{label}</Text>
                                     </Button>
                                 ))

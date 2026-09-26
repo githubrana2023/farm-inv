@@ -18,14 +18,24 @@ type Item = {
     updatedAt: Date;
 }
 
-export const saveInventory = async (saveFlag?: string) => {
+export const saveTags = async (saveFlag?: string) => {
     const items = await inventoryDb.select().from(inventoryTable).where(
-        eq(inventoryTable.scanFlag, 'Inventory')
+        eq(inventoryTable.scanFlag, 'Tags')
     )
     if (items.length < 1) return showError('No item to save')
-    const fileName = generateFileName('inv', saveFlag)
-    const content = generateInventoryContent(items)
-    await saveFile({ fileName, content })
+
+    const promoItems = items.filter(item => item.pflag === 'P')
+    const regularItems = items.filter(item => item.pflag === 'R')
+
+    const promoContent = generateInventoryContent(promoItems)
+    const promoFileName = generateFileName('p-tags', saveFlag)
+
+    const regularContent = generateInventoryContent(regularItems)
+    const regularFileName = generateFileName('r-tags', saveFlag)
+
+
+    await saveFile({ fileName: promoFileName, content: promoContent })
+    await saveFile({ fileName: regularFileName, content: regularContent })
 }
 
 const generateInventoryContent = (items: Item[]) => items.map(item => `${item.barcode.padEnd(25, " ")}|${item.quantity}`).join('\n')

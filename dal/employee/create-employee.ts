@@ -1,9 +1,9 @@
 import { inventoryDb } from "@/drizzle/db/inventory-db"
-import { employeeTable } from "@/drizzle/schema/inventory"
+import { employeeTable, labelingTable } from "@/drizzle/schema/inventory"
 import { EmployeeCreateFormValue } from "@/lib/zod/employee-form-schema"
 import 'react-native-get-random-values';
 import bcrypt from "bcryptjs"
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { failureResponse, successResponse } from "@/lib/response"
 
 export const createEmployee = async (value: EmployeeCreateFormValue) => {
@@ -13,6 +13,17 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
         const isFirstEmp = allEmployees.length < 1
         const isEdpEmployee = value.employeeTitle.toUpperCase() === 'EDP'
         const salt = await bcrypt.genSalt(10)
+
+        const existLabel = await inventoryDb.select().from(labelingTable).where(and(
+            eq(labelingTable.saveFlag, 'Tags'),
+            eq(labelingTable.label, value.name)
+        ))
+        if(!existLabel){
+            await inventoryDb.insert(labelingTable).values({
+                label:value.name,
+                saveFlag:'Tags'
+            })
+        }
 
         if (isFirstEmp) {
             if (value.employeeTitle.toUpperCase() !== 'EDP') return failureResponse('I.T required to create employee!')
