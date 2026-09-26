@@ -6,22 +6,20 @@ import { Button } from '@/components/ui/button'
 
 const Labeling = () => {
     return (
-        <Container>
-            <View className='flex-1 py-3'>
-                <ReusableTab
-                    tabLabels={[{
-                        label: 'Inventory',
-                        hidden: false,
-                    }, {
-                        label: 'Order'
-                    }]}
-                    tabContent={{
-                        Inventory: <InventoryLabeling />,
-                        Order: <OrderLabeling />,
-                    }}
-                />
-            </View>
-        </Container>
+        <View className='flex-1 py-3'>
+            <ReusableTab
+                tabLabels={[{
+                    label: 'Inventory',
+                    hidden: false,
+                }, {
+                    label: 'Order'
+                }]}
+                tabContent={{
+                    Inventory: <InventoryLabeling />,
+                    Order: <OrderLabeling />,
+                }}
+            />
+        </View>
     )
 }
 

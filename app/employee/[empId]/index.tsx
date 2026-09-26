@@ -13,7 +13,7 @@ import { MODAL_TYPE } from '@/constants';
 const EmployeeDetails = () => {
     const { empId } = useLocalSearchParams<{ empId: string }>();
     return (
-        <Container>
+        <>
             <CardWrapper
                 title="Employee settings"
                 description={`Employee ${empId}`}
@@ -41,7 +41,7 @@ const EmployeeDetails = () => {
                     </Link>
                 </View>
             </CardWrapper>
-        </Container>
+        </>
     )
 }
 

@@ -15,7 +15,7 @@ export default function TabsLayout() {
   return (
     <Tabs >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
           title: 'Scan',
           headerShown: false,

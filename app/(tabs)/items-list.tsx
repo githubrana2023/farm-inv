@@ -116,213 +116,209 @@ const ItemsList = () => {
     };
 
     return (
-        <Container>
-            <GestureHandlerRootView className='flex-1'>
+        <>
+            <AlertModal
+                isOpen={!!isDeleteAlert || !!isUpdateAlert}
+                title={alertTitle}
+                description={alertDescription}
+                onConfirm={onConfirm}
+                onCancel={onAlertCloseWithPayload}
+            />
 
-                <AlertModal
-                    isOpen={!!isDeleteAlert || !!isUpdateAlert}
-                    title={alertTitle}
-                    description={alertDescription}
-                    onConfirm={onConfirm}
-                    onCancel={onAlertCloseWithPayload}
-                />
+            <View className='flex-1 justify-between py-2'>
+                <View className='flex-1'>
+                    {/* Inventory Save Form */}
+                    <View className=" gap-2 py-2">
+                        <View className="relative">
+                            <Input
+                                placeholder="Item Title"
+                                onChangeText={(text) => {
+                                    setInputValue(prev => ({ ...prev, title: text }))
+                                }}
+                                value={inputValue.title}
+                            />
 
-                <View className='flex-1 justify-between py-2'>
-                    <View className='flex-1'>
-                        {/* Inventory Save Form */}
-                        <View className=" gap-2 py-2">
-                            <View className="relative">
-                                <Input
-                                    placeholder="Item Title"
-                                    onChangeText={(text) => {
-                                        setInputValue(prev => ({ ...prev, title: text }))
-                                    }}
-                                    value={inputValue.title}
-                                />
-
-                                {/* Clear Button */}
-                                {inputValue.title.length > 0 && (
-                                    <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setInputValue(prev => ({ ...prev, title: "" }))
-                                            }}
-                                        >
-                                            <Lucide name='x-circle' size={20} />
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </View>
-                            <View className="relative">
-                                <Input
-                                    placeholder="Search"
-                                    onChangeText={(text) => {
-                                        setInputValue(prev => ({ ...prev, search: text }))
-                                    }}
-                                    value={inputValue.search}
-                                />
-
-                                {/* Clear Button */}
-                                {inputValue.search.length > 0 && (
-                                    <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setInputValue(prev => ({ ...prev, search: "" }))
-                                            }}
-                                        >
-                                            <Lucide name='x-circle' size={20} />
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </View>
-                        </View>
-
-                        {/* scanned items */}
-                        <FlatList
-                            className="py-2 flex-1"
-                            showsVerticalScrollIndicator={false}
-                            data={data}
-                            renderItem={({ item, index }) => (
-                                <ItemListItemCard
-                                    key={item.id}
-                                    item={item}
-                                    enableActionBtn
-                                    isCollapseAble
-                                    defaultCollapse={index !== 0}
-                                    onDelete={(item) => {
-                                        onAlertOpenWithPayload({
-                                            type: ALERT_MODAL_TYPE.SCANNED_ITEM.DELETE,
-                                            id: item.id,
-                                            description: item.description,
-                                        })
-                                    }}
-                                    onUpdate={(item) => {
-                                        onAlertOpenWithPayload({
-                                            type: ALERT_MODAL_TYPE.SCANNED_ITEM.UPDATE,
-                                            id: item.id,
-                                            description: item.description,
-                                            previousQuantity: item.previousQuantity,
-                                            quantity: String(item.quantity),
-                                            uom: item.uom
-                                        })
-                                    }}
-                                />
+                            {/* Clear Button */}
+                            {inputValue.title.length > 0 && (
+                                <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setInputValue(prev => ({ ...prev, title: "" }))
+                                        }}
+                                    >
+                                        <Lucide name='x-circle' size={20} />
+                                    </TouchableOpacity>
+                                </View>
                             )}
-                        />
-                    </View>
+                        </View>
+                        <View className="relative">
+                            <Input
+                                placeholder="Search"
+                                onChangeText={(text) => {
+                                    setInputValue(prev => ({ ...prev, search: text }))
+                                }}
+                                value={inputValue.search}
+                            />
 
-                    <BottomSheet
-                        snapPoints={snapPoints}
-                        enableDynamicSizing={false}
-                        ref={bottomSheetRef}
-                        onChange={handleSheetChanges}
-                        index={-1}
-                        enablePanDownToClose
-                    >
-                        <BottomSheetView className='flex-1 p-8'>
-                            <View className='gap-2'>
-                                {
-                                    [
-                                        {
-                                            label: "Inventory",
-                                            onPress: async (flag: string, prefix: string) => {
-                                                await saveInventory(prefix)
-                                                // showSuccess(prefix, flag)
-                                                handleClosePress()
-                                            },
-                                            buttons: [
-                                                { label: "Inventory", },
-                                                { label: "Non Food Over Stock", },
-                                                { label: "Food Over Stock", },
-                                                { label: "Deli", },
-                                                { label: "Veg", },
-                                                { label: "Cig", },
-                                                { label: "Water", },
-                                                { label: "Meat", },
-                                                { label: "Louziano", },
-                                                { label: "Bakery", },
-                                                { label: "Chickens & Eggs", },
-                                                { label: "T96", },
-                                                { label: "T27", },
-                                                { label: "T77", },
-                                                { label: "T15", },
-                                                { label: "T19", },
-                                                { label: "Kwh Exp", },
-                                                { label: "Throwing", },
-                                                { label: "One Plus One", },
-                                            ]
-                                        },
-                                        {
-                                            label: "Tags",
-                                            onPress: async (flag: string, prefix: string) => {
-                                                // showSuccess(prefix, flag)
-                                                handleClosePress()
-                                            },
-                                            buttons: [
-                                                { label: "Tags", },
-                                                { label: "Jojo", },
-                                                { label: "Jitendra", },
-                                                { label: "Raam", },
-                                                { label: "Trishudhan", },
-                                            ]
-                                        },
-                                        {
-                                            label: "Order",
-                                            onPress: async (flag: string, prefix: string) => {
-                                                // showSuccess(prefix, flag)
-                                                handleClosePress()
-                                            },
-                                            buttons: [
-                                                { label: "Kwh", },
-                                                { label: "Veg", },
-                                                { label: "Louziano", },
-                                                { label: "Direct", },
-                                            ]
-                                        },
-                                    ].map(({ label, buttons, onPress }) => (
-                                        <View key={label}>
-                                            <View>
-                                                <Text>{label}</Text>
-                                            </View>
-                                            <Separator className='my-1' />
-                                            <View className='flex-row gap-1 flex-wrap'>
-                                                {buttons.map(button => (
-
-                                                    <Button size={'sm'} key={button.label} onPress={async () => await onPress(label, button.label)}>
-                                                        <Text>{button.label}</Text>
-                                                    </Button>
-                                                ))}
-                                            </View>
-                                        </View>
-                                    ))
-                                }
-                            </View>
-                        </BottomSheetView>
-                    </BottomSheet>
-                    {/* below buttons */}
-                    <View className='bg-background flex-row justify-between items-center  rounded-md p-1 shadow-sm shadow-black/5'>
-                        <View className="flex-row">
-                            <Button
-                                onPress={() => handleSnapPress(2)}
-                                className='rounded-r-none flex-1'
-                            >
-                                <Text>Save</Text>
-                            </Button>
-                            <Separator orientation='vertical' />
-                            <Button
-                                className='rounded-l-none '
-                                onPress={() => bottomSheetRef?.current?.close()}
-                            >
-                                <Text>Close</Text>
-                            </Button>
-
+                            {/* Clear Button */}
+                            {inputValue.search.length > 0 && (
+                                <View className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setInputValue(prev => ({ ...prev, search: "" }))
+                                        }}
+                                    >
+                                        <Lucide name='x-circle' size={20} />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     </View>
 
+                    {/* scanned items */}
+                    <FlatList
+                        className="py-2 flex-1"
+                        showsVerticalScrollIndicator={false}
+                        data={data}
+                        renderItem={({ item, index }) => (
+                            <ItemListItemCard
+                                key={item.id}
+                                item={item}
+                                enableActionBtn
+                                isCollapseAble
+                                defaultCollapse={index !== 0}
+                                onDelete={(item) => {
+                                    onAlertOpenWithPayload({
+                                        type: ALERT_MODAL_TYPE.SCANNED_ITEM.DELETE,
+                                        id: item.id,
+                                        description: item.description,
+                                    })
+                                }}
+                                onUpdate={(item) => {
+                                    onAlertOpenWithPayload({
+                                        type: ALERT_MODAL_TYPE.SCANNED_ITEM.UPDATE,
+                                        id: item.id,
+                                        description: item.description,
+                                        previousQuantity: item.previousQuantity,
+                                        quantity: String(item.quantity),
+                                        uom: item.uom
+                                    })
+                                }}
+                            />
+                        )}
+                    />
                 </View>
-            </GestureHandlerRootView>
 
-        </Container >
+                <BottomSheet
+                    snapPoints={snapPoints}
+                    enableDynamicSizing={false}
+                    ref={bottomSheetRef}
+                    onChange={handleSheetChanges}
+                    index={-1}
+                    enablePanDownToClose
+                >
+                    <BottomSheetView className='flex-1 p-8'>
+                        <View className='gap-2'>
+                            {
+                                [
+                                    {
+                                        label: "Inventory",
+                                        onPress: async (flag: string, prefix: string) => {
+                                            await saveInventory(prefix)
+                                            // showSuccess(prefix, flag)
+                                            handleClosePress()
+                                        },
+                                        buttons: [
+                                            { label: "Inventory", },
+                                            { label: "Non Food Over Stock", },
+                                            { label: "Food Over Stock", },
+                                            { label: "Deli", },
+                                            { label: "Veg", },
+                                            { label: "Cig", },
+                                            { label: "Water", },
+                                            { label: "Meat", },
+                                            { label: "Louziano", },
+                                            { label: "Bakery", },
+                                            { label: "Chickens & Eggs", },
+                                            { label: "T96", },
+                                            { label: "T27", },
+                                            { label: "T77", },
+                                            { label: "T15", },
+                                            { label: "T19", },
+                                            { label: "Kwh Exp", },
+                                            { label: "Throwing", },
+                                            { label: "One Plus One", },
+                                        ]
+                                    },
+                                    {
+                                        label: "Tags",
+                                        onPress: async (flag: string, prefix: string) => {
+                                            // showSuccess(prefix, flag)
+                                            handleClosePress()
+                                        },
+                                        buttons: [
+                                            { label: "Tags", },
+                                            { label: "Jojo", },
+                                            { label: "Jitendra", },
+                                            { label: "Raam", },
+                                            { label: "Trishudhan", },
+                                        ]
+                                    },
+                                    {
+                                        label: "Order",
+                                        onPress: async (flag: string, prefix: string) => {
+                                            // showSuccess(prefix, flag)
+                                            handleClosePress()
+                                        },
+                                        buttons: [
+                                            { label: "Kwh", },
+                                            { label: "Veg", },
+                                            { label: "Louziano", },
+                                            { label: "Direct", },
+                                        ]
+                                    },
+                                ].map(({ label, buttons, onPress }) => (
+                                    <View key={label}>
+                                        <View>
+                                            <Text>{label}</Text>
+                                        </View>
+                                        <Separator className='my-1' />
+                                        <View className='flex-row gap-1 flex-wrap'>
+                                            {buttons.map(button => (
+
+                                                <Button size={'sm'} key={button.label} onPress={async () => await onPress(label, button.label)}>
+                                                    <Text>{button.label}</Text>
+                                                </Button>
+                                            ))}
+                                        </View>
+                                    </View>
+                                ))
+                            }
+                        </View>
+                    </BottomSheetView>
+                </BottomSheet>
+                {/* below buttons */}
+                <View className='bg-background flex-row justify-between items-center  rounded-md p-1 shadow-sm shadow-black/5'>
+                    <View className="flex-row">
+                        <Button
+                            onPress={() => handleSnapPress(2)}
+                            className='rounded-r-none flex-1'
+                        >
+                            <Text>Save</Text>
+                        </Button>
+                        <Separator orientation='vertical' />
+                        <Button
+                            className='rounded-l-none '
+                            onPress={() => bottomSheetRef?.current?.close()}
+                        >
+                            <Text>Close</Text>
+                        </Button>
+
+                    </View>
+                </View>
+
+            </View>
+        </ >
     )
 }
 

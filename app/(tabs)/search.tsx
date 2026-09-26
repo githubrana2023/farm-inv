@@ -139,178 +139,176 @@ const Search = () => {
 
 
     return (
-        <Container>
-            <View className="flex-1 gap-1">
+        <View className="flex-1 gap-1">
 
-                <View className='flex-1'>
+            <View className='flex-1'>
 
-                    <View className="h-16 py-2">
-                        <Input
-                            className="flex-1 relative pr-12"
-                            placeholder="Search"
-                            onChangeText={(text) => {
-                                setSearchValue(text)
-                            }}
-                            value={searchValue}
-                        />
+                <View className="h-16 py-2">
+                    <Input
+                        className="flex-1 relative pr-12"
+                        placeholder="Search"
+                        onChangeText={(text) => {
+                            setSearchValue(text)
+                        }}
+                        value={searchValue}
+                    />
 
-                        {
-                            searchValue.length > 0 && (
-                                <View className='absolute top-5 right-4'>
-                                    <Lucide
-                                        name='x-circle'
-                                        size={24}
-                                        onPress={() => setSearchValue("")}
-                                        color={isDark ? "white" : "black"}
-                                    />
-                                </View>
-                            )
-                        }
-                    </View>
-
-
-
-                    {/* ADD TO INVENTORY|TAGS|ORDER FORM  START*/}
                     {
-                        requestedItem && (
-                            <View className='gap-2 py-2'>
-                                <Form {...form}>
-                                    <View className='flex-row items-center justify-between gap-1'>
-                                        <View className='flex-1'>
-                                            <FormField
-                                                name="uom"
-                                                control={form.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <Select
-                                                                onValueChange={(option) => {
-                                                                    field.onChange(option?.value);
-                                                                }}
-                                                                value={
-                                                                    field.value ? {
-                                                                        value: field.value,
-                                                                        label: field.value
-                                                                    } : undefined
-                                                                }
-                                                            >
-                                                                <SelectTrigger
-                                                                    onLayout={(e) =>
-                                                                        setTriggerWidth(e.nativeEvent.layout.width)
-                                                                    }
-                                                                >
-                                                                    <SelectValue placeholder="UOM" />
-                                                                </SelectTrigger>
-                                                                <SelectContent
-                                                                    style={{ width: triggerWidth }}
-                                                                    className="mt-2">
-                                                                    <SelectGroup className="">
-                                                                        <SelectLabel>Units</SelectLabel>
-                                                                        {
-                                                                            requestedItem.itemUoms.map(
-                                                                                ({ uom, barcode, packing }) => (
-                                                                                    <SelectItem
-                                                                                        key={barcode}
-                                                                                        value={`${uom}|${String(packing)}`}
-                                                                                        label={`${uom} (${String(packing)})`}
-                                                                                    />
-                                                                                )
-                                                                            )
-                                                                        }
-                                                                    </SelectGroup>
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-
-
-                                        </View>
-                                        <View className="flex-1">
-                                            <FormField
-                                                control={form.control}
-                                                name='quantity'
-                                                render={({ field }) => {
-                                                    return (
-                                                        <InputField
-                                                            // ref={barcodeInputRef}
-                                                            // autoFocus
-                                                            placeholder="quantity"
-                                                            keyboardType="decimal-pad"
-                                                            returnKeyType="go"
-                                                            onChangeText={field.onChange}
-                                                            value={field.value}
-                                                            onSubmitEditing={onSubmit}
-                                                        />
-                                                    )
-                                                }}
-                                            />
-                                        </View>
-                                    </View>
-                                </Form>
-                                <ShowMessage success title={`Add to ${requestedItemIndex?.addTo}`} description={requestedItem.description} />
+                        searchValue.length > 0 && (
+                            <View className='absolute top-5 right-4'>
+                                <Lucide
+                                    name='x-circle'
+                                    size={24}
+                                    onPress={() => setSearchValue("")}
+                                    color={isDark ? "white" : "black"}
+                                />
                             </View>
                         )
                     }
-                    {/* ADD TO INVENTORY|TAGS|ORDER FORM END */}
-
-
-                    {
-                        (isFetching) && (
-                            <LoadingState
-                                title='Searching...'
-                                description='Please wait'
-                            />
-                        )
-                    }
-                    {
-                        (debouncedValue.length === 0 && !isFetching) && (
-                            <EmptySearch
-                                description='Enter a item name or keyword to find item'
-                                placeholder='Start typing to search item'
-                            />
-                        )
-                    }
-                    {
-                        (!isFetching && debouncedValue.length > 0 && items?.length < 1) && (
-                            <NoSearchResults query={debouncedValue} />
-                        )
-                    }
-                    {
-                        (!isFetching && debouncedValue.length > 0 && items.length > 0) && (
-                            <FlatList
-                                className="pb-0 flex-1"
-                                showsVerticalScrollIndicator={false}
-                                data={items}
-                                keyExtractor={item => item.barcode}
-                                renderItem={({ item, index }) => renderSearchItemDetailsCard(
-                                    { item, isDark, index, setRequestedItemIndex }
-                                )}
-                                onEndReached={() => {
-                                    if (hasNextPage && !isFetchingNextPage) {
-                                        fetchNextPage()
-                                    }
-                                }}
-                            />
-                        )
-                    }
-
                 </View>
 
 
 
-                {/* TODO: total item count remaining */}
-                {/* <View className='py-4'>
+                {/* ADD TO INVENTORY|TAGS|ORDER FORM  START*/}
+                {
+                    requestedItem && (
+                        <View className='gap-2 py-2'>
+                            <Form {...form}>
+                                <View className='flex-row items-center justify-between gap-1'>
+                                    <View className='flex-1'>
+                                        <FormField
+                                            name="uom"
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Select
+                                                            onValueChange={(option) => {
+                                                                field.onChange(option?.value);
+                                                            }}
+                                                            value={
+                                                                field.value ? {
+                                                                    value: field.value,
+                                                                    label: field.value
+                                                                } : undefined
+                                                            }
+                                                        >
+                                                            <SelectTrigger
+                                                                onLayout={(e) =>
+                                                                    setTriggerWidth(e.nativeEvent.layout.width)
+                                                                }
+                                                            >
+                                                                <SelectValue placeholder="UOM" />
+                                                            </SelectTrigger>
+                                                            <SelectContent
+                                                                style={{ width: triggerWidth }}
+                                                                className="mt-2">
+                                                                <SelectGroup className="">
+                                                                    <SelectLabel>Units</SelectLabel>
+                                                                    {
+                                                                        requestedItem.itemUoms.map(
+                                                                            ({ uom, barcode, packing }) => (
+                                                                                <SelectItem
+                                                                                    key={barcode}
+                                                                                    value={`${uom}|${String(packing)}`}
+                                                                                    label={`${uom} (${String(packing)})`}
+                                                                                />
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                </SelectGroup>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+
+                                    </View>
+                                    <View className="flex-1">
+                                        <FormField
+                                            control={form.control}
+                                            name='quantity'
+                                            render={({ field }) => {
+                                                return (
+                                                    <InputField
+                                                        // ref={barcodeInputRef}
+                                                        // autoFocus
+                                                        placeholder="quantity"
+                                                        keyboardType="decimal-pad"
+                                                        returnKeyType="go"
+                                                        onChangeText={field.onChange}
+                                                        value={field.value}
+                                                        onSubmitEditing={onSubmit}
+                                                    />
+                                                )
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+                            </Form>
+                            <ShowMessage success title={`Add to ${requestedItemIndex?.addTo}`} description={requestedItem.description} />
+                        </View>
+                    )
+                }
+                {/* ADD TO INVENTORY|TAGS|ORDER FORM END */}
+
+
+                {
+                    (isFetching) && (
+                        <LoadingState
+                            title='Searching...'
+                            description='Please wait'
+                        />
+                    )
+                }
+                {
+                    (debouncedValue.length === 0 && !isFetching) && (
+                        <EmptySearch
+                            description='Enter a item name or keyword to find item'
+                            placeholder='Start typing to search item'
+                        />
+                    )
+                }
+                {
+                    (!isFetching && debouncedValue.length > 0 && items?.length < 1) && (
+                        <NoSearchResults query={debouncedValue} />
+                    )
+                }
+                {
+                    (!isFetching && debouncedValue.length > 0 && items.length > 0) && (
+                        <FlatList
+                            className="pb-0 flex-1"
+                            showsVerticalScrollIndicator={false}
+                            data={items}
+                            keyExtractor={item => item.barcode}
+                            renderItem={({ item, index }) => renderSearchItemDetailsCard(
+                                { item, isDark, index, setRequestedItemIndex }
+                            )}
+                            onEndReached={() => {
+                                if (hasNextPage && !isFetchingNextPage) {
+                                    fetchNextPage()
+                                }
+                            }}
+                        />
+                    )
+                }
+
+            </View>
+
+
+
+            {/* TODO: total item count remaining */}
+            {/* <View className='py-4'>
                     <Badge>
                         <Text>
                             Total Items : {items.length}
                         </Text>
                     </Badge>
                 </View> */}
-            </View>
-        </Container>
+        </View>
     )
 }
 
