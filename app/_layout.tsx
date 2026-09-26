@@ -22,6 +22,13 @@ export {
   ErrorBoundary,
 } from 'expo-router';
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+
+
+
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
 
@@ -71,15 +78,19 @@ export default function RootLayout() {
         <TanstackQueryProvider>
           <ReduxStoreProvider>
             <SafeAreaProvider>
+              <GestureHandlerRootView className='flex-1'>
+              <BottomSheetModalProvider>
               <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
               <Stack
                 screenOptions={{
                   headerShown: false
                 }}
               />
-              <PortalHost />
-              <Toast config={toastConfig} />
-              <ModalProvider />
+                <PortalHost />
+                <Toast config={toastConfig} />
+                <ModalProvider />
+                  </BottomSheetModalProvider>
+              </GestureHandlerRootView>
             </SafeAreaProvider>
           </ReduxStoreProvider>
         </TanstackQueryProvider>
