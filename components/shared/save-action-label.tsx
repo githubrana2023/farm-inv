@@ -1,45 +1,20 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
     BottomSheetModal,
     BottomSheetView,
-    BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import { Button } from '../ui/button';
 import { Text } from '../ui/text';
 import { Icon } from '../ui/icon';
-import { Check, Menu, Save } from 'lucide-react-native';
-import { Href, useRouter } from 'expo-router';
+import { Check, Save } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { Separator } from '../ui/separator';
 import { Label } from '../ui/label';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { cn } from '@/lib/utils';
-import { Switch } from '../ui/switch';
 import { useLabelingGetQuery } from '@/hooks/tanstack/mutation/labeling';
-type Route = {
-    label: string;
-    href: Href
-}
+import { saveAll } from '@/lib/expo-file-system/save-file';
 
-const routes: Route[] = [
-    {
-        label: 'Regular Scan',
-        href: '/(tabs)/(home)'
-    },
-    {
-        label: 'Grab & Go',
-        href: '/(tabs)/(home)/grab-and-go'
-    },
-    {
-        label: '1+1 / Throwing / Overstock',
-        href: '/(tabs)/files'
-    },
-    {
-        label: 'Expiry Monitoring',
-        href: '/(tabs)/files'
-    },
-]
 
 export const SaveActionLabel = () => {
 
@@ -56,7 +31,14 @@ export const SaveActionLabel = () => {
     }, []);
     return (
         <>
-            <Button size={'sm'} onPress={handlePresentModalPress} className='flex-1'>
+            <Button
+                size={'sm'}
+                onPress={handlePresentModalPress}
+                className='flex-1'
+                onLongPress={async () => {
+                    await saveAll()
+                }}
+            >
                 <Icon
                     as={Save}
                 />

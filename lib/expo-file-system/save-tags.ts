@@ -25,7 +25,8 @@ export const saveTags = async (saveFlag?: string) => {
     if (items.length < 1) return showError('No item to save')
 
     const promoItems = items.filter(item => item.pflag === 'P')
-    const regularItems = items.filter(item => item.pflag === 'R')
+    const regularItems = items.filter(item => item.pflag !== 'P')
+
 
     const promoContent = generateInventoryContent(promoItems)
     const promoFileName = generateFileName('p-tags', saveFlag)

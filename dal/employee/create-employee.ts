@@ -14,14 +14,14 @@ export const createEmployee = async (value: EmployeeCreateFormValue) => {
         const isEdpEmployee = value.employeeTitle.toUpperCase() === 'EDP'
         const salt = await bcrypt.genSalt(10)
 
-        const existLabel = await inventoryDb.select().from(labelingTable).where(and(
+        const [existLabel] = await inventoryDb.select().from(labelingTable).where(and(
             eq(labelingTable.saveFlag, 'Tags'),
             eq(labelingTable.label, value.name)
         ))
-        if(!existLabel){
+        if (!existLabel) {
             await inventoryDb.insert(labelingTable).values({
-                label:value.name,
-                saveFlag:'Tags'
+                label: value.name,
+                saveFlag: 'Tags'
             })
         }
 

@@ -14,7 +14,7 @@ export const inventoryTable = sqliteTable('inventory', {
     uom: text('uom').notNull(),
     packing: text('packing').notNull(),
     quantity: text('quantity').notNull(),
-    scanFlag: text('scan_flag', { enum: SCAN_FLAG }),
+    scanFlag: text('scan_flag', { enum: SCAN_FLAG }).notNull().default('Inventory'),
     pflag: text('pflag'),
     createdAt: createdAt('createdAt'),
     updatedAt: updatedAt('updatedAt'),

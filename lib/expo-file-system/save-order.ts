@@ -9,10 +9,13 @@ export const saveOrder = async (saveFlag?: string) => {
         const items = await inventoryDb.select().from(inventoryTable).where(
             eq(inventoryTable.scanFlag, 'Order')
         )
-        if (items.length < 1) return showError('No item to save')
+        // if (items.length < 1) return showError('No item to save')
+
 
         const fileName = generateFileName('order', saveFlag)
         const content = generateOrderTypeContent(items)
+
+        console.log({ order: items, fileName, content })
         saveFile({
             content, fileName
         })

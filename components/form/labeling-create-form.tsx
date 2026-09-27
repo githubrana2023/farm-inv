@@ -12,9 +12,11 @@ import { labelingCreateFormSchema, LabelingCreateFormValue } from '@/lib/zod/lab
 import { useLabelingCreateMutation } from '@/hooks/tanstack/mutation/labeling'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
 import { Label } from '../ui/label'
-import { SAVE_FLAG } from '@/constants'
+import { SAVE_FLAG, SCAN_FLAG } from '@/constants'
 import { invalidateLabelingGetQuery } from '@/lib/tanstack-query/labeling'
 import { useRef } from 'react'
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller'
+import { showSuccess } from '@/lib/toast/success'
 
 const LabelingCreateForm = () => {
     const passwordRef = useRef<any>(null)
@@ -36,8 +38,9 @@ const LabelingCreateForm = () => {
 
     const onSubmitHandler = form.handleSubmit(values => {
         createLabeling(values, {
-            onSuccess() {
+            onSuccess(data) {
                 invalidateLabelingGetQuery()
+                showSuccess(data.message)
                 // form.reset()
                 // onClose()
             }
@@ -49,9 +52,11 @@ const LabelingCreateForm = () => {
 
 
     return (
-        <>
+        <KeyboardAvoidingView
+            behavior='padding'
+            keyboardVerticalOffset={100}
+        >
             <Form {...form}>
-
                 <View className='gap-2 w-72'>
                     <View className="gap-1 items-center justify-between flex-row">
                         <FormField
@@ -65,7 +70,7 @@ const LabelingCreateForm = () => {
                                         console.log({ current: saveFlagRef.current.open() })
                                     }}
                                     label='Label'
-                                    placeholder="e.g. 45168"
+                                    placeholder="e.g. Cigarattes"
                                     returnKeyType="next"
                                     onChangeText={field.onChange}
                                     value={String(field.value)}
@@ -96,7 +101,7 @@ const LabelingCreateForm = () => {
                                                 <SelectGroup>
                                                     <SelectLabel>Labels</SelectLabel>
                                                     {
-                                                        SAVE_FLAG.map(flag => (
+                                                        SCAN_FLAG.map(flag => (
                                                             <SelectItem
                                                                 key={flag}
                                                                 value={flag}
@@ -119,7 +124,7 @@ const LabelingCreateForm = () => {
                         render={({ field }) => (
                             <InputField
                                 ref={passwordRef}
-                                label='Password'
+                                label='Password (EDP)'
                                 placeholder="******"
                                 secureTextEntry
                                 returnKeyType="next"
@@ -135,7 +140,7 @@ const LabelingCreateForm = () => {
                     </Button>
                 </View>
             </Form>
-        </>
+        </KeyboardAvoidingView>
     )
 }
 

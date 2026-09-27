@@ -1,14 +1,14 @@
-import { DIRECTORY_PERMISSION_KEY, SCAN_FLAG_TYPE, ScanFlag } from "@/constants";
-import { StoredDirectoryInfo } from "@/constants/type";
 import { Directory } from "expo-file-system";
 import * as dateFns from 'date-fns'
-import { getNonStringStoredData } from "../async-storage";
-import { directoryPicker, getDirectory } from "@/lib/expo-file-system/directory-picker";
-import { getSavedItems } from "@/dal/item/get-item-save-file";
+import { getDirectory } from "@/lib/expo-file-system/directory-picker";
 import { showError } from "../toast/error";
 import { showSuccess } from "../toast/success";
 import { inventoryDb } from "@/drizzle/db/inventory-db";
-import { grabAndGoTable, inventoryTable } from "@/drizzle/schema/inventory";
+import { inventoryTable } from "@/drizzle/schema/inventory";
+import { saveTags } from "./save-tags";
+import { saveInventory } from "./save-inventory";
+import { saveOrder } from "./save-order";
+import { and, count, gt, isNotNull } from "drizzle-orm";
 
 
 
@@ -53,5 +53,39 @@ export async function saveFile(
     } catch (error) {
         console.error(error);
         showError("Failed to save file.");
+    }
+}
+
+export const saveAll = async () => {
+    try {
+        const saves = await inventoryDb.select(
+            {
+                scanFlag: inventoryTable.scanFlag,
+                count: count(inventoryTable.scanFlag)
+            }
+        ).from(inventoryTable)
+            .groupBy(inventoryTable.scanFlag)
+            .having(
+                and(
+                    gt(count(inventoryTable.scanFlag), 0),
+                    isNotNull(inventoryTable.scanFlag)
+                )
+            )
+
+        const saveFn: Record<typeof saves[number]['scanFlag'], (saveFlag?: string | undefined) => Promise<void>> = {
+            Inventory: saveInventory,
+            Tags: saveTags,
+            Order: saveOrder
+        }
+
+
+        console.log()
+
+        for (const save of saves) {
+            await saveFn[save.scanFlag]()
+        }
+
+    } catch (error) {
+
     }
 }

@@ -44,6 +44,7 @@ const EmployeeCreateForm = () => {
             async onSuccess({ data, success, message }) {
                 showDynamicToast(success, message)
                 await queryClient.invalidateQueries({ queryKey: [MUTATION_KEY.EMPLOYEE.READ] })
+                await queryClient.invalidateQueries({ queryKey: [MUTATION_KEY.LABELING.READ] })
                 // form.reset()
                 // onClose()
             }

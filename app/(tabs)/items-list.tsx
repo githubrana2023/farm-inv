@@ -6,8 +6,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useColorScheme } from 'nativewind'
 import { ALERT_MODAL_TYPE, MODAL_TYPE, SCAN_FLAG_TYPE, SCAN_TYPE_KEY, ScanFlag, } from '@/constants'
 import { Separator } from '@/components/ui/separator'
-import { saveOrder } from '@/lib/expo-file-system/save-file'
-import { useEmployeesGetQuery } from '@/hooks/tanstack/mutation/employee'
 import { useModalAction } from '@/hooks/redux/use-modal'
 import { useLabelingGetQuery } from '@/hooks/tanstack/mutation/labeling'
 import { useRouter } from 'expo-router'
@@ -31,7 +29,6 @@ import { saveInventory } from '@/lib/expo-file-system/save-inventory'
 
 
 const ItemsList = () => {
-    const { data: employees } = useEmployeesGetQuery()
     const { data: label } = useLabelingGetQuery()
     const [inputValue, setInputValue] = useState({ search: "", title: "" })
     const { data: items, } = useGetScannedItems()
@@ -43,11 +40,6 @@ const ItemsList = () => {
     const bottomSheetRef = useRef<BottomSheet>(null);
     // variables
     const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
-    // callbacks
-    // callbacks
-    const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
-    }, []);
     const handleSnapPress = useCallback((index: number) => {
         bottomSheetRef.current?.snapToIndex(index);
     }, []);
@@ -213,7 +205,6 @@ const ItemsList = () => {
                     snapPoints={snapPoints}
                     enableDynamicSizing={false}
                     ref={bottomSheetRef}
-                    onChange={handleSheetChanges}
                     index={-1}
                     enablePanDownToClose
                 >
@@ -306,6 +297,7 @@ const ItemsList = () => {
                         >
                             <Text>Save</Text>
                         </Button>
+                        <Tag />
                         <Separator orientation='vertical' />
                         <Button
                             className='rounded-l-none '
@@ -461,94 +453,68 @@ export default ItemsList
 //     )
 // }
 
-// const Tag = ({ employees, fileName, items }: {
-//     employees: {
-//         emp: {
-//             employeeId: string;
-//             name: string;
-//             employeeTitle: string;
-//         };
-//         onPress: SaveInventoryFn
-//     }[],
-//     fileName?: string
-//     items: {
-//         regularItems: any[]
-//         promoItems: any[]
-//     }
+const Tag = () => {
+    const { colorScheme } = useColorScheme();
+    const { onOpen } = useModalAction()
 
-// }) => {
-//     const { colorScheme } = useColorScheme();
-//     const { onOpen } = useModalAction()
+    const router = useRouter()
 
-//     const router = useRouter()
-
-//     return (
-//         <View className="flex-row">
-//             <Button
-//                 onPress={async () => {
-//                     await saveInventory({
-//                         items: items.regularItems,
-//                         prefix: 'tags',
-//                         saveFlag: fileName
-//                     })
-//                     await saveInventory({
-//                         items: items.promoItems,
-//                         prefix: 'tags',
-//                         saveFlag: fileName
-//                     })
-//                 }}
-//                 className='rounded-r-none h-8 pr-1.5'
-//                 size={'sm'}
-//             >
-//                 <Text>Tags</Text>
-//             </Button>
-//             <DropdownMenu  >
-//                 <DropdownMenuTrigger asChild>
-//                     <Button
-//                         className='rounded-l-none h-8 pl-2'
-//                         size={'sm'}
-//                     >
-//                         <Text>
-//                             <Lucide name='arrow-down' size={14}
-//                                 color={colorScheme === 'dark' ? 'black' : 'white'}
-//                             />
-//                         </Text>
-//                     </Button>
-//                 </DropdownMenuTrigger>
-//                 <DropdownMenuContent side='top'>
-//                     <DropdownMenuItem onPress={() => onOpen(MODAL_TYPE.EMPLOYEE.CREATE)} className='flex-row'
-//                     >
-//                         <Lucide name='circle-plus' color={colorScheme === 'dark' ? 'white' : 'black'}
-//                         />
-//                         <Text className='font-semibold'>Add New</Text>
-//                     </DropdownMenuItem>
-//                     <Separator />
-//                     {
-//                         employees?.map(({ emp, onPress }, i) => (
-//                             <View key={emp.employeeId}>
-//                                 <DropdownMenuItem
-//                                     onPress={async () => {
-//                                         await onPress({
-//                                             items: items.regularItems,
-//                                             prefix: 'r-tags',
-//                                             saveFlag: emp.name
-//                                         })
-//                                         await onPress({
-//                                             items: items.promoItems,
-//                                             prefix: 'p-tags',
-//                                             saveFlag: emp.name
-//                                         })
-//                                     }}
-//                                     onLongPress={(c) => router.push(`/employee/${emp.employeeId}`)}
-//                                 >
-//                                     <Text className='font-semibold'>{emp.name}</Text>
-//                                 </DropdownMenuItem>
-//                                 {employees?.length !== i + 1 && <Separator />}
-//                             </View>
-//                         ))
-//                     }
-//                 </DropdownMenuContent>
-//             </DropdownMenu>
-//         </View>
-//     )
-// }
+    return (
+        <View className="flex-row">
+            <Button
+                onPress={async () => { }}
+                className='rounded-r-none h-8 pr-1.5'
+                size={'sm'}
+            >
+                <Text>Tags</Text>
+            </Button>
+            <DropdownMenu  >
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        className='rounded-l-none h-8 pl-2'
+                        size={'sm'}
+                    >
+                        <Text>
+                            <Lucide name='arrow-down' size={14}
+                                color={colorScheme === 'dark' ? 'black' : 'white'}
+                            />
+                        </Text>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side='top'>
+                    <DropdownMenuItem onPress={() => onOpen(MODAL_TYPE.EMPLOYEE.CREATE)} className='flex-row'
+                    >
+                        <Lucide name='circle-plus' color={colorScheme === 'dark' ? 'white' : 'black'}
+                        />
+                        <Text className='font-semibold'>Add New</Text>
+                    </DropdownMenuItem>
+                    <Separator />
+                    {/* {
+                        employees?.map(({ emp, onPress }, i) => (
+                            <View key={emp.employeeId}>
+                                <DropdownMenuItem
+                                    onPress={async () => {
+                                        await onPress({
+                                            items: items.regularItems,
+                                            prefix: 'r-tags',
+                                            saveFlag: emp.name
+                                        })
+                                        await onPress({
+                                            items: items.promoItems,
+                                            prefix: 'p-tags',
+                                            saveFlag: emp.name
+                                        })
+                                    }}
+                                    onLongPress={(c) => router.push(`/employee/${emp.employeeId}`)}
+                                >
+                                    <Text className='font-semibold'>{emp.name}</Text>
+                                </DropdownMenuItem>
+                                {employees?.length !== i + 1 && <Separator />}
+                            </View>
+                        ))
+                    } */}
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </View>
+    )
+}
